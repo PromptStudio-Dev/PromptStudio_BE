@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+## application-local파일 무시
+src/main/resources/application-local.yml
