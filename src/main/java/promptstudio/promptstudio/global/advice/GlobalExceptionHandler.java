@@ -8,14 +8,6 @@ import org.springframework.http.ProblemDetail;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ProblemDetail handleNotFoundException(NotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        problemDetail.setTitle("404_NOT_FOUND");
-        problemDetail.setDetail(ex.getMessage());
-        return problemDetail;
-    }
-
     @ExceptionHandler(BadRequestException.class)
     public ProblemDetail handleBadRequestException(BadRequestException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
@@ -36,6 +28,14 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleForbiddenException(ForbiddenException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
         problemDetail.setTitle("403_FORBIDDEN");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ProblemDetail handleNotFoundException(NotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("404_NOT_FOUND");
         problemDetail.setDetail(ex.getMessage());
         return problemDetail;
     }
