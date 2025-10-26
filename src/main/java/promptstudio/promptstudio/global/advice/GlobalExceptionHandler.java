@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ProblemDetail handle409(ConflictException ex) {
+    public ProblemDetail handleConflictException(ConflictException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problemDetail.setTitle("409_CONFLICT");
         problemDetail.setDetail(ex.getMessage());
