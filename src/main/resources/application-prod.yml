@@ -1,6 +1,9 @@
 spring:
   application:
     name: promptstudio
+  mvc:
+    problemdetails:
+      enabled: true
 
   datasource:
     username: ${DB_USERNAME}
