@@ -38,3 +38,7 @@ out/
 
 ## application-local파일 무시
 src/main/resources/application-local.yml
+
+### 환경변수 및 로컬 설정 ###
+.env
+*.env
