@@ -43,9 +43,6 @@ public class Prompt extends BaseEntity {
     private String result;
 
     @Column(nullable=false)
-    private String category;
-
-    @Column(nullable=false)
     private boolean imageRequired;
 
     @Column(nullable=false)
@@ -71,7 +68,6 @@ public class Prompt extends BaseEntity {
         this.visible = visible;
         this.imageUrl = imageUrl;
         this.result = result;
-        this.category = category;
         this.imageRequired = imageRequired;
         this.AiEnvironment = AiEnvironment;
         this.copyCount = copyCount;
