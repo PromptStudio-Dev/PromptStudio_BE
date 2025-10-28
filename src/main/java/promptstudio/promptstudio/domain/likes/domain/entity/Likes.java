@@ -1,4 +1,4 @@
-package promptstudio.promptstudio.domain.likes;
+package promptstudio.promptstudio.domain.likes.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -14,7 +14,7 @@ import promptstudio.promptstudio.global.common.entity.BaseEntity;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id","post_id"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"member_id","prompt_id"}))
 public class Likes extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
