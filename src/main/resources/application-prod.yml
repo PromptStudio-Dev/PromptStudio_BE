@@ -25,7 +25,7 @@ spring:
     vectorstore:
       qdrant:
         host: ${QDRANT_HOST}
-        port: 6334          # gRPC 포트. 위에서 docker run 할 때 6334도 열었지.
+        port: 6334
         use-tls: false
         collection-name: prompts
         initialize-schema: true
