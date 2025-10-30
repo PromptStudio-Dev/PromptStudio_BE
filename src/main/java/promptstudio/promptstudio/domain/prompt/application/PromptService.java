@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PromptService {
     Long createPrompt(Long memberId, PromptCreateRequest request, MultipartFile file);
-    List<PromptCardNewsResponse> getAllPrompts(Long memberId);
-    List<PromptCardNewsResponse> getHotPrompts(Long memberId);
-    List<PromptCardNewsResponse> getLikedPrompts(Long memberId);
+    List<PromptCardNewsResponse> getAllPrompts(Long memberId, String category);
+    List<PromptCardNewsResponse> getHotPrompts(Long memberId, String category);
+    List<PromptCardNewsResponse> getLikedPrompts(Long memberId, String category);
 }

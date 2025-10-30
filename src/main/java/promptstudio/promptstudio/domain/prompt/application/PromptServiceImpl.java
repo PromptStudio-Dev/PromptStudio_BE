@@ -89,40 +89,58 @@ public class PromptServiceImpl implements PromptService {
     }
 
     @Override
-    public List<PromptCardNewsResponse> getAllPrompts(Long memberId) {
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> getAllPrompts(Long memberId, String category) {
+
+        if (memberId == null) {
+            return promptRepository.findAllOrderByLikeCountDescGuestWithCategory(category);
+        }
 
         if (!memberRepository.existsById(memberId)) {
             throw new NotFoundException("멤버가 존재하지 않습니다.");
         }
 
-        return promptRepository.findAllOrderByLikeCountDesc(memberId);
+        return promptRepository.findAllOrderByLikeCountDescWithCategory(memberId, category);
     }
 
     @Override
-    public List<PromptCardNewsResponse> getHotPrompts(Long memberId) {
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> getHotPrompts(Long memberId, String category) {
 
         LocalDateTime since = LocalDateTime.now().minusDays(7);
 
         PageRequest top3PageRequest = PageRequest.of(0, 3);
+
+        if (memberId == null) {
+            Page<PromptCardNewsResponse> pageResult =
+                    promptRepository.findWeeklyTopPromptsGuestWithCategory(
+                            since,
+                            category,
+                            top3PageRequest
+                    );
+
+            return pageResult.getContent();
+        }
 
         if (!memberRepository.existsById(memberId)) {
             throw new NotFoundException("멤버가 존재하지 않습니다.");
         }
 
         Page<PromptCardNewsResponse> pageResult =
-                promptRepository.findWeeklyTopPrompts(memberId, since, top3PageRequest);
+                promptRepository.findWeeklyTopPromptsWithCategory(memberId, since, category, top3PageRequest);
 
         return pageResult.getContent();
     }
 
     @Override
-    public List<PromptCardNewsResponse> getLikedPrompts(Long memberId) {
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> getLikedPrompts(Long memberId, String category) {
 
         if (!memberRepository.existsById(memberId)) {
             throw new NotFoundException("멤버가 존재하지 않습니다.");
         }
 
-        return promptRepository.findLikedPromptsByMemberId(memberId);
+        return promptRepository.findLikedPromptsByMemberId(memberId, category);
     }
 
     //placeholder 추출

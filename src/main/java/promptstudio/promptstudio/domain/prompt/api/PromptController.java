@@ -31,28 +31,31 @@ public class PromptController {
                                              @ModelAttribute PromptCreateRequest request,
                                              @RequestPart(value = "file", required = false) MultipartFile file) {
         Long promptId = promptService.createPrompt(memberId, request, file);
-        URI location = URI.create("/api/prompt/" + promptId);
+        URI location = URI.create("/api/prompts/" + promptId);
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/prompts/members/{memberId}")
+    @GetMapping("/prompts")
     @Operation(summary = "프롬프트 전체 조회", description = "프롬프트 전체 조회 API")
-    public ResponseEntity<List<PromptCardNewsResponse>> getAllPrompts(@PathVariable Long memberId) {
-        List<PromptCardNewsResponse> response = promptService.getAllPrompts(memberId);
+    public ResponseEntity<List<PromptCardNewsResponse>> getAllPrompts(@RequestParam(value = "memberId", required = false) Long memberId,
+                                                                      @RequestParam(value = "category", defaultValue = "전체") String category) {
+        List<PromptCardNewsResponse> response = promptService.getAllPrompts(memberId, category);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/prompts/hot/members/{memberId}")
+    @GetMapping("/prompts/hot")
     @Operation(summary = "인기 프롬프트 조회", description = "인기 프롬프트 조회 API")
-    public ResponseEntity<List<PromptCardNewsResponse>> getHotPrompts(@PathVariable Long memberId) {
-        List<PromptCardNewsResponse> response = promptService.getHotPrompts(memberId);
+    public ResponseEntity<List<PromptCardNewsResponse>> getHotPrompts(@RequestParam(value = "memberId", required = false) Long memberId,
+                                                                      @RequestParam(value = "category", defaultValue = "전체") String category) {
+        List<PromptCardNewsResponse> response = promptService.getHotPrompts(memberId, category);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/prompts/likes/members/{memberId}")
+    @GetMapping("/prompts/likes")
     @Operation(summary = "좋아요한 프롬프트 조회", description = "좋아요한 프롬프트 조회 API")
-    public ResponseEntity<List<PromptCardNewsResponse>> getLikedPrompts(@PathVariable Long memberId) {
-        List<PromptCardNewsResponse> response = promptService.getLikedPrompts(memberId);
+    public ResponseEntity<List<PromptCardNewsResponse>> getLikedPrompts(@RequestParam Long memberId,
+                                                                        @RequestParam(value = "category", defaultValue = "전체") String category) {
+        List<PromptCardNewsResponse> response = promptService.getLikedPrompts(memberId,  category);
         return ResponseEntity.ok(response);
     }
 }
