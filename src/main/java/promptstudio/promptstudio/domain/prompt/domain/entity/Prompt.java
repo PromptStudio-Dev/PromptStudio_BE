@@ -33,7 +33,7 @@ public class Prompt extends BaseEntity {
     @Column(columnDefinition="TEXT")
     private String content;
 
-    @Column
+    @Column(nullable=false)
     private String category;
 
     @Column(nullable=false)
@@ -68,6 +68,7 @@ public class Prompt extends BaseEntity {
         this.title = title;
         this.introduction = introduction;
         this.content = content;
+        this.category = category;
         this.visible = visible;
         this.imageUrl = imageUrl;
         this.result = result;

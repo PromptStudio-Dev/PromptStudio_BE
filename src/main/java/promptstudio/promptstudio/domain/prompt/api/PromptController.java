@@ -21,7 +21,7 @@ public class PromptController {
     private final PromptService promptService;
 
     @PostMapping(
-            value = "/prompt/member/{memberId}",
+            value = "/prompt/members/{memberId}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     @Operation(summary = "프롬프트 등록", description = "프롬프트 등록 API")
