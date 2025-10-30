@@ -5,22 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import promptstudio.promptstudio.domain.category.domain.entity.Category;
-import promptstudio.promptstudio.domain.category.domain.repository.CategoryRepository;
 import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.domain.repository.PromptRepository;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
-import promptstudio.promptstudio.domain.promptcategory.domain.entity.PromptCategory;
-import promptstudio.promptstudio.domain.promptcategory.domain.repository.PromptCategoryRepository;
 import promptstudio.promptstudio.domain.userinput.domain.entity.PromptPlaceholder;
 import promptstudio.promptstudio.domain.userinput.domain.repository.PromptPlaceholderRepository;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,8 +29,6 @@ public class PromptServiceImpl implements PromptService {
     private final S3StorageService s3StorageService;
     private final PromptRepository promptRepository;
     private final MemberRepository memberRepository;
-    private final PromptCategoryRepository promptCategoryRepository;
-    private final CategoryRepository categoryRepository;
     private final PromptIndexService promptIndexService;
     private final PromptPlaceholderRepository promptPlaceholderRepository;
 
@@ -59,6 +52,7 @@ public class PromptServiceImpl implements PromptService {
                 .title(request.getTitle())
                 .introduction(request.getIntroduction())
                 .content(request.getContent())
+                .category(request.getCategory())
                 .visible(request.isVisible())
                 .imageUrl(imageUrl)
                 .result(request.getResult())
@@ -69,27 +63,6 @@ public class PromptServiceImpl implements PromptService {
                 .build();
 
         Prompt saved = promptRepository.save(prompt);
-
-        //카테고리 저장
-        List<String> categories = request.getCategories();
-
-        if (categories != null && !categories.isEmpty()) {
-            for (String categoryTitle : categories) {
-
-                Category category = categoryRepository.findByTitle(categoryTitle)
-                        .orElseGet(() -> {
-                            Category newCategory = new Category(categoryTitle);
-                            return categoryRepository.save(newCategory);
-                        });
-
-                PromptCategory mapping = PromptCategory.builder()
-                        .prompt(saved)
-                        .category(category)
-                        .build();
-
-                promptCategoryRepository.save(mapping);
-            }
-        }
 
         //placeholder 추출
         Set<String> placeholders = extractPlaceholders(request.getContent());
@@ -104,9 +77,8 @@ public class PromptServiceImpl implements PromptService {
 
         //vectorDB embedding
         if (saved.isVisible()) {
-            promptIndexService.indexPrompt(saved, categories);
+            promptIndexService.indexPrompt(saved);
         }
-
 
         return saved.getId();
     }
@@ -129,6 +101,5 @@ public class PromptServiceImpl implements PromptService {
 
         return result;
     }
-
 
 }

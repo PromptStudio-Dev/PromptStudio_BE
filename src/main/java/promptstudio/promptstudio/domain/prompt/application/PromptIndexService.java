@@ -17,14 +17,10 @@ public class PromptIndexService {
 
     private final VectorStore vectorStore;
 
-    public void indexPrompt(Prompt prompt, List<String> categories) {
-
-        categories = (categories == null) ? List.of() : categories; //null 방지
-
-        String categoriesForEmbedding = String.join(", ", categories);
+    public void indexPrompt(Prompt prompt) {
 
         String embeddingText = """
-                [CATEGORIES]
+                [CATEGORY]
                 %s
 
                 [TITLE]
@@ -36,7 +32,7 @@ public class PromptIndexService {
                 [CONTENT]
                 %s
                 """.formatted(
-                categoriesForEmbedding,
+                prompt.getCategory(),
                 prompt.getTitle(),
                 prompt.getIntroduction(),
                 prompt.getContent()
@@ -45,7 +41,7 @@ public class PromptIndexService {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("promptId", prompt.getId());
         metadata.put("memberId", prompt.getMember().getId());
-        metadata.put("categories", categories);
+        metadata.put("category", prompt.getCategory());
 
         Document doc = Document.builder()
                 .id(UUID.randomUUID().toString())

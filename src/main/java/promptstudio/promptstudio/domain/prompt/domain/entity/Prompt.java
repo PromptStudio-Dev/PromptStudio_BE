@@ -34,6 +34,9 @@ public class Prompt extends BaseEntity {
     private String content;
 
     @Column(nullable=false)
+    private String category;
+
+    @Column(nullable=false)
     private boolean visible;
 
     @Column(length = 2048)
@@ -57,14 +60,15 @@ public class Prompt extends BaseEntity {
     @Builder
     public Prompt(Member member, String title,
                   String introduction, String content,
-                  boolean visible, String imageUrl,
-                  String result, boolean imageRequired,
-                  String aiEnvironment, Integer copyCount,
-                  Integer viewCount) {
+                  String category, boolean visible,
+                  String imageUrl, String result,
+                  boolean imageRequired, String aiEnvironment,
+                  Integer copyCount, Integer viewCount) {
         this.member = member;
         this.title = title;
         this.introduction = introduction;
         this.content = content;
+        this.category = category;
         this.visible = visible;
         this.imageUrl = imageUrl;
         this.result = result;
