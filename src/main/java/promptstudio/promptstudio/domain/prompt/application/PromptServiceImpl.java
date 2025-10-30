@@ -9,6 +9,7 @@ import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.domain.repository.PromptRepository;
+import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
@@ -16,6 +17,7 @@ import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,6 +83,14 @@ public class PromptServiceImpl implements PromptService {
         }
 
         return saved.getId();
+    }
+
+    @Override
+    public List<PromptCardNewsResponse> getAllPrompts(Long memberId) {
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+        return promptRepository.findAllOrderByLikeCountDesc(memberId);
     }
 
     //placeholder 추출
