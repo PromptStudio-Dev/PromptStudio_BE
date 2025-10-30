@@ -17,7 +17,7 @@ spring:
       base-url: https://api.openai.com/v1
       chat:
         options:
-          model: ${OPENAI_MODEL}
+          model: ${OPENAI_MODEL:gpt-4o-mini}
 
   jpa:
     hibernate:
@@ -25,9 +25,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        show_sql: true
-        format_sql: true
-        use_sql_comments: true
+        show_sql: false
+        format_sql: false
+        use_sql_comments: false
         default_batch_fetch_size: 1000
 
   servlet:
@@ -40,6 +40,21 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
 server:
+  port: 8080
   error:
     include-message: always
   forward-headers-strategy: native
+
+logging:
+  level:
+    root: INFO
+    promptstudio: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
