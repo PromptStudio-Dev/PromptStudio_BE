@@ -18,6 +18,17 @@ spring:
       chat:
         options:
           model: ${OPENAI_MODEL}
+    ollama:
+      base-url: ${OLLAMA_URL}
+      embedding:
+        model: bge-m3
+    vectorstore:
+      qdrant:
+        host: ${QDRANT_HOST}
+        port: 6334          # gRPC 포트. 위에서 docker run 할 때 6334도 열었지.
+        use-tls: false
+        collection-name: prompts
+        initialize-schema: true
 
   jpa:
     hibernate:
@@ -42,6 +53,8 @@ spring:
       credentials:
         access-key: ${AWS_ACCESS_KEY}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
+
+
 
 app:
   s3:
