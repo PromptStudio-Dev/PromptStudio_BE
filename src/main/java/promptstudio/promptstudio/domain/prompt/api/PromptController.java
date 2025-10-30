@@ -1,5 +1,6 @@
 package promptstudio.promptstudio.domain.prompt.api;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ public class PromptController {
             value = "/prompt/member/{memberId}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
+    @Operation(summary = "프롬프트 등록", description = "프롬프트 등록 API")
     public ResponseEntity<Void> createPrompt(@PathVariable Long memberId,
                                              @ModelAttribute PromptCreateRequest request,
                                              @RequestPart(value = "file", required = false) MultipartFile file) {
