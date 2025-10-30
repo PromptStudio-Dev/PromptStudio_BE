@@ -143,6 +143,17 @@ public class PromptServiceImpl implements PromptService {
         return promptRepository.findLikedPromptsByMemberId(memberId, category);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> getMyPrompts(Long memberId, String category) {
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        return promptRepository.findMyPromptsWithCategory(memberId, category);
+    }
+
     //placeholder 추출
     private Set<String> extractPlaceholders(String content) {
         if (content == null) return Set.of();

@@ -12,4 +12,5 @@ public interface PromptService {
     List<PromptCardNewsResponse> getAllPrompts(Long memberId, String category);
     List<PromptCardNewsResponse> getHotPrompts(Long memberId, String category);
     List<PromptCardNewsResponse> getLikedPrompts(Long memberId, String category);
+    List<PromptCardNewsResponse> getMyPrompts(Long memberId, String category);
 }
