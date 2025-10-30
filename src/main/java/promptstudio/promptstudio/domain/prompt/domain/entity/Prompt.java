@@ -58,9 +58,9 @@ public class Prompt extends BaseEntity {
     public Prompt(Member member, String title,
                   String introduction, String content,
                   boolean visible, String imageUrl,
-                  String result, String category,
-                  boolean imageRequired, String aiEnvironment,
-                  Integer copyCount, Integer viewCount) {
+                  String result, boolean imageRequired,
+                  String aiEnvironment, Integer copyCount,
+                  Integer viewCount) {
         this.member = member;
         this.title = title;
         this.introduction = introduction;
