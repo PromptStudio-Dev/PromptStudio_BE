@@ -1,0 +1,24 @@
+# Git 관련
+.git
+.gitignore
+.github
+
+# 빌드 결과물 (어차피 컨테이너 안에서 다시 빌드)
+.gradle
+build
+
+# IDE 설정
+.idea
+*.iml
+
+# 기타
+.DS_Store
+*.md
+README.md
+HELP.md
+.env
+
+# Gradle wrapper (이미지에 gradle 포함되어 있음)
+gradlew
+gradlew.bat
+gradle/wrapper/gradle-wrapper.jar
