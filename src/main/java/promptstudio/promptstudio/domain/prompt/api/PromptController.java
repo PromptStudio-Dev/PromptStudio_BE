@@ -48,4 +48,11 @@ public class PromptController {
         List<PromptCardNewsResponse> response = promptService.getHotPrompts(memberId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/prompts/likes/members/{memberId}")
+    @Operation(summary = "좋아요한 프롬프트 조회", description = "좋아요한 프롬프트 조회 API")
+    public ResponseEntity<List<PromptCardNewsResponse>> getLikedPrompts(@PathVariable Long memberId) {
+        List<PromptCardNewsResponse> response = promptService.getLikedPrompts(memberId);
+        return ResponseEntity.ok(response);
+    }
 }

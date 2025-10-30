@@ -11,4 +11,5 @@ public interface PromptService {
     Long createPrompt(Long memberId, PromptCreateRequest request, MultipartFile file);
     List<PromptCardNewsResponse> getAllPrompts(Long memberId);
     List<PromptCardNewsResponse> getHotPrompts(Long memberId);
+    List<PromptCardNewsResponse> getLikedPrompts(Long memberId);
 }

@@ -79,4 +79,35 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
             @Param("since") java.time.LocalDateTime since,
             Pageable pageable
     );
+
+    @Query("""
+        select new promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse(
+            p.id,
+            p.member.id,
+            p.category,
+            p.aiEnvironment,
+            p.title,
+            p.introduction,
+            p.imageUrl,
+            true,
+            count(lAll.id)
+        )
+        from Likes lMine
+        join lMine.prompt p
+        left join Likes lAll
+            on lAll.prompt.id = p.id
+        where lMine.member.id = :memberId
+          and p.visible = true
+        group by p.id,
+                 p.member.id,
+                 p.category,
+                 p.aiEnvironment,
+                 p.title,
+                 p.introduction,
+                 p.imageUrl,
+                 lMine.createdAt,
+                 p.createdAt
+        order by lMine.createdAt desc
+    """)
+    List<PromptCardNewsResponse> findLikedPromptsByMemberId(@Param("memberId") Long memberId);
 }

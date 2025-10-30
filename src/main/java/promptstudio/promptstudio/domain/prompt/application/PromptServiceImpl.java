@@ -114,6 +114,17 @@ public class PromptServiceImpl implements PromptService {
 
         return pageResult.getContent();
     }
+
+    @Override
+    public List<PromptCardNewsResponse> getLikedPrompts(Long memberId) {
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        return promptRepository.findLikedPromptsByMemberId(memberId);
+    }
+
     //placeholder 추출
     private Set<String> extractPlaceholders(String content) {
         if (content == null) return Set.of();
