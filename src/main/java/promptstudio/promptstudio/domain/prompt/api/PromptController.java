@@ -41,4 +41,11 @@ public class PromptController {
         List<PromptCardNewsResponse> response = promptService.getAllPrompts(memberId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/prompt/hot/members/{memberId}")
+    @Operation(summary = "인기 프롬프트 조회", description = "인기 프롬프트 조회 API")
+    public ResponseEntity<List<PromptCardNewsResponse>> getHotPrompts(@PathVariable Long memberId) {
+        List<PromptCardNewsResponse> response = promptService.getHotPrompts(memberId);
+        return ResponseEntity.ok(response);
+    }
 }

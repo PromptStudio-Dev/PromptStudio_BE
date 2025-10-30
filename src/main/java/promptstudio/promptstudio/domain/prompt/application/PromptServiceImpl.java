@@ -2,6 +2,8 @@ package promptstudio.promptstudio.domain.prompt.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,7 @@ import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.Prom
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,12 +90,30 @@ public class PromptServiceImpl implements PromptService {
 
     @Override
     public List<PromptCardNewsResponse> getAllPrompts(Long memberId) {
+
         if (!memberRepository.existsById(memberId)) {
             throw new NotFoundException("멤버가 존재하지 않습니다.");
         }
+
         return promptRepository.findAllOrderByLikeCountDesc(memberId);
     }
 
+    @Override
+    public List<PromptCardNewsResponse> getHotPrompts(Long memberId) {
+
+        LocalDateTime since = LocalDateTime.now().minusDays(7);
+
+        PageRequest top3PageRequest = PageRequest.of(0, 3);
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        Page<PromptCardNewsResponse> pageResult =
+                promptRepository.findWeeklyTopPrompts(memberId, since, top3PageRequest);
+
+        return pageResult.getContent();
+    }
     //placeholder 추출
     private Set<String> extractPlaceholders(String content) {
         if (content == null) return Set.of();
