@@ -1,4 +1,4 @@
-package promptstudio.promptstudio.domain.userinput.domain.entity;
+package promptstudio.promptstudio.domain.promptplaceholder.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -2,6 +2,8 @@ package promptstudio.promptstudio.domain.prompt.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,13 +11,16 @@ import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.domain.repository.PromptRepository;
+import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
-import promptstudio.promptstudio.domain.userinput.domain.entity.PromptPlaceholder;
-import promptstudio.promptstudio.domain.userinput.domain.repository.PromptPlaceholderRepository;
+import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
+import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,6 +86,72 @@ public class PromptServiceImpl implements PromptService {
         }
 
         return saved.getId();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> getAllPrompts(Long memberId, String category) {
+
+        if (memberId == null) {
+            return promptRepository.findAllOrderByLikeCountDescGuestWithCategory(category);
+        }
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        return promptRepository.findAllOrderByLikeCountDescWithCategory(memberId, category);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> getHotPrompts(Long memberId, String category) {
+
+        LocalDateTime since = LocalDateTime.now().minusDays(7);
+
+        PageRequest top3PageRequest = PageRequest.of(0, 3);
+
+        if (memberId == null) {
+            Page<PromptCardNewsResponse> pageResult =
+                    promptRepository.findWeeklyTopPromptsGuestWithCategory(
+                            since,
+                            category,
+                            top3PageRequest
+                    );
+
+            return pageResult.getContent();
+        }
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        Page<PromptCardNewsResponse> pageResult =
+                promptRepository.findWeeklyTopPromptsWithCategory(memberId, since, category, top3PageRequest);
+
+        return pageResult.getContent();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> getLikedPrompts(Long memberId, String category) {
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        return promptRepository.findLikedPromptsByMemberId(memberId, category);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> getMyPrompts(Long memberId, String category) {
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        return promptRepository.findMyPromptsWithCategory(memberId, category);
     }
 
     //placeholder 추출
