@@ -79,7 +79,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: promptstudio-server
-          IMAGE_TAG: ${{ github.sha }}  # Git 커밋 해시 (고유한 버전)
+          IMAGE_TAG: ${{ github.sha }}  # Git 커밋 해시
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
