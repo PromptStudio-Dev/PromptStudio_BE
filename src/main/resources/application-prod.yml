@@ -35,7 +35,18 @@ spring:
       max-file-size: 25MB
       max-request-size: 25MB
 
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+
 app:
+  s3:
+    bucket: ${S3_BUCKET}
+    public-read: true
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
