@@ -10,8 +10,8 @@ import promptstudio.promptstudio.domain.member.domain.repository.MemberRepositor
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.domain.repository.PromptRepository;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
-import promptstudio.promptstudio.domain.userinput.domain.entity.PromptPlaceholder;
-import promptstudio.promptstudio.domain.userinput.domain.repository.PromptPlaceholderRepository;
+import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
+import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
