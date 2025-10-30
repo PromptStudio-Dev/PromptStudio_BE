@@ -18,6 +18,17 @@ spring:
       chat:
         options:
           model: ${OPENAI_MODEL:gpt-4o-mini}
+    ollama:
+      base-url: ${OLLAMA_URL}
+      embedding:
+        model: bge-m3
+    vectorstore:
+      qdrant:
+        host: ${QDRANT_HOST}
+        port: 6334
+        use-tls: false
+        collection-name: prompts
+        initialize-schema: true
 
   jpa:
     hibernate:
@@ -35,7 +46,20 @@ spring:
       max-file-size: 25MB
       max-request-size: 25MB
 
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+
+
+
 app:
+  s3:
+    bucket: ${S3_BUCKET}
+    public-read: true
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
 

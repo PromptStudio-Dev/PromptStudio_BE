@@ -44,6 +44,15 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//aws s3
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.2'
+
+	//spring ai
+	implementation(platform("org.springframework.ai:spring-ai-bom:1.0.0"))
+
+	implementation("org.springframework.ai:spring-ai-starter-model-ollama")
+	implementation("org.springframework.ai:spring-ai-starter-vector-store-qdrant")
 }
 
 dependencyManagement {

@@ -13,7 +13,7 @@ import promptstudio.promptstudio.global.common.entity.BaseEntity;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserInput extends BaseEntity {
+public class PromptPlaceholder extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,13 +26,9 @@ public class UserInput extends BaseEntity {
     @Column(nullable=false)
     private String fieldName;
 
-    @Column(columnDefinition="TEXT")
-    private String fieldValue;
-
     @Builder
-    public UserInput(Prompt prompt,  String fieldName, String fieldValue) {
+    public PromptPlaceholder(Prompt prompt, String fieldName) {
         this.prompt = prompt;
         this.fieldName = fieldName;
-        this.fieldValue = fieldValue;
     }
 }
