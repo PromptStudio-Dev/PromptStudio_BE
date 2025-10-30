@@ -23,7 +23,7 @@ public class PromptController {
     private final PromptService promptService;
 
     @PostMapping(
-            value = "/prompt/members/{memberId}",
+            value = "/prompts/members/{memberId}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     @Operation(summary = "프롬프트 등록", description = "프롬프트 등록 API")
@@ -35,14 +35,14 @@ public class PromptController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/prompt/members/{memberId}")
+    @GetMapping("/prompts/members/{memberId}")
     @Operation(summary = "프롬프트 전체 조회", description = "프롬프트 전체 조회 API")
     public ResponseEntity<List<PromptCardNewsResponse>> getAllPrompts(@PathVariable Long memberId) {
         List<PromptCardNewsResponse> response = promptService.getAllPrompts(memberId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/prompt/hot/members/{memberId}")
+    @GetMapping("/prompts/hot/members/{memberId}")
     @Operation(summary = "인기 프롬프트 조회", description = "인기 프롬프트 조회 API")
     public ResponseEntity<List<PromptCardNewsResponse>> getHotPrompts(@PathVariable Long memberId) {
         List<PromptCardNewsResponse> response = promptService.getHotPrompts(memberId);
