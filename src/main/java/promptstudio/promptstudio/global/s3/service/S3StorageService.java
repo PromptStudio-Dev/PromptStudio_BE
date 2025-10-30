@@ -84,12 +84,4 @@ public class S3StorageService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "S3 업로드 실패", e);
         }
     }
-
-    public String uploadQrPng(Long memberCouponId, byte[] pngBytes, boolean deterministicKey) {
-        String key = deterministicKey
-                ? "qr/%d.png".formatted(memberCouponId)
-                : "qr/%s.png".formatted(UUID.randomUUID().toString().replace("-", ""));
-
-        return uploadBytes(pngBytes, key, "image/png", "public, max-age=300");
-    }
 }
