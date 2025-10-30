@@ -78,7 +78,7 @@ jobs:
       - name: Build and push Docker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: promptstudio
+          ECR_REPOSITORY: promptstudio-server
           IMAGE_TAG: ${{ github.sha }}  # Git 커밋 해시 (고유한 버전)
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -116,7 +116,7 @@ jobs:
             docker rm promptstudio 2>/dev/null || true
           
             # 새 이미지 pull
-            docker pull $ECR_REGISTRY/promptstudio:latest
+            docker pull $ECR_REGISTRY/promptstudio-server:latest
           
             # 새 컨테이너 실행
             docker run -d \
@@ -130,7 +130,7 @@ jobs:
               -e OPENAI_API_KEY='$OPENAI_API_KEY' \
               -e OPENAI_MODEL='$OPENAI_MODEL' \
               -e CORS_ALLOWED_ORIGINS='$CORS_ORIGINS' \
-              $ECR_REGISTRY/promptstudio:latest
+              $ECR_REGISTRY/promptstudio-server:latest
           
             # 사용하지 않는 이미지 정리
             docker image prune -af
