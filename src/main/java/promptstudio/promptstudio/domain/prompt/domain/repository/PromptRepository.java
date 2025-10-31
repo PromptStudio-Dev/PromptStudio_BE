@@ -236,4 +236,42 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
     """)
     void increaseViewCount(@Param("promptId") Long promptId);
 
+    @Query("""
+    select new promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse(
+        p.id,
+        p.member.id,
+        p.category,
+        p.aiEnvironment,
+        p.title,
+        p.introduction,
+        p.imageUrl,
+        case when max(case when lMine.id is not null then 1 else 0 end) = 1
+             then true else false end,
+        count(lAll.id)
+    )
+    from Prompt p
+    left join Likes lAll
+        on lAll.prompt.id = p.id
+    left join Likes lMine
+        on lMine.prompt.id = p.id
+       and lMine.member.id = :memberId
+    where p.id in :promptIds
+      and p.visible = true
+      and (:category = '전체' or p.category = :category)
+    group by p.id,
+             p.member.id,
+             p.category,
+             p.aiEnvironment,
+             p.title,
+             p.introduction,
+             p.imageUrl,
+             p.createdAt
+    """)
+    List<PromptCardNewsResponse> findPromptsByIdsWithCategory(
+            @Param("promptIds") List<Long> promptIds,
+            @Param("memberId") Long memberId,
+            @Param("category") String category
+    );
+
+
 }

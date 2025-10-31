@@ -76,4 +76,13 @@ public class PromptController {
         PromptResponse response = promptService.getPromptDetail(memberId, promptId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/prompts/search")
+    @Operation(summary = "프롬프트 검색", description = "프롬프트 검색 API")
+    public ResponseEntity<List<PromptCardNewsResponse>> searchPrompts(@RequestParam(value = "memberId", required = false) Long memberId,
+                                                                      @RequestParam(value = "category", defaultValue = "전체") String category,
+                                                                      @RequestParam("q") String query) {
+        List<PromptCardNewsResponse> response = promptService.searchPrompts(memberId, category, query);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -2,6 +2,9 @@ package promptstudio.promptstudio.domain.prompt.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ import promptstudio.promptstudio.global.s3.service.S3StorageService;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +43,7 @@ public class PromptServiceImpl implements PromptService {
     private final PromptIndexService promptIndexService;
     private final PromptPlaceholderRepository promptPlaceholderRepository;
     private final LikesRepository likesRepository;
+    private final VectorStore vectorStore;
 
     @Override
     public Long createPrompt(Long memberId, PromptCreateRequest request, MultipartFile file) {
@@ -180,6 +185,59 @@ public class PromptServiceImpl implements PromptService {
 
         return toPromptResponse(prompt, likeCount, liked);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> searchPrompts(Long memberId, String category, String query) {
+
+        if (memberId != null && !memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        SearchRequest.Builder builder = SearchRequest.builder()
+                .query(query)
+                .topK(30);
+
+        if (category != null && !"전체".equals(category)) {
+            builder.filterExpression("category == '" + category + "'");
+        }
+
+        SearchRequest request = builder.build();
+
+        List<Document> docs = vectorStore.similaritySearch(request);
+
+        List<Long> rankedIds = docs.stream()
+                .map(doc -> toLong(doc.getMetadata().get("promptId")))
+                .filter(id -> id != null)
+                .distinct()
+                .toList();
+
+        if (rankedIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<PromptCardNewsResponse> rawCards =
+                promptRepository.findPromptsByIdsWithCategory(rankedIds, memberId, category);
+
+        Map<Long, PromptCardNewsResponse> cardById = new java.util.HashMap<>();
+        for (PromptCardNewsResponse card : rawCards) {
+            cardById.put(card.getPromptId(), card);
+        }
+
+        return rankedIds.stream()
+                .map(cardById::get)
+                .filter(card -> card != null) // 카테고리에서 걸러져서 없어진 애들 제거
+                .toList();
+    }
+
+    private Long toLong(Object raw) {
+        if (raw == null) return null;
+        if (raw instanceof Long l) return l;
+        if (raw instanceof Integer i) return i.longValue();
+        if (raw instanceof String s) return Long.parseLong(s);
+        throw new IllegalArgumentException("Unexpected ID type: " + raw.getClass());
+    }
+
 
     private PromptResponse toPromptResponse(Prompt prompt, long likeCount, boolean liked) {
         PromptResponse dto = new PromptResponse();
