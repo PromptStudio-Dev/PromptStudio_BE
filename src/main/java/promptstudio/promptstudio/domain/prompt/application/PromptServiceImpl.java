@@ -7,12 +7,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import promptstudio.promptstudio.domain.likes.domain.repository.LikesRepository;
 import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.domain.repository.PromptRepository;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
+import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
@@ -36,6 +38,7 @@ public class PromptServiceImpl implements PromptService {
     private final MemberRepository memberRepository;
     private final PromptIndexService promptIndexService;
     private final PromptPlaceholderRepository promptPlaceholderRepository;
+    private final LikesRepository likesRepository;
 
     @Override
     public Long createPrompt(Long memberId, PromptCreateRequest request, MultipartFile file) {
@@ -152,6 +155,52 @@ public class PromptServiceImpl implements PromptService {
         }
 
         return promptRepository.findMyPromptsWithCategory(memberId, category);
+    }
+
+    @Override
+    public PromptResponse getPromptDetail(Long memberId, Long promptId) {
+
+        Prompt prompt = promptRepository.findById(promptId).orElseThrow(
+                () -> new NotFoundException("프롬프트가 존재하지 않습니다.")
+        );
+
+        if (memberId != null && !memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        promptRepository.increaseViewCount(promptId);
+
+        long likeCount = likesRepository.countByPromptId(promptId);
+
+        if (memberId == null) {
+            return toPromptResponse(prompt, likeCount, false);
+        }
+
+        boolean liked = likesRepository.existsByPromptIdAndMemberId(promptId, memberId);
+
+        return toPromptResponse(prompt, likeCount, liked);
+    }
+
+    private PromptResponse toPromptResponse(Prompt prompt, long likeCount, boolean liked) {
+        PromptResponse dto = new PromptResponse();
+
+        dto.setMemberId(prompt.getMember().getId());
+        dto.setPromptId(prompt.getId());
+        dto.setName(prompt.getMember().getName());
+        dto.setTitle(prompt.getTitle());
+        dto.setIntroduction(prompt.getIntroduction());
+        dto.setAiEnvironment(prompt.getAiEnvironment());
+        dto.setCategory(prompt.getCategory());
+        dto.setContent(prompt.getContent());
+        dto.setImageUrl(prompt.getImageUrl());
+        dto.setResult(prompt.getResult());
+        dto.setLikeCount(likeCount);
+        dto.setLiked(liked);
+        dto.setCopyCount(prompt.getCopyCount());
+        dto.setViewCount(prompt.getViewCount() + 1);
+        dto.setCreatedAt(prompt.getCreatedAt());
+
+        return dto;
     }
 
     //placeholder 추출

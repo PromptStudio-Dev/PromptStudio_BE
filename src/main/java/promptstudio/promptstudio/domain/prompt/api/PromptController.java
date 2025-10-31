@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.prompt.application.PromptService;
+import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
+import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -64,6 +66,14 @@ public class PromptController {
     public ResponseEntity<List<PromptCardNewsResponse>> getMyPrompts(@RequestParam Long memberId,
                                                                      @RequestParam(value = "category", defaultValue = "전체") String category) {
         List<PromptCardNewsResponse> response = promptService.getMyPrompts(memberId, category);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/prompts/{promptId}")
+    @Operation(summary = "프롬프트 상세 조회", description = "프롬프트 상세 조회 API")
+    public ResponseEntity<PromptResponse> getPromptDetail(@PathVariable("promptId") Long promptId,
+                                                    @RequestParam(value = "memberId", required = false) Long memberId) {
+        PromptResponse response = promptService.getPromptDetail(memberId, promptId);
         return ResponseEntity.ok(response);
     }
 }
