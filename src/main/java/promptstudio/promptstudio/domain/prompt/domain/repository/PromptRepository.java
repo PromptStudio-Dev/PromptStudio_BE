@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -226,4 +227,13 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
             @Param("memberId") Long memberId,
             @Param("category") String category
     );
+
+    @Modifying(clearAutomatically = false, flushAutomatically = false)
+    @Query("""
+        UPDATE Prompt p
+        SET p.viewCount = p.viewCount + 1
+        WHERE p.id = :promptId
+    """)
+    void increaseViewCount(@Param("promptId") Long promptId);
+
 }
