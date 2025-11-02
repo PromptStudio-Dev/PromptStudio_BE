@@ -85,4 +85,11 @@ public class PromptController {
         List<PromptCardNewsResponse> response = promptService.searchPrompts(memberId, category, query);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/prompts/recent/members/{memberId}")
+    @Operation(summary = "최근 조회한 프롬프트 조회", description = "최근 조회한 프롬프트 조회 API")
+    public ResponseEntity<List<PromptCardNewsResponse>> getViewedPrompt(@PathVariable("memberId") Long memberId) {
+        List<PromptCardNewsResponse> response = promptService.getViewedPrompts(memberId);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,8 @@ import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
 import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
+import promptstudio.promptstudio.domain.viewrecord.domain.entity.ViewRecord;
+import promptstudio.promptstudio.domain.viewrecord.domain.repository.ViewRecordRepository;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
@@ -44,6 +47,7 @@ public class PromptServiceImpl implements PromptService {
     private final PromptPlaceholderRepository promptPlaceholderRepository;
     private final LikesRepository likesRepository;
     private final VectorStore vectorStore;
+    private final ViewRecordRepository viewRecordRepository;
 
     @Override
     public Long createPrompt(Long memberId, PromptCreateRequest request, MultipartFile file) {
@@ -169,8 +173,20 @@ public class PromptServiceImpl implements PromptService {
                 () -> new NotFoundException("프롬프트가 존재하지 않습니다.")
         );
 
-        if (memberId != null && !memberRepository.existsById(memberId)) {
-            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        if (memberId != null) {
+            Member member = memberRepository.findById(memberId).orElseThrow(
+                    () -> new NotFoundException("멤버가 존재하지 않습니다."));
+
+            int updated = viewRecordRepository.touchIfExists(memberId, promptId);
+
+            if (updated == 0) {
+                ViewRecord record = ViewRecord.builder()
+                        .member(member)
+                        .prompt(prompt)
+                        .build();
+                viewRecordRepository.save(record);
+            }
+
         }
 
         promptRepository.increaseViewCount(promptId);
@@ -226,8 +242,19 @@ public class PromptServiceImpl implements PromptService {
 
         return rankedIds.stream()
                 .map(cardById::get)
-                .filter(card -> card != null) // 카테고리에서 걸러져서 없어진 애들 제거
+                .filter(card -> card != null)
                 .toList();
+    }
+
+    @Override
+    public List<PromptCardNewsResponse> getViewedPrompts(Long memberId) {
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        Pageable top10 = PageRequest.of(0, 10);
+
+        return promptRepository.findRecentViewedCards(memberId, top10);
     }
 
     private Long toLong(Object raw) {
