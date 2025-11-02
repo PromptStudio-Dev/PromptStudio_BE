@@ -17,6 +17,7 @@ import promptstudio.promptstudio.domain.member.domain.repository.MemberRepositor
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.domain.repository.PromptRepository;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
+import promptstudio.promptstudio.domain.prompt.dto.PromptCopyResponse;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
 import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
@@ -255,6 +256,22 @@ public class PromptServiceImpl implements PromptService {
         Pageable top10 = PageRequest.of(0, 10);
 
         return promptRepository.findRecentViewedCards(memberId, top10);
+    }
+
+    @Override
+    public PromptCopyResponse updateCopyCount(Long promptId) {
+        Prompt prompt = promptRepository.findById(promptId).orElseThrow(
+                () -> new NotFoundException("프롬프트가 존재하지 않습니다.")
+        );
+
+        prompt.updateCopyCount();
+
+        PromptCopyResponse response = new PromptCopyResponse();
+
+        response.setPromptId(prompt.getId());
+        response.setCopyCount(prompt.getCopyCount());
+
+        return response;
     }
 
     private Long toLong(Object raw) {
