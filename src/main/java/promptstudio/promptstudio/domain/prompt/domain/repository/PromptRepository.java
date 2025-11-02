@@ -273,5 +273,42 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
             @Param("category") String category
     );
 
+    @Query("""
+    select new promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse(
+        p.id,
+        p.member.id,
+        p.category,
+        p.aiEnvironment,
+        p.title,
+        p.introduction,
+        p.imageUrl,
+        case when max(case when l2.id is not null then 1 else 0 end) = 1
+             then true else false end,
+        count(l.id)
+    )
+    from ViewRecord vr
+    join vr.prompt p
+    left join Likes l
+        on l.prompt.id = p.id
+    left join Likes l2
+        on l2.prompt.id = p.id
+       and l2.member.id = :memberId
+    where vr.member.id = :memberId
+      and p.visible = true
+    group by p.id,
+             p.member.id,
+             p.category,
+             p.aiEnvironment,
+             p.title,
+             p.introduction,
+             p.imageUrl,
+             vr.updatedAt
+    order by max(vr.updatedAt) desc
+    """)
+    List<PromptCardNewsResponse> findRecentViewedCards(
+            @Param("memberId") Long memberId,
+            Pageable pageable
+    );
+
 
 }

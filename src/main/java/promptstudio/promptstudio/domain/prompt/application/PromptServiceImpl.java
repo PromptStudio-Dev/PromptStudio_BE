@@ -7,6 +7,7 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -241,8 +242,19 @@ public class PromptServiceImpl implements PromptService {
 
         return rankedIds.stream()
                 .map(cardById::get)
-                .filter(card -> card != null) // 카테고리에서 걸러져서 없어진 애들 제거
+                .filter(card -> card != null)
                 .toList();
+    }
+
+    @Override
+    public List<PromptCardNewsResponse> getViewedPrompts(Long memberId) {
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        Pageable top10 = PageRequest.of(0, 10);
+
+        return promptRepository.findRecentViewedCards(memberId, top10);
     }
 
     private Long toLong(Object raw) {

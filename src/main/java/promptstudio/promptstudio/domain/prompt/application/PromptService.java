@@ -16,4 +16,5 @@ public interface PromptService {
     List<PromptCardNewsResponse> getMyPrompts(Long memberId, String category);
     PromptResponse getPromptDetail(Long memberId, Long promptId);
     List<PromptCardNewsResponse> searchPrompts(Long memberId, String category, String query);
+    List<PromptCardNewsResponse> getViewedPrompts(Long memberId);
 }
