@@ -57,6 +57,10 @@ public class Prompt extends BaseEntity {
     @Column(nullable=false)
     private Integer viewCount;
 
+    public void updateCopyCount() {
+        this.copyCount +=1;
+    }
+
     @Builder
     public Prompt(Member member, String title,
                   String introduction, String content,

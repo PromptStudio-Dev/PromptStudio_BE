@@ -3,6 +3,7 @@ package promptstudio.promptstudio.domain.prompt.application;
 import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
+import promptstudio.promptstudio.domain.prompt.dto.PromptCopyResponse;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
 import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
 
@@ -17,4 +18,5 @@ public interface PromptService {
     PromptResponse getPromptDetail(Long memberId, Long promptId);
     List<PromptCardNewsResponse> searchPrompts(Long memberId, String category, String query);
     List<PromptCardNewsResponse> getViewedPrompts(Long memberId);
+    PromptCopyResponse updateCopyCount(Long promptId);
 }

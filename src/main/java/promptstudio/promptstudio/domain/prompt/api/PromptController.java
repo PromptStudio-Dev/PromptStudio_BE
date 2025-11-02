@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.prompt.application.PromptService;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
+import promptstudio.promptstudio.domain.prompt.dto.PromptCopyResponse;
 import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
 import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
 
@@ -90,6 +91,13 @@ public class PromptController {
     @Operation(summary = "최근 조회한 프롬프트 조회", description = "최근 조회한 프롬프트 조회 API")
     public ResponseEntity<List<PromptCardNewsResponse>> getViewedPrompt(@PathVariable("memberId") Long memberId) {
         List<PromptCardNewsResponse> response = promptService.getViewedPrompts(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/prompts/{promptId}/copy")
+    @Operation(summary = "프롬프트 복사 횟수 업데이트", description = "프롬프트 복사 횟수 업데이트 API")
+    public ResponseEntity<PromptCopyResponse> updateCopyCount(@PathVariable("promptId") Long promptId) {
+        PromptCopyResponse response = promptService.updateCopyCount(promptId);
         return ResponseEntity.ok(response);
     }
 }
