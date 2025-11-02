@@ -32,7 +32,7 @@ public class LikesServiceImpl implements LikesService {
                 () -> new NotFoundException("프롬프트가 존재하지 않습니다."));
 
         if (likesRepository.existsByMemberIdAndPromptId(memberId, promptId)) {
-            likesRepository.deleteByMemberIdAndPromptId(memberId, promptId);;
+            likesRepository.deleteByMemberIdAndPromptId(memberId, promptId);
         } else {
             try {
                 likesRepository.save(Likes.builder()
