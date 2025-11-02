@@ -20,6 +20,8 @@ import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
 import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
+import promptstudio.promptstudio.domain.viewrecord.domain.entity.ViewRecord;
+import promptstudio.promptstudio.domain.viewrecord.domain.repository.ViewRecordRepository;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
@@ -44,6 +46,7 @@ public class PromptServiceImpl implements PromptService {
     private final PromptPlaceholderRepository promptPlaceholderRepository;
     private final LikesRepository likesRepository;
     private final VectorStore vectorStore;
+    private final ViewRecordRepository viewRecordRepository;
 
     @Override
     public Long createPrompt(Long memberId, PromptCreateRequest request, MultipartFile file) {
@@ -169,8 +172,20 @@ public class PromptServiceImpl implements PromptService {
                 () -> new NotFoundException("프롬프트가 존재하지 않습니다.")
         );
 
-        if (memberId != null && !memberRepository.existsById(memberId)) {
-            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        if (memberId != null) {
+            Member member = memberRepository.findById(memberId).orElseThrow(
+                    () -> new NotFoundException("멤버가 존재하지 않습니다."));
+
+            int updated = viewRecordRepository.touchIfExists(memberId, promptId);
+
+            if (updated == 0) {
+                ViewRecord record = ViewRecord.builder()
+                        .member(member)
+                        .prompt(prompt)
+                        .build();
+                viewRecordRepository.save(record);
+            }
+
         }
 
         promptRepository.increaseViewCount(promptId);

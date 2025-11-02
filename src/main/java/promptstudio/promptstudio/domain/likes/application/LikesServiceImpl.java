@@ -26,8 +26,10 @@ public class LikesServiceImpl implements LikesService {
 
     @Override
     public LikesToggleResponse toggleLikes(Long memberId, Long promptId) {
+
         Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new NotFoundException("유저가 존재하지 않습니다."));
+                () -> new NotFoundException("멤버가 존재하지 않습니다."));
+
         Prompt prompt = promptRepository.findById(promptId).orElseThrow(
                 () -> new NotFoundException("프롬프트가 존재하지 않습니다."));
 
