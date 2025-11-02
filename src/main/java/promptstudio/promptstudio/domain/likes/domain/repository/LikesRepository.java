@@ -22,4 +22,7 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     """)
     boolean existsByPromptIdAndMemberId(@Param("promptId") Long promptId,
                                         @Param("memberId") Long memberId);
+
+    boolean existsByMemberIdAndPromptId(Long memberId, Long promptId);
+    void deleteByMemberIdAndPromptId(Long memberId, Long promptId);
 }
