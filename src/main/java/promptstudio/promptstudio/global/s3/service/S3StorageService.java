@@ -84,4 +84,29 @@ public class S3StorageService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "S3 업로드 실패", e);
         }
     }
+
+    public void deleteImage(String imageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return;
+        }
+
+        try {
+            // URL에서 key 추출
+            String key = extractKeyFromUrl(imageUrl);
+            s3Template.deleteObject(bucket, key);
+        } catch (Exception e) {
+            // 삭제 실패해도 계속 진행 (로그만 남김)
+            System.err.println("S3 파일 삭제 실패: " + imageUrl + ", " + e.getMessage());
+        }
+    }
+
+    private String extractKeyFromUrl(String url) {
+        if (url.contains(bucket)) {
+            // https://bucket.s3.region.amazonaws.com/key 형태
+            int keyStartIndex = url.indexOf(bucket) + bucket.length() + 1;
+            return url.substring(keyStartIndex);
+        }
+        // 이미 key만 있는 경우
+        return url;
+    }
 }
