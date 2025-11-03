@@ -3,13 +3,18 @@ package promptstudio.promptstudio.domain.maker.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.maker.application.MakerService;
 import promptstudio.promptstudio.domain.maker.dto.MakerCreateRequest;
 import promptstudio.promptstudio.domain.maker.dto.MakerCreateResponse;
+import promptstudio.promptstudio.domain.maker.dto.MakerUpdateRequest;
+import promptstudio.promptstudio.domain.maker.dto.MakerUpdateResponse;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/makers")
@@ -33,5 +38,20 @@ public class MakerController {
 
         URI location = URI.create("/api/makers/" + makerId);
         return ResponseEntity.created(location).body(response);
+    }
+
+    @PatchMapping(
+            value = "/{makerId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @Operation(summary = "메이커 자동 저장", description = "메이커를 자동 저장합니다. (2초 debounce)")
+    public ResponseEntity<MakerUpdateResponse> updateMaker(
+            @PathVariable Long makerId,
+            @ModelAttribute MakerUpdateRequest request,
+            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages) {
+
+        MakerUpdateResponse response = makerService.updateMaker(makerId, request, newImages);
+
+        return ResponseEntity.ok(response);
     }
 }
