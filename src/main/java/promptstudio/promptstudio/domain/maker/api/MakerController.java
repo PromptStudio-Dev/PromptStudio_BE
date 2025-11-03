@@ -8,11 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.maker.application.MakerService;
-import promptstudio.promptstudio.domain.maker.dto.MakerCreateRequest;
-import promptstudio.promptstudio.domain.maker.dto.MakerCreateResponse;
-import promptstudio.promptstudio.domain.maker.dto.MakerDetailResponse;
-import promptstudio.promptstudio.domain.maker.dto.MakerUpdateRequest;
-import promptstudio.promptstudio.domain.maker.dto.MakerUpdateResponse;
+import promptstudio.promptstudio.domain.maker.dto.*;
 
 import java.net.URI;
 import java.util.List;
@@ -60,6 +56,16 @@ public class MakerController {
     @Operation(summary = "메이커 상세 조회", description = "메이커의 상세 정보를 조회합니다.")
     public ResponseEntity<MakerDetailResponse> getMakerDetail(@PathVariable Long makerId) {
         MakerDetailResponse response = makerService.getMakerDetail(makerId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{makerId}/upgrade-text")
+    @Operation(summary = "텍스트 업그레이드", description = "선택한 텍스트를 GPT로 업그레이드합니다.")
+    public ResponseEntity<TextUpgradeResponse> upgradeText(
+            @PathVariable Long makerId,
+            @RequestBody TextUpgradeRequest request) {
+
+        TextUpgradeResponse response = makerService.upgradeText(makerId, request);
         return ResponseEntity.ok(response);
     }
 }

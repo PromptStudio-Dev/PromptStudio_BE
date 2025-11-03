@@ -45,6 +45,16 @@ public class MakerServiceImpl implements MakerService {
     @Override
     @Transactional
     public MakerUpdateResponse updateMaker(Long makerId, MakerUpdateRequest request, List<MultipartFile> newImages) {
+        System.out.println("=== DEBUG ===");
+        System.out.println("Title: " + request.getTitle());
+        System.out.println("Content: " + request.getContent());
+        System.out.println("Content is null? " + (request.getContent() == null));
+
+        if (request.getContent() != null) {
+            System.out.println("Content length: " + request.getContent().length());
+            System.out.println("Content preview: " + request.getContent().substring(0, Math.min(50, request.getContent().length())));
+        }
+
         Maker maker = makerRepository.findById(makerId)
                 .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
 
