@@ -1,10 +1,7 @@
 package promptstudio.promptstudio.domain.maker.application;
 
 import org.springframework.web.multipart.MultipartFile;
-import promptstudio.promptstudio.domain.maker.dto.MakerCreateRequest;
-import promptstudio.promptstudio.domain.maker.dto.MakerDetailResponse;
-import promptstudio.promptstudio.domain.maker.dto.MakerUpdateRequest;
-import promptstudio.promptstudio.domain.maker.dto.MakerUpdateResponse;
+import promptstudio.promptstudio.domain.maker.dto.*;
 
 import java.util.List;
 
@@ -14,4 +11,6 @@ public interface MakerService {
     MakerUpdateResponse updateMaker(Long makerId, MakerUpdateRequest request, List<MultipartFile> newImages);
 
     MakerDetailResponse getMakerDetail(Long makerId);
+
+    TextUpgradeResponse upgradeText(Long makerId, TextUpgradeRequest request);
 }

@@ -7,14 +7,12 @@ import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.maker.domain.entity.Maker;
 import promptstudio.promptstudio.domain.maker.domain.entity.MakerImage;
 import promptstudio.promptstudio.domain.maker.domain.repository.MakerRepository;
-import promptstudio.promptstudio.domain.maker.dto.MakerCreateRequest;
-import promptstudio.promptstudio.domain.maker.dto.MakerDetailResponse;
-import promptstudio.promptstudio.domain.maker.dto.MakerUpdateRequest;
-import promptstudio.promptstudio.domain.maker.dto.MakerUpdateResponse;
+import promptstudio.promptstudio.domain.maker.dto.*;
 import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
+import promptstudio.promptstudio.global.gpt.application.GptService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,5 +104,31 @@ public class MakerServiceImpl implements MakerService {
                 .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
 
         return MakerDetailResponse.from(maker);
+    }
+
+    private final GptService gptService; // 생성자 주입 필요
+
+    @Override
+    @Transactional(readOnly = true)
+    public TextUpgradeResponse upgradeText(Long makerId, TextUpgradeRequest request) {
+        // 1. Maker 조회하여 fullContext 가져오기
+        Maker maker = makerRepository.findById(makerId)
+                .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
+
+        String fullContext = maker.getContent();
+
+        // 2. GPT 서비스 호출
+        String upgradedText = gptService.upgradeText(
+                request.getSelectedText(),
+                request.getDirection(),
+                fullContext
+        );
+
+        // 3. 응답 생성
+        return TextUpgradeResponse.builder()
+                .originalText(request.getSelectedText())
+                .upgradedText(upgradedText)
+                .direction(request.getDirection())
+                .build();
     }
 }
