@@ -8,6 +8,7 @@ import promptstudio.promptstudio.domain.maker.domain.entity.Maker;
 import promptstudio.promptstudio.domain.maker.domain.entity.MakerImage;
 import promptstudio.promptstudio.domain.maker.domain.repository.MakerRepository;
 import promptstudio.promptstudio.domain.maker.dto.MakerCreateRequest;
+import promptstudio.promptstudio.domain.maker.dto.MakerDetailResponse;
 import promptstudio.promptstudio.domain.maker.dto.MakerUpdateRequest;
 import promptstudio.promptstudio.domain.maker.dto.MakerUpdateResponse;
 import promptstudio.promptstudio.domain.member.domain.entity.Member;
@@ -96,5 +97,14 @@ public class MakerServiceImpl implements MakerService {
                 .title(maker.getTitle())
                 .updatedAt(maker.getUpdatedAt())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MakerDetailResponse getMakerDetail(Long makerId) {
+        Maker maker = makerRepository.findByIdWithImages(makerId)
+                .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
+
+        return MakerDetailResponse.from(maker);
     }
 }
