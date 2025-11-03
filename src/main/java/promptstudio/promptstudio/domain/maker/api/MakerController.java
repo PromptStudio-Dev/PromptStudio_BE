@@ -44,8 +44,18 @@ public class MakerController {
     @Operation(summary = "메이커 자동 저장", description = "메이커를 자동 저장합니다. (2초 debounce)")
     public ResponseEntity<MakerUpdateResponse> updateMaker(
             @PathVariable Long makerId,
-            @ModelAttribute MakerUpdateRequest request,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "existingImageUrls", required = false) List<String> existingImageUrls,
             @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages) {
+
+        // DTO 직접 생성
+        MakerUpdateRequest request = new MakerUpdateRequest();
+        request.setTitle(title);
+        request.setContent(content);
+        if (existingImageUrls != null) {
+            request.setExistingImageUrls(existingImageUrls);
+        }
 
         MakerUpdateResponse response = makerService.updateMaker(makerId, request, newImages);
 
