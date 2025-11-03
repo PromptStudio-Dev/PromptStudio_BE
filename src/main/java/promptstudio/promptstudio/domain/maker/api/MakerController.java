@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.maker.application.MakerService;
 import promptstudio.promptstudio.domain.maker.dto.MakerCreateRequest;
 import promptstudio.promptstudio.domain.maker.dto.MakerCreateResponse;
+import promptstudio.promptstudio.domain.maker.dto.MakerDetailResponse;
 import promptstudio.promptstudio.domain.maker.dto.MakerUpdateRequest;
 import promptstudio.promptstudio.domain.maker.dto.MakerUpdateResponse;
 
@@ -52,6 +53,13 @@ public class MakerController {
 
         MakerUpdateResponse response = makerService.updateMaker(makerId, request, newImages);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{makerId}")
+    @Operation(summary = "메이커 상세 조회", description = "메이커의 상세 정보를 조회합니다.")
+    public ResponseEntity<MakerDetailResponse> getMakerDetail(@PathVariable Long makerId) {
+        MakerDetailResponse response = makerService.getMakerDetail(makerId);
         return ResponseEntity.ok(response);
     }
 }
