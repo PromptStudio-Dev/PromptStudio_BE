@@ -45,6 +45,7 @@ public class MakerServiceImpl implements MakerService {
     @Override
     @Transactional
     public MakerUpdateResponse updateMaker(Long makerId, MakerUpdateRequest request, List<MultipartFile> newImages) {
+        // TODO: 디버깅 로그이기에 나중에 삭제하기
         System.out.println("=== DEBUG ===");
         System.out.println("Title: " + request.getTitle());
         System.out.println("Content: " + request.getContent());
