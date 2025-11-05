@@ -102,18 +102,24 @@ jobs:
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           # CORS
           CORS_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
-          # Ollama & Qdrant (옵션 - 사용하지 않으면 삭제)
+          # Ollama & Qdrant
           OLLAMA_URL: ${{ secrets.OLLAMA_URL }}
           QDRANT_HOST: ${{ secrets.QDRANT_HOST }}
         run: |
           echo "$EC2_KEY" > private_key.pem
           chmod 600 private_key.pem
           
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST bash << EOF
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST bash << 'EOF'
             # ECR 로그인
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_REGISTRY
           
-            # 기존 컨테이너 중지 및 삭제
+            # Qdrant 컨테이너 확인 및 시작
+            if ! docker ps | grep -q qdrant; then
+              echo "Starting Qdrant..."
+              docker start qdrant 2>/dev/null || docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant
+            fi
+          
+            # 기존 promptstudio 컨테이너 중지 및 삭제
             docker stop promptstudio 2>/dev/null || true
             docker rm promptstudio 2>/dev/null || true
           
@@ -124,7 +130,7 @@ jobs:
             docker run -d \
               --name promptstudio \
               --restart unless-stopped \
-              -p 8080:8080 \
+              --network host \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e DB_URL='$DB_URL' \
               -e DB_USERNAME='$DB_USERNAME' \
@@ -143,7 +149,7 @@ jobs:
             docker image prune -af
           
             # 배포 확인
-            sleep 5
+            sleep 10
             docker ps | grep promptstudio
             echo "Deployment completed!"
           EOF
