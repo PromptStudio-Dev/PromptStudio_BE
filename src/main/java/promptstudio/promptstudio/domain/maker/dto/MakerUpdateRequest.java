@@ -2,12 +2,14 @@ package promptstudio.promptstudio.domain.maker.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class MakerUpdateRequest {
     private String title;
