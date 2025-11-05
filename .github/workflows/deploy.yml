@@ -1,35 +1,20 @@
-# ============================================
-# 워크플로우 이름
-# ============================================
 name: Deploy to ECR and EC2
 
-# ============================================
-# 트리거 조건
-# ============================================
 on:
   push:
     branches:
       - main
       - develop
 
-# ============================================
-# 실행할 작업
-# ============================================
 jobs:
   deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
 
     steps:
-      # ----------------------------------------
-      # Step 1: 코드 체크아웃
-      # ----------------------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ----------------------------------------
-      # Step 2: JDK 17 설치
-      # ----------------------------------------
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -37,21 +22,12 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # ----------------------------------------
-      # Step 3: Gradle 실행 권한 부여
-      # ----------------------------------------
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # ----------------------------------------
-      # Step 4: Spring Boot 빌드
-      # ----------------------------------------
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
-      # ----------------------------------------
-      # Step 5: AWS 자격증명 설정
-      # ----------------------------------------
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -59,16 +35,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # ----------------------------------------
-      # Step 6: ECR 로그인
-      # ----------------------------------------
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # ----------------------------------------
-      # Step 7: Docker 이미지 빌드 및 푸시
-      # ----------------------------------------
       - name: Build and push Docker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -80,43 +50,41 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      # ----------------------------------------
-      # Step 8: EC2에 배포 명령 전송
-      # ----------------------------------------
       - name: Deploy to EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ubuntu
           EC2_KEY: ${{ secrets.EC2_SSH_KEY }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          # Database
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          # OpenAI
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
-          # AWS S3
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          # CORS
           CORS_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
-          # Ollama & Qdrant
           OLLAMA_URL: ${{ secrets.OLLAMA_URL }}
           QDRANT_HOST: ${{ secrets.QDRANT_HOST }}
         run: |
           echo "$EC2_KEY" > private_key.pem
           chmod 600 private_key.pem
           
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST bash << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST << EOF
             # ECR 로그인
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $ECR_REGISTRY
           
             # Qdrant 컨테이너 확인 및 시작
             if ! docker ps | grep -q qdrant; then
               echo "Starting Qdrant..."
-              docker start qdrant 2>/dev/null || docker run -d --name qdrant -p 6333:6333 -p 6334:6334 qdrant/qdrant
+              docker start qdrant 2>/dev/null || docker run -d \
+                --name qdrant \
+                --restart unless-stopped \
+                -p 6333:6333 \
+                -p 6334:6334 \
+                -v qdrant_storage:/qdrant/storage \
+                qdrant/qdrant
             fi
           
             # 기존 promptstudio 컨테이너 중지 및 삭제
