@@ -8,7 +8,7 @@ spring:
   datasource:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    url: ${DB_URL}
+    url: jdbc:mysql://${DB_URL}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   ai:
@@ -19,12 +19,12 @@ spring:
         options:
           model: ${OPENAI_MODEL:gpt-4o-mini}
     ollama:
-      base-url: ${OLLAMA_URL}
+      base-url: ${OLLAMA_URL:http://localhost:11434}
       embedding:
         model: bge-m3
     vectorstore:
       qdrant:
-        host: ${QDRANT_HOST}
+        host: ${QDRANT_HOST:localhost}
         port: 6334
         use-tls: false
         collection-name: prompts
@@ -53,8 +53,6 @@ spring:
       credentials:
         access-key: ${AWS_ACCESS_KEY}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
-
-
 
 app:
   s3:

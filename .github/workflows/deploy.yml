@@ -9,9 +9,8 @@ name: Deploy to ECR and EC2
 on:
   push:
     branches:
-      - main      # main 브랜치에 푸시할 때
-      - develop   # develop 브랜치에 푸시할 때
-  # pull_request:  # PR 생성 시에도 실행하고 싶다면 주석 해제
+      - main
+      - develop
 
 # ============================================
 # 실행할 작업
@@ -19,7 +18,7 @@ on:
 jobs:
   deploy:
     name: Build and Deploy
-    runs-on: ubuntu-latest  # GitHub이 제공하는 Ubuntu 서버에서 실행
+    runs-on: ubuntu-latest
 
     steps:
       # ----------------------------------------
@@ -27,7 +26,6 @@ jobs:
       # ----------------------------------------
       - name: Checkout code
         uses: actions/checkout@v4
-        # GitHub 리포지토리의 코드를 가져옴
 
       # ----------------------------------------
       # Step 2: JDK 17 설치
@@ -36,22 +34,20 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'  # Eclipse Temurin (OpenJDK)
-          cache: gradle  # Gradle 의존성 캐싱 → 빌드 속도 향상
+          distribution: 'temurin'
+          cache: gradle
 
       # ----------------------------------------
       # Step 3: Gradle 실행 권한 부여
       # ----------------------------------------
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-        # Linux에서 gradlew 파일을 실행 가능하게 만듦
 
       # ----------------------------------------
       # Step 4: Spring Boot 빌드
       # ----------------------------------------
       - name: Build with Gradle
         run: ./gradlew clean build -x test
-        # JAR 파일 생성 (테스트 제외로 시간 단축)
 
       # ----------------------------------------
       # Step 5: AWS 자격증명 설정
@@ -62,7 +58,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
-        # GitHub Secrets에 저장된 AWS 키로 인증
 
       # ----------------------------------------
       # Step 6: ECR 로그인
@@ -70,7 +65,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        # ECR에 Docker 이미지를 푸시하기 위해 로그인
 
       # ----------------------------------------
       # Step 7: Docker 이미지 빌드 및 푸시
@@ -79,14 +73,12 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: promptstudio-server
-          IMAGE_TAG: ${{ github.sha }}  # Git 커밋 해시
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        # latest 태그: 항상 최신 버전을 가리킴
-        # 커밋해시 태그: 특정 버전 롤백 가능
 
       # ----------------------------------------
       # Step 8: EC2에 배포 명령 전송
@@ -97,12 +89,22 @@ jobs:
           EC2_USER: ubuntu
           EC2_KEY: ${{ secrets.EC2_SSH_KEY }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          # Database
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          # OpenAI
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+          # AWS S3
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          # CORS
           CORS_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
+          # Ollama & Qdrant (옵션 - 사용하지 않으면 삭제)
+          OLLAMA_URL: ${{ secrets.OLLAMA_URL }}
+          QDRANT_HOST: ${{ secrets.QDRANT_HOST }}
         run: |
           echo "$EC2_KEY" > private_key.pem
           chmod 600 private_key.pem
@@ -129,7 +131,12 @@ jobs:
               -e DB_PASSWORD='$DB_PASSWORD' \
               -e OPENAI_API_KEY='$OPENAI_API_KEY' \
               -e OPENAI_MODEL='$OPENAI_MODEL' \
+              -e AWS_ACCESS_KEY='$AWS_ACCESS_KEY' \
+              -e AWS_SECRET_ACCESS_KEY='$AWS_SECRET_ACCESS_KEY' \
+              -e S3_BUCKET='$S3_BUCKET' \
               -e CORS_ALLOWED_ORIGINS='$CORS_ORIGINS' \
+              -e OLLAMA_URL='$OLLAMA_URL' \
+              -e QDRANT_HOST='$QDRANT_HOST' \
               $ECR_REGISTRY/promptstudio-server:latest
           
             # 사용하지 않는 이미지 정리
