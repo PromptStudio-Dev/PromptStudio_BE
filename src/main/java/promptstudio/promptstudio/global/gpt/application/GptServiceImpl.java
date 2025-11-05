@@ -17,27 +17,37 @@ public class GptServiceImpl implements GptService {
     private final ChatClient.Builder chatClientBuilder;
 
     private static final String SYSTEM_MESSAGE = """
-            당신은 프롬프트 작성 전문가입니다.
-            사용자가 제공한 텍스트를 지정된 방향성에 맞게 개선해주세요.
-            개선된 텍스트만 출력하고, 추가 설명이나 인사말은 하지 마세요.
-            원본 텍스트의 핵심 의미는 유지하되, 방향성에 맞게 표현을 개선하세요.
-            """;
+        당신은 프롬프트 작성 전문가입니다.
+        사용자가 제공한 텍스트를 지정된 방향성에 맞게 개선해주세요.
+        
+        중요한 규칙:
+        - 개선된 텍스트만 출력하고, 추가 설명이나 인사말은 절대 하지 마세요
+        - 원본 텍스트의 문장 구조, 어조, 시제를 최대한 유지하세요
+        - 원본과 비슷한 길이로 작성하세요 (너무 길거나 짧지 않게)
+        - 원본이 명사형이면 명사형으로, 동사형이면 동사형으로 유지하세요
+        - 전체 맥락 속에서 자연스럽게 들어갈 수 있도록 작성하세요
+        """;
 
     private static final String USER_MESSAGE_TEMPLATE = """
-            전체 맥락:
-            {fullContext}
-            
-            ---
-            
-            업그레이드할 텍스트:
-            {selectedText}
-            
-            개선 방향:
-            {direction}
-            
-            위 텍스트를 개선 방향에 맞게 다시 작성해주세요.
-            개선된 텍스트만 출력하세요.
-            """;
+        전체 맥락:
+        {fullContext}
+        
+        ---
+        
+        업그레이드할 텍스트:
+        {selectedText}
+        
+        개선 방향:
+        {direction}
+        
+        ---
+        
+        위 텍스트를 개선 방향에 맞게 다시 작성하되, 다음을 반드시 지켜주세요:
+        1. 원본의 문장 구조와 형식을 최대한 유지할 것
+        2. 전체 맥락에서 해당 부분이 자연스럽게 이어지도록 할 것
+        3. 원본과 비슷한 길이로 작성할 것
+        4. 개선된 텍스트만 출력하고 다른 말은 하지 말 것
+        """;
 
     @Override
     public String upgradeText(String selectedText, String direction, String fullContext) {
