@@ -79,4 +79,4 @@ management:
         include: health,info
   endpoint:
     health:
-      show-details: when-authorizedg
+      show-details: when-authorized

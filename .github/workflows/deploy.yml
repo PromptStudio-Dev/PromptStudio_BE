@@ -80,7 +80,7 @@ jobs:
               echo "Starting Qdrant..."
               docker start qdrant 2>/dev/null || docker run -d \
                 --name qdrant \
-                --restart unless-stopped \
+                --restart on-failure:3 \
                 -p 6333:6333 \
                 -p 6334:6334 \
                 -v qdrant_storage:/qdrant/storage \
@@ -97,7 +97,7 @@ jobs:
             # 새 컨테이너 실행
             docker run -d \
               --name promptstudio \
-              --restart unless-stopped \
+              --restart on-failure:3 \
               --network host \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e DB_URL='$DB_URL' \
