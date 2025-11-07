@@ -27,7 +27,7 @@ public class SwaggerConfig {
                                 .url("http://localhost:8080")
                                 .description("로컬 개발 서버"),
                         new Server()
-                                .url("https://www.promptstudio.kr")
+                                .url("https://api.promptstudio.kr")
                                 .description("운영 서버")
                 ));
     }
