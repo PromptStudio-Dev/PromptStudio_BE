@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class S3StorageService {
 
     private final S3Template s3Template;
+    private final S3Client s3Client;
 
     @Value("${app.s3.bucket}")
     private String bucket;
@@ -108,5 +111,48 @@ public class S3StorageService {
         }
         // 이미 key만 있는 경우
         return url;
+    }
+
+    public String copyImage(String sourceUrl) {
+        try {
+            // 1. 원본 key 추출
+            String sourceKey = extractKeyFromUrl(sourceUrl);
+
+            // 2. 확장자 추출
+            String ext = sourceKey.contains(".")
+                    ? sourceKey.substring(sourceKey.lastIndexOf('.') + 1).toLowerCase()
+                    : "jpg";
+
+            // 3. 새 key 생성 (history 폴더에 저장)
+            String newKey = "history/%s/%s.%s".formatted(
+                    LocalDate.now(),
+                    UUID.randomUUID(),
+                    ext
+            );
+
+            // 4. S3 복사 (SDK 직접 사용)
+            CopyObjectRequest copyRequest = CopyObjectRequest.builder()
+                    .sourceBucket(bucket)
+                    .sourceKey(sourceKey)
+                    .destinationBucket(bucket)
+                    .destinationKey(newKey)
+                    .build();
+
+            s3Client.copyObject(copyRequest);
+
+            // 5. 새 URL 반환
+            if (publicRead) {
+                return "https://%s.s3.%s.amazonaws.com/%s".formatted(bucket, region, newKey);
+            } else {
+                return s3Template.createSignedGetURL(bucket, newKey, Duration.ofMinutes(15)).toString();
+            }
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "S3 이미지 복사 실패: " + e.getMessage(),
+                    e
+            );
+        }
     }
 }
