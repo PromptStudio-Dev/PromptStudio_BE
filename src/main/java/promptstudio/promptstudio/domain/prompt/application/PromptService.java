@@ -18,5 +18,5 @@ public interface PromptService {
     PromptResponse getPromptDetail(Long memberId, Long promptId);
     List<PromptCardNewsResponse> searchPrompts(Long memberId, String category, String query);
     List<PromptCardNewsResponse> getViewedPrompts(Long memberId);
-    PromptCopyResponse updateCopyCount(Long promptId);
+    PromptCopyResponse copyPrompt(Long promptId);
 }

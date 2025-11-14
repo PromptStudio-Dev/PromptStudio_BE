@@ -95,9 +95,9 @@ public class PromptController {
     }
 
     @PatchMapping("/prompts/{promptId}/copy")
-    @Operation(summary = "프롬프트 복사 횟수 업데이트", description = "프롬프트 복사 횟수 업데이트 API")
-    public ResponseEntity<PromptCopyResponse> updateCopyCount(@PathVariable("promptId") Long promptId) {
-        PromptCopyResponse response = promptService.updateCopyCount(promptId);
+    @Operation(summary = "프롬프트 복사", description = "프롬프트 복사 API")
+    public ResponseEntity<PromptCopyResponse> copyPrompt(@PathVariable("promptId") Long promptId) {
+        PromptCopyResponse response = promptService.copyPrompt(promptId);
         return ResponseEntity.ok(response);
     }
 }
