@@ -1,5 +1,7 @@
 package promptstudio.promptstudio.domain.history.domain.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +22,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
             "LEFT JOIN FETCH h.snapshotImages " +
             "WHERE h.id = :historyId")
     Optional<History> findByIdWithImages(@Param("historyId") Long historyId);
+
+    Page<History> findByMakerIdOrderByCreatedAtDesc(Long makerId, Pageable pageable);
 }
