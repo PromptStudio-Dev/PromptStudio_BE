@@ -259,7 +259,7 @@ public class PromptServiceImpl implements PromptService {
     }
 
     @Override
-    public PromptCopyResponse updateCopyCount(Long promptId) {
+    public PromptCopyResponse copyPrompt(Long promptId) {
         Prompt prompt = promptRepository.findById(promptId).orElseThrow(
                 () -> new NotFoundException("프롬프트가 존재하지 않습니다.")
         );
@@ -270,6 +270,7 @@ public class PromptServiceImpl implements PromptService {
 
         response.setPromptId(prompt.getId());
         response.setCopyCount(prompt.getCopyCount());
+        response.setContent(prompt.getContent());
 
         return response;
     }
