@@ -28,10 +28,7 @@ import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,6 +89,7 @@ public class PromptServiceImpl implements PromptService {
 
             promptPlaceholderRepository.save(placeholderEntity);
         }
+
 
         //vectorDB embedding
         if (saved.isVisible()) {
@@ -310,13 +308,13 @@ public class PromptServiceImpl implements PromptService {
     private Set<String> extractPlaceholders(String content) {
         if (content == null) return Set.of();
 
-        Set<String> result = new HashSet<>();
+        Set<String> result = new LinkedHashSet<>();
 
         Pattern p = Pattern.compile("\\[([^\\]]+)]");
         Matcher m = p.matcher(content);
 
         while (m.find()) {
-            String fieldName = m.group(1).trim(); // "name", "date" 등
+            String fieldName = m.group(1).trim();
             if (!fieldName.isEmpty()) {
                 result.add(fieldName);
             }
