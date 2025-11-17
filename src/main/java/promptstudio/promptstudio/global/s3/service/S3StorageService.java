@@ -104,24 +104,44 @@ public class S3StorageService {
     }
 
     private String extractKeyFromUrl(String url) {
-        if (url.contains(bucket)) {
-            // https://bucket.s3.region.amazonaws.com/key 형태
-            int keyStartIndex = url.indexOf(bucket) + bucket.length() + 1;
-            return url.substring(keyStartIndex);
+        // 쿼리 파라미터 먼저 제거
+        String cleanUrl = url;
+        int queryIndex = url.indexOf('?');
+        if (queryIndex > 0) {
+            cleanUrl = url.substring(0, queryIndex);
         }
-        // 이미 key만 있는 경우
-        return url;
+
+        String amazonDomain = "amazonaws.com/";
+        int keyStartIndex = cleanUrl.indexOf(amazonDomain);
+        if (keyStartIndex > 0) {
+            return cleanUrl.substring(keyStartIndex + amazonDomain.length());
+        }
+
+        int lastSlash = cleanUrl.lastIndexOf('/');
+        if (lastSlash > 0) {
+            return cleanUrl.substring(lastSlash + 1);
+        }
+
+        // 그 외의 경우 그대로 반환
+        return cleanUrl;
     }
 
     public String copyImage(String sourceUrl) {
         try {
+            // 디버깅 로그 추가
+            System.out.println("=== S3 이미지 복사 시작 ===");
+            System.out.println("원본 URL: " + sourceUrl);
+
             // 1. 원본 key 추출
             String sourceKey = extractKeyFromUrl(sourceUrl);
+            System.out.println("추출된 sourceKey: " + sourceKey);
+            System.out.println("버킷명: " + bucket);
 
             // 2. 확장자 추출
             String ext = sourceKey.contains(".")
                     ? sourceKey.substring(sourceKey.lastIndexOf('.') + 1).toLowerCase()
                     : "jpg";
+            System.out.println("확장자: " + ext);
 
             // 3. 새 key 생성 (history 폴더에 저장)
             String newKey = "history/%s/%s.%s".formatted(
@@ -129,6 +149,7 @@ public class S3StorageService {
                     UUID.randomUUID(),
                     ext
             );
+            System.out.println("새 key: " + newKey);
 
             // 4. S3 복사 (SDK 직접 사용)
             CopyObjectRequest copyRequest = CopyObjectRequest.builder()
@@ -148,6 +169,8 @@ public class S3StorageService {
             }
 
         } catch (Exception e) {
+            System.err.println("=== S3 복사 실패 ===");
+            System.err.println("에러 메시지: " + e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "S3 이미지 복사 실패: " + e.getMessage(),
