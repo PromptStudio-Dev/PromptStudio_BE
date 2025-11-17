@@ -28,7 +28,7 @@ public class PromptPlaceholderServiceImpl implements PromptPlaceholderService{
         );
 
         List<PromptPlaceholder> placeholders =
-                promptPlaceholderRepository.findByPromptId(promptId);
+                promptPlaceholderRepository.findByPromptIdOrderByIdAsc(promptId);
 
         List<String> placeholderNames = placeholders.stream()
                 .map(PromptPlaceholder::getFieldName)
