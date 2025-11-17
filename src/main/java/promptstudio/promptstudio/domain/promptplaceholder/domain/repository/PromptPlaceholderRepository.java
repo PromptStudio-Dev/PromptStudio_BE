@@ -6,5 +6,5 @@ import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPl
 import java.util.List;
 
 public interface PromptPlaceholderRepository extends JpaRepository<PromptPlaceholder, Long> {
-    List<PromptPlaceholder> findByPromptId(Long promptId);
+    List<PromptPlaceholder> findByPromptIdOrderByIdAsc(Long promptId);
 }
