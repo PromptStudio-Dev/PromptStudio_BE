@@ -22,10 +22,10 @@ public class ImageServiceImpl implements ImageService {
                     new ImagePrompt(prompt,
                             OpenAiImageOptions.builder()
                                     .model("dall-e-3")
-                                    .quality("standard")  // "standard" or "hd"
+                                    .quality("standard")
                                     .width(1024)
                                     .height(1024)
-                                    .style("natural")     // "natural" or "vivid"
+                                    .style("natural")
                                     .build()
                     )
             );
@@ -48,19 +48,18 @@ public class ImageServiceImpl implements ImageService {
                     new ImagePrompt(prompt,
                             OpenAiImageOptions.builder()
                                     .model("dall-e-3")
-                                    .quality("hd")  // HD 품질
+                                    .quality("hd")
                                     .width(1024)
                                     .height(1024)
-                                    .style("vivid")  // 더 생생한 결과
+                                    .style("vivid")  // 애니메이션/게임 스타일용
                                     .build()
                     )
             );
 
-            // DALL-E가 수정한 프롬프트 확인 (디버깅용)
             if (response.getMetadata() != null) {
                 Object revisedPrompt = response.getMetadata().get("revisedPrompt");
                 if (revisedPrompt != null) {
-                    System.out.println("=== DALL-E가 수정한 프롬프트 ===");
+                    System.out.println("=== DALL-E가 수정한 프롬프트 (vivid) ===");
                     System.out.println(revisedPrompt);
                     System.out.println("================================");
                 }
@@ -72,6 +71,41 @@ public class ImageServiceImpl implements ImageService {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "HD 이미지 생성 중 오류가 발생했습니다: " + e.getMessage(),
+                    e
+            );
+        }
+    }
+
+    @Override
+    public String generateImageRealistic(String prompt) {
+        try {
+            ImageResponse response = openAiImageModel.call(
+                    new ImagePrompt(prompt,
+                            OpenAiImageOptions.builder()
+                                    .model("dall-e-3")
+                                    .quality("hd")
+                                    .width(1024)
+                                    .height(1024)
+                                    .style("natural")  // 사실적/원본 유지용
+                                    .build()
+                    )
+            );
+
+            if (response.getMetadata() != null) {
+                Object revisedPrompt = response.getMetadata().get("revisedPrompt");
+                if (revisedPrompt != null) {
+                    System.out.println("=== DALL-E가 수정한 프롬프트 (natural) ===");
+                    System.out.println(revisedPrompt);
+                    System.out.println("================================");
+                }
+            }
+
+            return response.getResult().getOutput().getUrl();
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Realistic 이미지 생성 중 오류가 발생했습니다: " + e.getMessage(),
                     e
             );
         }
