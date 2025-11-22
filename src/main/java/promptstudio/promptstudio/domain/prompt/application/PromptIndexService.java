@@ -20,9 +20,6 @@ public class PromptIndexService {
     public void indexPrompt(Prompt prompt) {
 
         String embeddingText = """
-                [CATEGORY]
-                %s
-
                 [TITLE]
                 %s
 
@@ -32,7 +29,6 @@ public class PromptIndexService {
                 [CONTENT]
                 %s
                 """.formatted(
-                prompt.getCategory(),
                 prompt.getTitle(),
                 prompt.getIntroduction(),
                 prompt.getContent()
