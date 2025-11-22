@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.prompt.application.PromptService;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCopyResponse;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
-import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
+import promptstudio.promptstudio.domain.prompt.dto.*;
 
 import java.net.URI;
 import java.util.List;
@@ -98,6 +95,15 @@ public class PromptController {
     @Operation(summary = "프롬프트 복사", description = "프롬프트 복사 API")
     public ResponseEntity<PromptCopyResponse> copyPrompt(@PathVariable("promptId") Long promptId) {
         PromptCopyResponse response = promptService.copyPrompt(promptId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/members/{memberId}/prompts/{promptId}")
+    @Operation(summary = "프롬프트 수정", description = "프롬프트 수정 API")
+    public ResponseEntity<PromptUpdateResponse> updatePrompt(@PathVariable("memberId") Long memberId,
+                                                             @PathVariable("promptId") Long promptId,
+                                                             @RequestBody PromptUpdateRequest request) {
+        PromptUpdateResponse response = promptService.updatePrompt(memberId, promptId, request);
         return ResponseEntity.ok(response);
     }
 }
