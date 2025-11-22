@@ -13,4 +13,6 @@ public interface MakerService {
     MakerDetailResponse getMakerDetail(Long makerId);
 
     TextUpgradeResponse upgradeText(TextUpgradeRequest request);
+
+    TextUpgradeResponse reupgradeText(TextReupgradeRequest request);
 }

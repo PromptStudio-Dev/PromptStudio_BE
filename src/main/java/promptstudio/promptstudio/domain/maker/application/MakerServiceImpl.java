@@ -206,4 +206,102 @@ public class MakerServiceImpl implements MakerService {
                 .direction(request.getDirection())
                 .build();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TextUpgradeResponse reupgradeText(TextReupgradeRequest request) {
+
+        // 검색 쿼리 생성
+        String searchQuery = gptService.generateSearchQuery(
+                request.getFullText(),
+                request.getSelectedText(),
+                request.getDirection()
+        );
+
+        log.info("searchQuery: {}", searchQuery);
+
+        // 벡터 검색 (topK + threshold)
+        List<Document> docs = gptService.retrieve(
+                searchQuery,
+                8,
+                0.5
+        );
+
+        // threshold 필터링 후 결과 0개인 경우
+        if (docs.isEmpty()) {
+            String upgradedText = gptService.reupgradeText(
+                    request.getFullText(),
+                    request.getSelectedText(),
+                    request.getPrevDirection(),
+                    request.getPrevResult(),
+                    request.getDirection()
+            );
+
+            return TextUpgradeResponse.builder()
+                    .originalText(request.getSelectedText())
+                    .upgradedText(upgradedText)
+                    .direction(request.getDirection())
+                    .build();
+        }
+
+        // 컨텍스트 구성
+        int perDocLimit = 3000;   // 문서 하나당 최대 글자 수
+        int totalLimit  = 12000;  // 전체 컨텍스트 최대 글자 수
+
+        StringBuilder sb = new StringBuilder();
+        int used = 0;
+
+        for (Document d : docs) {
+            String text = d.getText();
+            if (text == null || text.isBlank()) continue;
+
+            if (text.length() > perDocLimit) {
+                text = text.substring(0, perDocLimit);
+            }
+
+            String chunk = "----\n" + text + "\n";
+
+            if (used + chunk.length() > totalLimit) break;
+
+            sb.append(chunk);
+            used += chunk.length();
+        }
+
+        String context = sb.toString().trim();
+
+        // 업그레이드 텍스트 생성
+        String upgradedText = gptService.reupgradeTextWithContext(
+                request.getFullText(),
+                request.getSelectedText(),
+                request.getPrevDirection(),
+                request.getPrevResult(),
+                request.getDirection(),
+                context
+        );
+
+        // RAG 활용 프롬프트 ID
+        List<Long> promptIds = docs.stream()
+                .map(d -> d.getMetadata().get("promptId"))
+                .filter(Objects::nonNull)
+                .map(id -> {
+                    try {
+                        return Long.parseLong(id.toString());
+                    } catch (NumberFormatException e) {
+                        log.warn("Invalid promptId format: {}", id);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        log.info("retrievedPromptIds: {}", promptIds);
+
+        return TextUpgradeResponse.builder()
+                .originalText(request.getSelectedText())
+                .upgradedText(upgradedText)
+                .direction(request.getDirection())
+                .build();
+    }
+
 }

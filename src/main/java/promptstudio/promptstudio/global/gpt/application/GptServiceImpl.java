@@ -7,9 +7,7 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -26,14 +24,14 @@ public class GptServiceImpl implements GptService {
         사용자가 제공한 ‘선택 텍스트’를 ‘개선 방향’에 맞게 자연스럽게 업그레이드하세요.
         
         규칙:
-        - 출력은 개선된 텍스트만 반환합니다. 설명/인사/부연 금지.
-        - 원본의 문장 구조, 어조, 시제, 형식을 가능한 유지합니다.
-        - 전체 맥락과 자연스럽게 이어지도록 작성합니다.
+        - 출력은 개선된 텍스트만 반환합니다. 설명/인사/부연/메타 발화 금지.
+        - 원본 문장의 말투, 어조, 시제, 문체를 유지하세요.
+        - 전체 텍스트에서 선택 텍스트가 포함된 위치를 고려해, 앞문장과 뒷문장 모두와 자연스럽게 이어지도록 다듬습니다.
         """;
 
 
     private static final String USER_MESSAGE_TEMPLATE = """
-        [전체 맥락]
+        [전체 텍스트]
         {fullContext}
         
         [선택 텍스트]
@@ -47,7 +45,7 @@ public class GptServiceImpl implements GptService {
 
 
     private static final String USER_MESSAGE_TEMPLATE_WITH_CONTEXT = """
-        [전체 맥락]
+        [전체 텍스트]
         {fullContext}
         
         [선택 텍스트]
@@ -64,6 +62,55 @@ public class GptServiceImpl implements GptService {
         
         선택 텍스트를 현재 개선 방향에 맞게 업그레이드하여 출력하세요.
         """;
+
+    private static final String REUPGRADE_USER_TEMPLATE = """
+        [전체 텍스트]
+        {fullContext}
+        
+        [선택 텍스트]
+        {selectedText}
+        
+        [이전 개선 방향]
+        {prevDirection}
+        
+        [이전 결과]
+        {prevResult}
+        
+        [현재 개선 방향]
+        {direction}
+        
+        이전 개선 방향과 현 개선 방향이 상충한다면, 현재 개선 방향을 우선해 참고하여 더 정교한 개선을 수행하세요.
+        
+        선택 텍스트를 현재 개선 방향에 맞게 업그레이드하여 출력하세요.
+        """;
+    private static final String REUPGRADE_USER_TEMPLATE_WITH_CONTEXT = """
+        [전체 텍스트]
+        {fullContext}
+        
+        [선택 텍스트]
+        {selectedText}
+        
+        [이전 개선 방향]
+        {prevDirection}
+        
+        [이전 결과]
+        {prevResult}
+        
+        [현재 개선 방향]
+        {direction}
+        
+        [참고 프롬프트]
+        {ragContext}
+    
+        참고 프롬프트는 스타일/구성/표현을 참고하되,
+        내용을 그대로 복사하지 말고 사용자 문맥에 맞게 재작성하세요.
+    
+        아래의 이전 요청 정보가 존재한다면,
+        이번 개선 방향보다 우선해 참고하여 더 정교한 개선을 수행하세요.
+        
+        선택 텍스트를 현재 개선 방향에 맞게 업그레이드하여 출력하세요.
+        """;
+
 
     private static final String QUERY_SYSTEM_MESSAGE = """
         당신은 프롬프트 검색을 위한 "검색 쿼리 생성기"입니다.
@@ -146,7 +193,66 @@ public class GptServiceImpl implements GptService {
     }
 
     @Override
-    public String generateSearchQuery(String selectedText, String direction, String fullText) {
+    public String reupgradeText(
+            String fullContext,
+            String selectedText,
+            String prevDirection,
+            String prevResult,
+            String direction
+    ) {
+
+        ChatClient chatClient = chatClientBuilder.build();
+
+        PromptTemplate promptTemplate = new PromptTemplate(REUPGRADE_USER_TEMPLATE);
+        Prompt prompt = promptTemplate.create(Map.of(
+                "fullContext", fullContext != null ? fullContext : "",
+                "selectedText", selectedText,
+                "prevDirection", prevDirection != null ? prevDirection : "",
+                "prevResult", prevResult != null ? prevResult : "",
+                "direction", direction
+        ));
+
+        String result = chatClient.prompt(prompt)
+                .system(SYSTEM_MESSAGE)
+                .call()
+                .content();
+
+        return result != null ? result.trim() : selectedText;
+    }
+
+    @Override
+    public String reupgradeTextWithContext(
+            String fullContext,
+            String selectedText,
+            String prevDirection,
+            String prevResult,
+            String direction,
+            String ragContext
+    ) {
+
+        ChatClient chatClient = chatClientBuilder.build();
+
+        PromptTemplate promptTemplate = new PromptTemplate(REUPGRADE_USER_TEMPLATE_WITH_CONTEXT);
+        Prompt prompt = promptTemplate.create(Map.of(
+                "fullContext", fullContext != null ? fullContext : "",
+                "selectedText", selectedText,
+                "prevDirection", prevDirection != null ? prevDirection : "",
+                "prevResult", prevResult != null ? prevResult : "",
+                "direction", direction,
+                "ragContext", ragContext != null ? ragContext : ""
+        ));
+
+        String result = chatClient.prompt(prompt)
+                .system(SYSTEM_MESSAGE)
+                .call()
+                .content();
+
+        return result != null ? result.trim() : selectedText;
+    }
+
+    @Override
+    public String generateSearchQuery(String fullText, String selectedText, String direction) {
+
         ChatClient chatClient = chatClientBuilder.build();
 
         PromptTemplate promptTemplate = new PromptTemplate(QUERY_USER_TEMPLATE);
@@ -164,6 +270,7 @@ public class GptServiceImpl implements GptService {
         return result != null ? result.trim() : selectedText;
     }
 
+    @Override
     public List<Document> retrieve(String query, int topK, double threshold) {
 
         SearchRequest.Builder builder = SearchRequest.builder()
