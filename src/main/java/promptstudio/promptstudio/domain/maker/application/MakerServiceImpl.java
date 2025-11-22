@@ -1,6 +1,8 @@
 package promptstudio.promptstudio.domain.maker.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,15 +18,19 @@ import promptstudio.promptstudio.global.gpt.application.GptService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MakerServiceImpl implements MakerService {
 
     private final MakerRepository makerRepository;
     private final MemberRepository memberRepository;
     private final S3StorageService s3StorageService;
+    private final GptService gptService;
 
     @Override
     @Transactional
@@ -106,25 +112,94 @@ public class MakerServiceImpl implements MakerService {
         return MakerDetailResponse.from(maker);
     }
 
-    private final GptService gptService; // 생성자 주입 필요
-
     @Override
     @Transactional(readOnly = true)
-    public TextUpgradeResponse upgradeText(Long makerId, TextUpgradeRequest request) {
-        // 1. Maker 조회하여 fullContext 가져오기
-        Maker maker = makerRepository.findById(makerId)
-                .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
+    public TextUpgradeResponse upgradeText(TextUpgradeRequest request) {
 
-        String fullContext = maker.getContent();
-
-        // 2. GPT 서비스 호출
-        String upgradedText = gptService.upgradeText(
+        String searchQuery = gptService.generateSearchQuery(
+                request.getFullText(),
                 request.getSelectedText(),
-                request.getDirection(),
-                fullContext
+                request.getDirection()
         );
 
-        // 3. 응답 생성
+        log.info("searchQuery: {}", searchQuery);
+
+        // 벡터 검색 (topK + threshold 필터링)
+        List<Document> docs = gptService.retrieve(
+                searchQuery,
+                8,
+                0.5
+        );
+
+        // threshold 필터링 후 결과 0개인 경우
+        if (docs.isEmpty()) {
+            String upgradedText = gptService.upgradeText(
+                    request.getFullText(),
+                    request.getSelectedText(),
+                    request.getDirection()
+            );
+
+            return TextUpgradeResponse.builder()
+                    .originalText(request.getSelectedText())
+                    .upgradedText(upgradedText)
+                    .direction(request.getDirection())
+                    .build();
+        }
+
+        // 컨텍스트 구성
+        int perDocLimit = 3000;   // 문서 하나당 최대 글자 수
+        int totalLimit  = 12000;  // 전체 컨텍스트 최대 글자 수
+
+        StringBuilder sb = new StringBuilder();
+        int used = 0;
+
+        for (Document d : docs) {
+            String text = d.getText();
+            if (text == null || text.isBlank()) continue;
+
+            // 문서별 최대 길이
+            if (text.length() > perDocLimit) {
+                text = text.substring(0, perDocLimit);
+            }
+
+            String chunk = "----\n" + text + "\n";
+
+            // totalLimit 초과 시 중단
+            if (used + chunk.length() > totalLimit) break;
+
+            sb.append(chunk);
+            used += chunk.length();
+        }
+
+        String context = sb.toString().trim();
+
+
+        // 업그레이드 텍스트 생성
+        String upgradedText = gptService.upgradeTextWithContext(
+                request.getFullText(),
+                request.getSelectedText(),
+                request.getDirection(),
+                context
+        );
+
+        // RAG 활용 프롬프트 ID
+        List<Long> promptIds = docs.stream()
+                .map(d -> d.getMetadata().get("promptId"))
+                .filter(Objects::nonNull)
+                .map(id -> {
+                    try {
+                        return Long.parseLong(id.toString());
+                    } catch (NumberFormatException e) {
+                        log.warn("Invalid promptId format: {}", id);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        log.info("retrievedPromptIds: {}", promptIds);
+
         return TextUpgradeResponse.builder()
                 .originalText(request.getSelectedText())
                 .upgradedText(upgradedText)

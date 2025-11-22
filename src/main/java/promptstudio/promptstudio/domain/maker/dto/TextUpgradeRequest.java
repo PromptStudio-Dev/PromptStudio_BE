@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class TextUpgradeRequest {
+    private String fullText;
     private String selectedText;
     private String direction;
 }

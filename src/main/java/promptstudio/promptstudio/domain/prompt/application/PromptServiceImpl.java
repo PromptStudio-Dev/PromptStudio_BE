@@ -211,7 +211,7 @@ public class PromptServiceImpl implements PromptService {
 
         SearchRequest.Builder builder = SearchRequest.builder()
                 .query(query)
-                .topK(30);
+                .topK(100);
 
         if (category != null && !"전체".equals(category)) {
             builder.filterExpression("category == '" + category + "'");

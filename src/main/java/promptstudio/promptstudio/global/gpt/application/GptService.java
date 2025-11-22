@@ -1,5 +1,9 @@
 package promptstudio.promptstudio.global.gpt.application;
 
+import org.springframework.ai.document.Document;
+
+import java.util.List;
+
 public interface GptService {
     /**
      * 텍스트를 업그레이드합니다.
@@ -9,4 +13,7 @@ public interface GptService {
      * @return 업그레이드된 텍스트
      */
     String upgradeText(String selectedText, String direction, String fullContext);
+    String upgradeTextWithContext(String selectedText, String direction, String fullContext, String ragContext);
+    String generateSearchQuery(String selectedText, String direction, String fullText);
+    List<Document> retrieve(String query, int topK, double threshold);
 }

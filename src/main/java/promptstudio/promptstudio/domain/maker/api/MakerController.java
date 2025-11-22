@@ -69,13 +69,12 @@ public class MakerController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{makerId}/upgrade-text")
+    @PostMapping("/upgrade-text")
     @Operation(summary = "텍스트 업그레이드", description = "선택한 텍스트를 GPT로 업그레이드합니다.")
     public ResponseEntity<TextUpgradeResponse> upgradeText(
-            @PathVariable Long makerId,
             @RequestBody TextUpgradeRequest request) {
 
-        TextUpgradeResponse response = makerService.upgradeText(makerId, request);
+        TextUpgradeResponse response = makerService.upgradeText(request);
         return ResponseEntity.ok(response);
     }
 }
