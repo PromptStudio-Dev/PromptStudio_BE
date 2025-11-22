@@ -68,12 +68,14 @@ public class Prompt extends BaseEntity {
         if (request.getContent() != null) this.content = request.getContent();
         if (request.getCategory() != null) this.category = request.getCategory();
         if (request.getVisible() != null) this.visible = request.getVisible();
-        if (request.getImageUrl() != null) this.imageUrl = request.getImageUrl();
         if (request.getResult() != null) this.result = request.getResult();
         if (request.getImageRequired() != null) this.imageRequired = request.getImageRequired();
         if (request.getAiEnvironment() != null) this.aiEnvironment = request.getAiEnvironment();
     }
 
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     @Builder
     public Prompt(Member member, String title,

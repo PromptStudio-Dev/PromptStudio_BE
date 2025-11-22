@@ -16,6 +16,6 @@ public interface PromptService {
     List<PromptCardNewsResponse> searchPrompts(Long memberId, String category, String query);
     List<PromptCardNewsResponse> getViewedPrompts(Long memberId);
     PromptCopyResponse copyPrompt(Long promptId);
-    PromptUpdateResponse updatePrompt(Long memberId, Long promptId, PromptUpdateRequest request);
+    PromptUpdateResponse updatePrompt(Long memberId, Long promptId, PromptUpdateRequest request, MultipartFile file);
     void deletePrompt(Long memberId, Long promptId);
 }

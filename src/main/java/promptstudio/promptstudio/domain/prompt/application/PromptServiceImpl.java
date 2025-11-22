@@ -21,6 +21,7 @@ import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPl
 import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
 import promptstudio.promptstudio.domain.viewrecord.domain.entity.ViewRecord;
 import promptstudio.promptstudio.domain.viewrecord.domain.repository.ViewRecordRepository;
+import promptstudio.promptstudio.global.exception.http.BadRequestException;
 import promptstudio.promptstudio.global.exception.http.ForbiddenException;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
@@ -322,7 +323,8 @@ public class PromptServiceImpl implements PromptService {
     }
 
     @Override
-    public PromptUpdateResponse updatePrompt(Long memberId, Long promptId, PromptUpdateRequest request) {
+    public PromptUpdateResponse updatePrompt(Long memberId, Long promptId,
+                                             PromptUpdateRequest request, MultipartFile file) {
 
         Prompt prompt = promptRepository.findById(promptId)
                 .orElseThrow(() -> new NotFoundException("프롬프트가 존재하지 않습니다."));
@@ -332,6 +334,34 @@ public class PromptServiceImpl implements PromptService {
         }
 
         boolean wasVisible = prompt.isVisible();
+
+        boolean removeImage = Boolean.TRUE.equals(request.getRemoveImage());
+        boolean hasNewFile = (file != null && !file.isEmpty());
+
+        if (removeImage && hasNewFile) {
+            throw new BadRequestException("이미지 삭제와 파일 업로드는 동시에 할 수 없습니다.");
+        }
+
+        String oldUrl = prompt.getImageUrl();
+
+        if (removeImage) {
+            if (oldUrl != null && !oldUrl.isBlank()) {
+                s3StorageService.deleteImage(oldUrl);
+            }
+            prompt.updateImageUrl(null);
+
+        } else if (hasNewFile) {
+            String newUrl = s3StorageService.uploadImage(
+                    file,
+                    String.format("prompt/%d", memberId)
+            );
+
+            prompt.updateImageUrl(newUrl);
+
+            if (oldUrl != null && !oldUrl.isBlank()) {
+                s3StorageService.deleteImage(oldUrl);
+            }
+        }
 
         prompt.update(request);
 

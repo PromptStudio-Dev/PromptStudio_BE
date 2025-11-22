@@ -98,12 +98,17 @@ public class PromptController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/members/{memberId}/prompts/{promptId}")
+    @PatchMapping(
+            value = "/members/{memberId}/prompts/{promptId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     @Operation(summary = "프롬프트 수정", description = "프롬프트 수정 API")
-    public ResponseEntity<PromptUpdateResponse> updatePrompt(@PathVariable("memberId") Long memberId,
-                                                             @PathVariable("promptId") Long promptId,
-                                                             @RequestBody PromptUpdateRequest request) {
-        PromptUpdateResponse response = promptService.updatePrompt(memberId, promptId, request);
+    public ResponseEntity<PromptUpdateResponse> updatePrompt(@PathVariable Long memberId,
+                                                             @PathVariable Long promptId,
+                                                             @ModelAttribute PromptUpdateRequest request,
+                                                             @RequestPart(value = "file", required = false) MultipartFile file) {
+        PromptUpdateResponse response =
+                promptService.updatePrompt(memberId, promptId, request, file);
         return ResponseEntity.ok(response);
     }
 

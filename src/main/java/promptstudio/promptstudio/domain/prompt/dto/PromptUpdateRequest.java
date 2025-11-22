@@ -11,8 +11,8 @@ public class PromptUpdateRequest {
     private String content;
     private String category;
     private Boolean visible;
-    private String imageUrl;
     private String result;
     private Boolean imageRequired;
     private String aiEnvironment;
+    private Boolean removeImage;
 }
