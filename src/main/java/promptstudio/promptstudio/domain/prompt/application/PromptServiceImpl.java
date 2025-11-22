@@ -415,10 +415,16 @@ public class PromptServiceImpl implements PromptService {
 
         boolean wasVisible = prompt.isVisible();
 
+        String imageUrl = prompt.getImageUrl();
+
         promptRepository.delete(prompt);
 
         if (wasVisible) {
             promptIndexService.deletePrompt(promptId);
+        }
+
+        if (imageUrl != null && !imageUrl.isBlank()) {
+            s3StorageService.deleteImage(imageUrl);
         }
 
     }
