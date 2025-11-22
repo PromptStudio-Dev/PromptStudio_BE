@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -128,22 +129,80 @@ public class S3StorageService {
 
     public String copyImage(String sourceUrl) {
         try {
-            // 디버깅 로그 추가
-            System.out.println("=== S3 이미지 복사 시작 ===");
+            System.out.println("=== 이미지 복사 시작 ===");
             System.out.println("원본 URL: " + sourceUrl);
 
-            // 1. 원본 key 추출
-            String sourceKey = extractKeyFromUrl(sourceUrl);
-            System.out.println("추출된 sourceKey: " + sourceKey);
-            System.out.println("버킷명: " + bucket);
+            // 1. S3 URL인지 확인
+            if (sourceUrl.contains("amazonaws.com") && sourceUrl.contains(bucket)) {
+                // S3 내부 복사 (빠름)
+                return copyWithinS3(sourceUrl);
+            } else {
+                // 외부 URL (DALL-E 등) - 다운로드 후 재업로드
+                return downloadAndUpload(sourceUrl);
+            }
 
-            // 2. 확장자 추출
-            String ext = sourceKey.contains(".")
-                    ? sourceKey.substring(sourceKey.lastIndexOf('.') + 1).toLowerCase()
-                    : "jpg";
-            System.out.println("확장자: " + ext);
+        } catch (Exception e) {
+            System.err.println("=== 이미지 복사 실패 ===");
+            System.err.println("에러 메시지: " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "이미지 복사 실패: " + e.getMessage(),
+                    e
+            );
+        }
+    }
 
-            // 3. 새 key 생성 (history 폴더에 저장)
+    private String copyWithinS3(String sourceUrl) {
+        System.out.println("→ S3 내부 복사 방식");
+
+        // 기존 copyImage() 로직 그대로
+        String sourceKey = extractKeyFromUrl(sourceUrl);
+        System.out.println("추출된 sourceKey: " + sourceKey);
+
+        String ext = sourceKey.contains(".")
+                ? sourceKey.substring(sourceKey.lastIndexOf('.') + 1).toLowerCase()
+                : "jpg";
+
+        String newKey = "history/%s/%s.%s".formatted(
+                LocalDate.now(),
+                UUID.randomUUID(),
+                ext
+        );
+        System.out.println("새 key: " + newKey);
+
+        CopyObjectRequest copyRequest = CopyObjectRequest.builder()
+                .sourceBucket(bucket)
+                .sourceKey(sourceKey)
+                .destinationBucket(bucket)
+                .destinationKey(newKey)
+                .build();
+
+        s3Client.copyObject(copyRequest);
+
+        if (publicRead) {
+            return "https://%s.s3.%s.amazonaws.com/%s".formatted(bucket, region, newKey);
+        } else {
+            return s3Template.createSignedGetURL(bucket, newKey, Duration.ofMinutes(15)).toString();
+        }
+    }
+
+    private String downloadAndUpload(String externalUrl) {
+        try {
+            System.out.println("→ 외부 URL 다운로드 후 업로드 방식");
+
+            // 1. 외부 URL에서 다운로드
+            byte[] imageBytes = downloadImageFromUrl(externalUrl);
+            System.out.println("다운로드 완료: " + imageBytes.length + " bytes");
+
+            // 2. 확장자 추출 (URL에서 또는 기본값)
+            String ext = "png";  // DALL-E는 보통 PNG
+            if (externalUrl.contains(".png")) {
+                ext = "png";
+            } else if (externalUrl.contains(".jpg") || externalUrl.contains(".jpeg")) {
+                ext = "jpg";
+            }
+
+            // 3. 새 key 생성
             String newKey = "history/%s/%s.%s".formatted(
                     LocalDate.now(),
                     UUID.randomUUID(),
@@ -151,31 +210,165 @@ public class S3StorageService {
             );
             System.out.println("새 key: " + newKey);
 
-            // 4. S3 복사 (SDK 직접 사용)
-            CopyObjectRequest copyRequest = CopyObjectRequest.builder()
-                    .sourceBucket(bucket)
-                    .sourceKey(sourceKey)
-                    .destinationBucket(bucket)
-                    .destinationKey(newKey)
-                    .build();
+            // 4. S3에 업로드
+            String contentType = ext.equals("png") ? "image/png" : "image/jpeg";
+            String s3Url = uploadBytes(imageBytes, newKey, contentType, "max-age=31536000");
 
-            s3Client.copyObject(copyRequest);
-
-            // 5. 새 URL 반환
-            if (publicRead) {
-                return "https://%s.s3.%s.amazonaws.com/%s".formatted(bucket, region, newKey);
-            } else {
-                return s3Template.createSignedGetURL(bucket, newKey, Duration.ofMinutes(15)).toString();
-            }
+            System.out.println("S3 업로드 완료: " + s3Url);
+            return s3Url;
 
         } catch (Exception e) {
-            System.err.println("=== S3 복사 실패 ===");
-            System.err.println("에러 메시지: " + e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "S3 이미지 복사 실패: " + e.getMessage(),
+                    "외부 URL 다운로드 및 업로드 실패: " + e.getMessage(),
                     e
             );
         }
     }
+
+    public byte[] downloadImageFromUrl(String imageUrl) {
+        try {
+            System.out.println("=== 이미지 다운로드 시작 ===");
+            System.out.println("URL: " + imageUrl);
+
+            // 1. S3 URL인지 확인
+            if (imageUrl.contains("amazonaws.com")) {
+                // S3에서 직접 다운로드 (더 빠름)
+                String key = extractKeyFromUrl(imageUrl);
+                System.out.println("S3 Key: " + key);
+
+                try {
+                    S3Resource resource = s3Template.download(bucket, key);
+                    byte[] imageBytes = resource.getContentAsByteArray();
+
+                    System.out.println("다운로드 완료: " + imageBytes.length + " bytes");
+
+                    // 파일 크기 체크 (4MB = 4 * 1024 * 1024)
+                    if (imageBytes.length > 4 * 1024 * 1024) {
+                        throw new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "이미지 파일이 너무 큽니다. (최대 4MB)"
+                        );
+                    }
+
+                    return imageBytes;
+
+                } catch (IOException e) {
+                    throw new ResponseStatusException(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "S3 이미지 다운로드 실패: " + e.getMessage(),
+                            e
+                    );
+                }
+
+            } else {
+                // 외부 URL (DALL-E 결과 등)
+                System.out.println("외부 URL에서 다운로드");
+                return downloadFromExternalUrl(imageUrl);
+            }
+
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "이미지 다운로드 실패: " + e.getMessage(),
+                    e
+            );
+        }
+    }
+
+    private byte[] downloadFromExternalUrl(String url) {
+        try {
+            // 1. URL 정리 (빈 쿼리 파라미터 제거)
+            String cleanUrl = cleanInvalidQueryParams(url);
+            System.out.println("정리된 URL: " + cleanUrl);
+
+            // RestTemplate 생성 (timeout 설정)
+            RestTemplate restTemplate = new RestTemplate();
+
+            var factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+            factory.setConnectTimeout(30000);
+            factory.setReadTimeout(30000);
+            restTemplate.setRequestFactory(factory);
+
+            // HTTP GET 요청
+            byte[] imageBytes = restTemplate.getForObject(cleanUrl, byte[].class);
+
+            if (imageBytes == null || imageBytes.length == 0) {
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "이미지 다운로드 실패: 빈 응답"
+                );
+            }
+
+            System.out.println("외부 다운로드 완료: " + imageBytes.length + " bytes");
+
+            // 파일 크기 체크 (4MB)
+            if (imageBytes.length > 4 * 1024 * 1024) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "이미지 파일이 너무 큽니다. (최대 4MB)"
+                );
+            }
+
+            return imageBytes;
+
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "외부 URL 다운로드 실패: " + e.getMessage(),
+                    e
+            );
+        }
+    }
+
+    private String cleanInvalidQueryParams(String url) {
+        try {
+            // 쿼리 파라미터가 없으면 그대로 반환
+            if (!url.contains("?")) {
+                return url;
+            }
+
+            String[] parts = url.split("\\?", 2);
+            String baseUrl = parts[0];
+            String queryString = parts[1];
+
+            // 쿼리 파라미터 분리
+            String[] params = queryString.split("&");
+            StringBuilder cleanParams = new StringBuilder();
+
+            for (String param : params) {
+                // "key=value" 형태만 유지
+                if (param.contains("=")) {
+                    String[] keyValue = param.split("=", 2);
+                    String key = keyValue[0];
+                    String value = keyValue.length > 1 ? keyValue[1] : "";
+
+                    // 값이 있는 파라미터만 추가
+                    if (!value.isEmpty()) {
+                        if (cleanParams.length() > 0) {
+                            cleanParams.append("&");
+                        }
+                        cleanParams.append(key).append("=").append(value);
+                    }
+                }
+            }
+
+            // 정리된 URL 반환
+            if (cleanParams.length() > 0) {
+                return baseUrl + "?" + cleanParams.toString();
+            } else {
+                return baseUrl;
+            }
+
+        } catch (Exception e) {
+            // 파싱 실패 시 원본 반환
+            System.err.println("URL 정리 실패, 원본 사용: " + e.getMessage());
+            return url;
+        }
+    }
+
 }

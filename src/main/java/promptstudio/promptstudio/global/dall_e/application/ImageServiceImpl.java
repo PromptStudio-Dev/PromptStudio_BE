@@ -51,19 +51,10 @@ public class ImageServiceImpl implements ImageService {
                                     .quality("hd")
                                     .width(1024)
                                     .height(1024)
-                                    .style("vivid")  // 애니메이션/게임 스타일용
+                                    .style("vivid")
                                     .build()
                     )
             );
-
-            if (response.getMetadata() != null) {
-                Object revisedPrompt = response.getMetadata().get("revisedPrompt");
-                if (revisedPrompt != null) {
-                    System.out.println("=== DALL-E가 수정한 프롬프트 (vivid) ===");
-                    System.out.println(revisedPrompt);
-                    System.out.println("================================");
-                }
-            }
 
             return response.getResult().getOutput().getUrl();
 
@@ -86,19 +77,10 @@ public class ImageServiceImpl implements ImageService {
                                     .quality("hd")
                                     .width(1024)
                                     .height(1024)
-                                    .style("natural")  // 사실적/원본 유지용
+                                    .style("natural")
                                     .build()
                     )
             );
-
-            if (response.getMetadata() != null) {
-                Object revisedPrompt = response.getMetadata().get("revisedPrompt");
-                if (revisedPrompt != null) {
-                    System.out.println("=== DALL-E가 수정한 프롬프트 (natural) ===");
-                    System.out.println(revisedPrompt);
-                    System.out.println("================================");
-                }
-            }
 
             return response.getResult().getOutput().getUrl();
 

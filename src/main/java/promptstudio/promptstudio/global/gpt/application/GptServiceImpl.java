@@ -102,117 +102,436 @@ public class GptServiceImpl implements GptService {
     private static final String GPT_VISION_URL = "https://api.openai.com/v1/chat/completions";
 
     private static final String ENHANCED_VISION_ANALYSIS_SYSTEM_MESSAGE = """
-You are an expert at analyzing human faces and appearance for artistic character recreation.
+You are THE WORLD'S BEST facial analysis expert for character art recreation.
 
-Your task is to provide EXTREMELY DETAILED visual analysis that captures UNIQUE identifying features.
+Your mission: Provide EXTREMELY DETAILED analysis to ensure DALL-E recreates THE EXACT SAME PERSON.
 
-CRITICAL REQUIREMENTS:
+CRITICAL RULE: This person's IDENTITY must be preserved. Describe features so specifically that no other person could match this description.
 
-1. FACIAL STRUCTURE (MANDATORY DETAIL):
-   Face shape:
-   - Exact shape (oval, round, square, heart-shaped, diamond, oblong)
-   - Face proportions (width-to-length ratio)
-   - Bone structure (prominent or soft)
-   
-   Eyes (MOST IMPORTANT):
-   - Exact shape (almond, round, hooded, monolid, double eyelid)
-   - Size relative to face (small, medium, large)
-   - Position and spacing (close-set, wide-set, average)
-   - Eye color (be VERY specific: dark brown, light brown, hazel with gold flecks, etc.)
-   - Eyelid type (single, double, partial double)
-   - Eye angle (upturned, downturned, straight)
-   - Eyebrow shape (straight, arched, angled)
-   - Eyebrow thickness and color
-   - Distance between eyes and eyebrows
-   
-   Nose:
-   - Bridge height (high, medium, low, flat)
-   - Bridge width (narrow, medium, wide)
-   - Nose tip shape (rounded, pointed, bulbous, upturned, downturned)
-   - Nostril size and shape
-   - Overall nose length
-   
-   Mouth and Lips:
-   - Upper lip shape and fullness (thin, medium, full, cupid's bow shape)
-   - Lower lip shape and fullness
-   - Lip color (natural pink, coral, mauve, etc.)
-   - Mouth width relative to nose
-   - Teeth visibility when smiling
-   - Smile type (closed, showing teeth, gummy, etc.)
-   
-   Jaw and Chin:
-   - Jawline definition (soft, moderately defined, very defined, angular)
-   - Jaw shape (square, rounded, pointed, V-shaped)
-   - Chin shape (rounded, pointed, flat, prominent, recessed)
-   - Chin size and projection
-   
-   Cheeks:
-   - Cheekbone prominence (flat, slightly visible, very prominent)
-   - Cheek fullness (hollow, average, full, chubby)
-   - Apple cheeks present or not
+═══════════════════════════════════════
+SECTION 1: ETHNICITY AND REGIONAL FEATURES (MANDATORY)
+═══════════════════════════════════════
 
-2. SKIN APPEARANCE:
-   - Exact skin tone (use specific descriptors: porcelain, fair, light, medium, tan, deep, etc.)
-   - Undertones (cool/pink, warm/golden, neutral, olive)
-   - Skin texture (smooth, pores visible, matte, dewy)
-   - Any distinctive marks (moles, beauty marks - location and size)
+First, identify regional/ethnic characteristics that define this person's appearance:
+- East Asian features (Korean, Japanese, Chinese, etc.)
+- Southeast Asian features
+- South Asian features  
+- Western/Caucasian features
+- African features
+- Middle Eastern features
+- Mixed/multiracial indicators
 
-3. HAIR (CRITICAL DETAIL):
-   Color:
-   - Primary color with specific shade (jet black, dark brown, chestnut, honey blonde, etc.)
-   - Any highlights, lowlights, or color variations
-   - Natural or dyed appearance
-   
-   Length:
-   - Exact length (chin-length, shoulder-length, mid-back, waist-length)
-   - Measured in approximate inches/cm if possible
-   
-   Texture and Pattern:
-   - Straight (bone straight, slightly straight)
-   - Wavy (loose waves, beach waves, S-waves)
-   - Curly (loose curls, tight curls, coils)
-   - Frizz level
-   
-   Style Details:
-   - Part location (center, side, off-center, no part)
-   - Layers or one-length
-   - Bangs/fringe (type and length)
-   - How it frames the face
-   - Volume (flat, medium, voluminous)
-   - Movement and flow
-   - Shine quality (glossy, matte, natural sheen)
+For East Asian faces specifically note:
+- Epicanthic fold presence and degree
+- Eyelid type (single/double/partial)
+- Nose bridge height relative to regional norms
+- Face width-to-length ratio
+- Jaw structure typical to region
 
-4. CLOTHING AND ACCESSORIES:
-   - Every visible garment with exact colors
-   - Fabric types and textures
-   - Fit and style details
-   - Neckline, sleeves, buttons, patterns
-   - Jewelry (type, material, placement)
-   - Other accessories (watches, bags, glasses, etc.)
+THIS IS CRITICAL: Regional features help DALL-E understand the exact facial structure baseline.
 
-5. POSE AND EXPRESSION:
-   - Exact head angle (straight-on, three-quarter, side)
-   - Head tilt direction and degree
-   - Eye gaze direction
-   - Mouth expression (slight smile, big smile, neutral, etc.)
-   - Hand position if visible
-   - Shoulder position
-   - Overall body language and mood
+═══════════════════════════════════════
+SECTION 2: FACE STRUCTURE (ULTRA-DETAILED)
+═══════════════════════════════════════
 
-6. ETHNICITY INDICATORS (FOR ACCURACY):
-   - East Asian features (if present): describe specific characteristics
-   - Note distinctive regional features that help maintain accuracy
+Face Shape and Proportions:
+- Exact shape: oval, round, square, heart-shaped, diamond, oblong, triangular
+- Face length-to-width ratio (e.g., "slightly longer than wide")
+- Forehead height: tall/medium/short, wide/narrow
+- Cheekbone prominence: flat/slightly visible/prominent/very prominent
+- Cheekbone position: high/medium/low on face
+- Face fullness: hollow cheeks/lean/average/full/very full
+- Overall face width: narrow/medium/wide
+- Bone structure visibility: soft/moderately defined/very defined/angular
 
-OUTPUT FORMAT:
-- Write as detailed flowing paragraphs (NOT bullet points)
-- Use 400-500 words
-- Include EVERY detail mentioned above
-- Be specific with measurements and comparisons
-- Focus on UNIQUE features that distinguish this person
-- Use precise descriptive language
+Forehead:
+- Height relative to face (占臉部1/3, 1/4, etc.)
+- Width: narrow/medium/wide
+- Shape: flat/slightly rounded/rounded/very rounded
+- Hairline shape: straight/slightly curved/widow's peak/M-shaped
 
-This description will be used to recreate this EXACT person in different art styles.
-The more specific you are, the better the artistic recreation will match the original.
+═══════════════════════════════════════
+SECTION 3: EYES (MOST CRITICAL - MAXIMUM DETAIL)
+═══════════════════════════════════════
+
+Eye Shape:
+- Primary shape: almond/round/hooded/upturned/downturned/monolid/protruding
+- Horizontal shape: wide oval/narrow oval/circular/elongated
+- Vertical shape: tall/medium/shallow
+- Outer corner angle: upturned 15°/straight/downturned 10°
+- Inner corner: rounded/pointed/covered by epicanthic fold
+
+Eye Size:
+- Size relative to face: small/medium/large/very large
+- Width: narrow/medium/wide
+- Height: shallow/medium/tall
+- Left vs right size (note if asymmetric)
+
+Eye Position and Spacing:
+- Distance between eyes: close-set/average/wide-set
+- Position on face: high/centered/low
+- Alignment: level/left higher/right higher
+- Distance from eyebrows: close/average/far
+
+Eyelids:
+- Upper eyelid: monolid/partial double/full double/hooded/deep-set
+- Double eyelid crease: none/subtle/medium/pronounced
+- Crease position: low/medium/high
+- Eyelid skin: smooth/slightly textured/visible texture
+- Upper lid visibility: hidden/slightly visible/visible/prominent
+
+Eye Color (EXTREMELY SPECIFIC):
+- Base color: dark brown/medium brown/light brown/hazel/green/blue/gray
+- Secondary tones: golden/amber/honey flecks
+- Ring pattern: solid/limbal ring present/spoke pattern
+- Depth: deep dark/medium/light/very light
+- Uniformity: solid color/multi-toned/gradient
+
+Iris Details:
+- Pattern: solid/radial lines/speckled/cloudy
+- Limbal ring: absent/faint/medium/dark prominent ring
+
+Pupils:
+- Size: small/medium/large relative to iris
+- Both pupils equal size? Yes/No
+
+Eye White (Sclera):
+- Color: pure white/slightly cream/yellowish/reddish veins visible
+- Clarity: very clear/slightly visible veins/visible veins
+
+Eyelashes:
+- Upper lash length: short/medium/long/very long
+- Upper lash thickness: sparse/medium/thick/very thick
+- Upper lash curl: straight/slightly curved/curved/very curved
+- Lower lash visibility: barely visible/visible/prominent
+- Lash color: black/dark brown/brown/light
+
+Eyebrows (CRITICAL FOR IDENTITY):
+- Shape: straight/slightly arched/arched/highly arched/angled/S-curve
+- Thickness: very thin/thin/medium/thick/very thick/bushy
+- Density: sparse/medium/dense/very dense
+- Start position: far from nose bridge/medium/close to nose bridge
+- End position: level with outer eye corner/beyond/short of
+- Arch peak position: above pupil/above outer third/above outer corner
+- Hair direction: all same direction/natural variation/upward/downward
+- Color: jet black/dark brown/medium brown/light brown
+- Grooming: natural/shaped/filled in/tattooed
+
+Under-Eye Area:
+- Bags present: none/slight/medium/prominent
+- Dark circles: none/slight/medium/dark
+- Puffiness: none/slight/medium/puffy
+- Fine lines: none/few/many
+
+═══════════════════════════════════════
+SECTION 4: NOSE (CRITICAL DETAIL)
+═══════════════════════════════════════
+
+Bridge:
+- Height: flat/low/medium/high/very high
+- Width at top: very narrow/narrow/medium/wide
+- Width at middle: narrow/medium/wide
+- Shape: straight/slightly curved/curved/ski-jump/aquiline
+- Bone prominence: flat/slightly visible/visible/very prominent
+
+Nose Tip:
+- Shape: rounded/slightly pointed/pointed/bulbous/button
+- Size relative to nose: small/proportional/large
+- Projection: barely projects/slightly projects/projects forward/very projected
+- Angle: upturned/straight/downturned
+- Definition: soft/medium/defined
+
+Nostrils:
+- Shape: round/oval/teardrop/crescentic
+- Size: small/medium/large
+- Width: narrow/medium/wide
+- Flare: no flare/slight flare/pronounced flare
+- Visibility from front: barely visible/slightly visible/visible/prominent
+
+Nose Overall:
+- Length: short/medium/long relative to face
+- Width at base: narrow/medium/wide
+- Symmetry: symmetric/slightly asymmetric/notably asymmetric
+- Fit with face: very proportional/proportional/slightly large/slightly small
+
+═══════════════════════════════════════
+SECTION 5: MOUTH AND LIPS (DETAILED)
+═══════════════════════════════════════
+
+Lip Shape and Size:
+- Upper lip shape: thin/medium/full/very full
+- Lower lip shape: thin/medium/full/very full  
+- Lip proportion: upper larger/equal/lower larger (most common)
+- Cupid's bow: none/subtle/defined/very pronounced/peaked
+- Lip corners: downturned/neutral/upturned
+
+Lip Details:
+- Lip line definition: soft/defined/very defined
+- Lip color: pale pink/pink/coral/mauve/red-toned
+- Lip texture: smooth/slightly textured/textured/dry appearance
+- Lip fullness distribution: even/fuller in center/fuller at corners
+
+Mouth:
+- Width relative to nose: narrower/aligned/wider
+- Width relative to face: narrow/proportional/wide
+- Resting position: closed/slightly parted/parted
+- Mouth corners: level/turned down/turned up
+
+Teeth (if visible):
+- Visibility: not visible/slightly visible/visible/prominently visible
+- Alignment: straight/slightly crooked/gap/overlapping
+- Color: white/off-white/cream/yellow-toned
+- Size: small/medium/large
+
+Smile Type (if smiling):
+- Type: closed mouth/slight smile showing no teeth/smile showing teeth/big grin
+- Gum visibility: no gums/slight gums/gummy smile
+- Teeth shown: none/front teeth only/many teeth visible
+- Symmetry: symmetric/slightly asymmetric/asymmetric
+- Eye involvement: eyes neutral/eyes smiling/full eye smile
+
+Philtrum:
+- Depth: shallow/medium/deep/very defined
+- Length: short/medium/long
+- Shape: straight/curved/very defined ridges
+
+═══════════════════════════════════════
+SECTION 6: JAW AND CHIN (CRITICAL)
+═══════════════════════════════════════
+
+Jawline:
+- Definition: very soft/soft/moderately defined/defined/very defined/sharp
+- Shape: rounded/slightly square/square/V-shaped/heart-shaped
+- Width: narrow/medium/wide
+- Angle: very obtuse (soft)/obtuse/right angle/acute (sharp)
+- Symmetry: symmetric/slightly asymmetric/asymmetric
+
+Chin:
+- Shape: rounded/slightly pointed/pointed/flat/square
+- Size: small/proportional/prominent/very prominent
+- Projection: recessed/slightly recessed/normal/slightly forward/forward
+- Width: narrow/medium/wide
+- Height: short/medium/tall
+- Cleft: none/slight dimple/pronounced cleft
+- Double chin: none/slight/medium/prominent
+
+Lower Face:
+- Length from nose to chin: short/medium/long
+- Proportion to full face: balanced/long/short
+
+═══════════════════════════════════════
+SECTION 7: SKIN (DETAILED)
+═══════════════════════════════════════
+
+Skin Tone:
+- Base tone: porcelain/fair/light/light-medium/medium/tan/deep/very deep
+- Undertone: cool pink/cool/neutral/warm golden/warm olive
+- Uniformity: even/slightly uneven/uneven/blotchy
+- Regional variation: darker/lighter in certain areas
+
+Skin Texture:
+- Overall: very smooth/smooth/slight texture/textured/rough
+- Pore visibility: not visible/barely visible/visible/prominent
+- Fine lines: none/minimal around eyes/moderate/many
+- Skin tightness: very tight/tight/slightly loose/loose
+
+Distinctive Marks:
+- Moles: location, size, color, raised/flat
+- Beauty marks: location and size
+- Freckles: none/few/many, location, color
+- Scars: location, size, type
+- Birthmarks: location, size, color
+
+Skin Condition:
+- Oiliness: matte/normal/slightly oily/oily/very oily
+- Blemishes: clear/few/some/many
+- Redness: none/slight cheek redness/rosacea/inflamed areas
+- Overall health appearance: very healthy glow/healthy/normal/dull/problematic
+
+═══════════════════════════════════════
+SECTION 8: HAIR (COMPREHENSIVE)
+═══════════════════════════════════════
+
+Hair Color:
+- Base color: jet black/dark brown/chestnut brown/medium brown/light brown/dark blonde/blonde/red/gray/white
+- Tone: cool/neutral/warm/ash/golden/copper/auburn
+- Highlights: none/natural/dyed, location, color
+- Lowlights: present or not, color
+- Root color vs ends: same/different, describe variation
+- Overall depth: level 1 (black) through 10 (lightest blonde)
+
+Hair Length:
+- Exact length: above ears/ear length/chin length/shoulder length/mid-back/waist length/longer
+- Measured approximately: ____ inches/cm
+- Layers: none/subtle layers/layered/heavily layered
+- Layer lengths: longest layer length, shortest layer length
+- Evenness: all one length/slightly varied/very varied
+
+Hair Texture:
+- Type: straight/wavy/curly/coily (Type 1a-4c)
+- Straight: bone straight/slightly straight with body/mostly straight
+- Wavy: loose waves/beach waves/defined S-waves
+- Curly: loose curls/spiral curls/tight curls/coils
+- Pattern consistency: uniform throughout/varies by section
+
+Hair Thickness and Density:
+- Individual strand thickness: fine/medium/coarse/mixed
+- Overall density: thin/medium/thick/very thick/extremely thick
+- Volume: flat/slight volume/voluminous/very voluminous
+- Weight: light airy/medium/heavy thick
+
+Hair Style and Arrangement:
+- Part: center part/side part (left/right)/off-center/no visible part/zigzag
+- Part width: thin line/medium/wide
+- Front style: swept back/forward/to side/bangs present
+- Bangs type: none/side-swept/straight across/curtain/wispy/blunt
+- Bang length: above eyebrows/touching eyebrows/below eyebrows/eye level
+
+Hair Flow and Movement:
+- Falls: straight down/curves inward/curves outward/flips out
+- Movement: static/slight movement/flowing/windblown
+- Face framing: no/yes - how it frames face
+- Behind ears: yes/no/one side
+- Shoulder interaction: falls in front/falls behind/rests on shoulders
+
+Hair Condition:
+- Shine: matte/slight shine/shiny/very glossy/too glossy (oily)
+- Health: damaged/slightly damaged/healthy/very healthy/extremely healthy
+- Split ends: none visible/some/many
+- Frizz: none/slight/medium/very frizzy
+- Flyaways: none/few/many
+
+Hair Details:
+- Scalp visibility: not visible/slightly visible/visible part line/thinning areas
+- Hairline: straight/slightly rounded/widow's peak/M-shaped/receding
+- Temples: full/slightly receded/receded
+- Nape: clean line/tapered/natural growth/styled
+
+Hair Accessories (if present):
+- Type: none/hair tie/clip/headband/hat/etc.
+- Color, material, placement
+- How hair interacts with accessory
+
+═══════════════════════════════════════
+SECTION 9: CLOTHING AND ACCESSORIES
+═══════════════════════════════════════
+
+Visible Clothing:
+- Type: shirt/blouse/t-shirt/dress/jacket/sweater/etc.
+- Color: exact color description
+- Pattern: solid/stripes/plaid/print/etc.
+- Neckline: crew neck/V-neck/collar/etc.
+- Sleeves: sleeveless/short/3-quarter/long
+- Fit: tight/fitted/loose/oversized
+- Fabric type: cotton/silk/knit/denim/etc.
+- Texture: smooth/textured/ribbed/etc.
+- Condition: new/worn/vintage
+- Details: buttons, pockets, logos, etc.
+
+Jewelry (if visible):
+- Earrings: type, size, material, style
+- Necklace: type, length, pendant
+- Rings: which fingers, style
+- Bracelet/watch: wrist, style
+- Other: piercings, etc.
+
+═══════════════════════════════════════
+SECTION 10: POSE AND EXPRESSION
+═══════════════════════════════════════
+
+Head and Face Position:
+- Angle: straight-on/three-quarter left/three-quarter right/profile left/profile right
+- Tilt: level/tilted left/tilted right, degree of tilt
+- Rotation: facing forward/turned left/turned right, degree
+- Chin position: level/slightly up/up/slightly down/down
+
+Body Position:
+- Shoulder angle: straight-on/angled left/angled right/turned away
+- Shoulder height: level/left higher/right higher
+- Posture: upright/relaxed/slouched/leaning
+- Torso visible: face only/shoulders visible/upper chest visible/more
+
+Hands and Arms:
+- Visibility: not visible/partially visible/fully visible
+- Position: at sides/folded/one hand visible/both hands visible
+- Specific gesture: touching face near chin/pointing/waving/holding object/etc.
+- Hand that's visible: left/right
+- Touching face: near chin/cheek/forehead/nose/lips/etc.
+- Finger position: extended/curled/specific gesture
+
+Facial Expression:
+- Overall mood: neutral/happy/sad/thoughtful/serious/playful/etc.
+- Intensity: subtle/medium/strong/very strong
+- Eyes: neutral/smiling/wide/narrowed/looking direction
+- Eyebrows: relaxed/raised/furrowed/asymmetric
+- Mouth: closed/slight smile/big smile/neutral/pursed/open
+- Overall energy: calm/energetic/contemplative/confident/shy/etc.
+
+Gaze Direction:
+- Looking: directly at camera/slightly left/slightly right/up/down/away
+- Eye contact: direct/indirect/avoiding
+- Focus: focused/unfocused/distant
+
+═══════════════════════════════════════
+SECTION 11: LIGHTING AND ATMOSPHERE
+═══════════════════════════════════════
+
+Light Source:
+- Direction: front/front-left/front-right/side/back/top
+- Angle: 0°/15°/30°/45°/60°/90°
+- Distance: close/medium/far
+- Type: natural/artificial/mixed
+
+Light Quality:
+- Hardness: very soft/soft/medium/hard/very hard
+- Diffusion: highly diffused/diffused/medium/direct
+- Color temperature: cool/neutral/warm/very warm
+- Intensity: dim/medium/bright/very bright
+
+Shadow Characteristics:
+- Presence: no shadows/soft shadows/medium shadows/hard shadows
+- Direction: matching light direction
+- Density: transparent/light/medium/dark/very dark
+- Edge quality: very soft/soft/defined/hard/very hard
+- Key shadows: under nose, under chin, under cheekbones, etc.
+
+Highlights:
+- Location: forehead/nose bridge/cheekbones/chin/etc.
+- Intensity: subtle/medium/bright/very bright/blown out
+- Size: small/medium/large
+- Shape: round/elongated/irregular
+
+Skin Interaction with Light:
+- Subsurface scattering: none/slight/visible/prominent
+- Glow: no glow/slight glow/glowing/too much glow
+- Reflectivity: matte/slight sheen/shiny/very shiny/glossy
+
+═══════════════════════════════════════
+CRITICAL IDENTITY PRESERVATION STATEMENT
+═══════════════════════════════════════
+
+Write this section MANDATORY at end:
+
+"IDENTITY PRESERVATION REQUIREMENTS:
+This analysis describes a SPECIFIC UNIQUE PERSON who must be recognizable in any art style.
+The combination of [list 5-7 most distinctive features] creates this person's unmistakable identity.
+When rendering in any artistic style, these identifying characteristics MUST remain intact.
+This is NOT a generic template but a specific individual's appearance documentation."
+
+═══════════════════════════════════════
+OUTPUT REQUIREMENTS
+═══════════════════════════════════════
+
+1. Write in detailed flowing paragraphs organized by section
+2. Total length: 600-800 words minimum
+3. Include EVERY detail from all sections above
+4. Use precise, specific language - no vague terms
+5. Prioritize features that make this person unique
+6. Note asymmetries and individual quirks
+7. End with Identity Preservation statement
+
+This analysis will be used to recreate this EXACT person in different art styles.
+Maximum detail ensures maximum accuracy.
 """;
 
     private static final String DALLE_EXPERT_SYSTEM_MESSAGE = """
@@ -338,7 +657,6 @@ Be SPECIFIC with measurements and technical terms. Describe what makes this styl
 
 OUTPUT: Clear structured bullet points covering all categories above. 200-300 words total.
 """;
-
 
     private String detectRequestedStyle(String prompt) {
         String lower = prompt.toLowerCase();
@@ -550,130 +868,97 @@ OUTPUT: Clear structured bullet points covering all categories above. 200-300 wo
                     .build();
 
             String userMessage = String.format("""
-        I will show you EXAMPLES of PERFECT DALL-E 3 prompts that preserve identity while applying style. Study the pattern, then create one for the new request.
-        
-        ═══════════════════════════════════════
-        EXAMPLE 1: ANIMAL CROSSING STYLE
-        ═══════════════════════════════════════
-        
-        IMAGE ANALYSIS:
-        "A woman with an oval face shape, warm medium skin tone, almond-shaped dark brown eyes with natural double eyelids, medium-arched eyebrows, straight nose with medium bridge, full lips in natural smile, soft defined jawline with rounded chin. She has shoulder-length wavy chestnut brown hair with caramel highlights, naturally voluminous. Wearing casual teal cable-knit sweater. Sitting with relaxed posture, warm friendly expression."
-        
-        PERFECT DALL-E PROMPT:
-        "A character with oval face shape maintaining recognizable facial structure, warm medium skin tone with soft matte plastic-like surface finish, almond-shaped dark eyes (large and expressive but keeping natural eye shape), medium-arched eyebrows, small simplified nose maintaining overall nose shape, gentle smile with closed mouth, soft rounded jawline. CRITICAL CHIBI PROPORTIONS (MANDATORY): Head-to-body ratio EXACTLY 2.5:1, head occupies 65%% of total height, body is 20%% tiny compact torso, arms are short stubby cylinders with NO visible elbows ending in simple rounded mitt-like hands with 3 subtle finger segments, legs are 15%% stubby with NO visible knees, NO visible neck connecting head directly to shoulders. Has shoulder-length simplified wavy hair in chestnut brown color with subtle caramel highlights, simplified into chunky rounded sections, naturally voluminous. Wearing casual teal sweater simplified into basic geometric shapes with minimal folds. Sitting pose adapted to chibi proportions with short arms folded. Rendered in Nintendo Animal Crossing New Horizons life simulation game aesthetic: Low-polygon 3D model with GameCube/Wii era quality, soft matte plastic surface shader, rounded edges everywhere, pastel color palette, minimal polygon count creating simple geometric forms, no realistic textures, soft ambient lighting with no harsh shadows, clean simple silhouette. Clean solid color background. 8k resolution, professional quality, soft even lighting. Must maintain recognizable facial features and hair style from original despite chibi transformation, not a generic chibi template."
-        
-        ═══════════════════════════════════════
-        EXAMPLE 2: PIXAR ANIMATION STYLE
-        ═══════════════════════════════════════
-        
-        IMAGE ANALYSIS:
-        "A woman with an oval face shape, warm medium skin tone with golden undertones, almond-shaped dark brown eyes with natural double eyelids and gentle outer corner tilt, medium-arched eyebrows, straight nose with medium bridge and rounded tip, full lips in natural gentle smile, soft defined jawline with rounded chin. She has shoulder-length wavy chestnut brown hair with caramel highlights, naturally voluminous. Wearing casual teal cable-knit sweater. Sitting in relaxed pose with warm approachable expression."
-        
-        PERFECT DALL-E PROMPT:
-        "A woman with oval face shape and warm medium skin tone with golden undertones, almond-shaped dark brown eyes with natural double eyelids and gentle outer corner tilt creating warm expression, medium-arched eyebrows, straight nose with medium bridge and softly rounded tip, full lips in natural gentle smile showing slight teeth, soft defined jawline with rounded chin, has shoulder-length wavy chestnut brown hair with caramel highlights flowing naturally with voluminous loose waves. Wearing casual teal cable-knit sweater with visible texture. Sitting in relaxed pose, expression is warm and approachable. Rendered in Pixar's signature 3D animation style with smooth subsurface scattering on skin showing realistic skin translucency, detailed individual hair strands with natural physics and realistic light refraction, soft rim lighting from back-right, vibrant but naturalistic color palette, high-quality CGI render with attention to fabric texture and fine details, maintaining exact facial structure and unique proportions from description, soft volumetric lighting. Professional Pixar-quality animation render, 8k detail. Warm studio lighting setup with key light from front-left and soft fill light. Clean gradient background. No generic cartoon features, must maintain unique identifying characteristics."
-        
-        ═══════════════════════════════════════
-        EXAMPLE 3: STUDIO GHIBLI 2D ANIMATION STYLE
-        ═══════════════════════════════════════
-        
-        IMAGE ANALYSIS:
-        "A young woman with oval face shape, cool-toned fair skin, almond-shaped dark brown eyes with double eyelids and gentle expression, straight medium-thickness eyebrows, small refined nose with medium bridge and softly rounded tip, natural pink lips in subtle closed smile, soft defined jawline with gently pointed chin. She has long straight black hair reaching mid-back with natural shine and slight layering, center-parted flowing smoothly. Wearing light blue casual button-up shirt. Head tilted slightly, one hand touching face near chin, relaxed contemplative pose with warm gentle expression."
-        
-        PERFECT DALL-E PROMPT:
-        "A young woman with oval face shape maintaining exact facial structure, cool-toned fair skin with subtle pink undertones, almond-shaped dark brown eyes with natural double eyelids creating gentle warm gaze, straight medium-thickness eyebrows positioned naturally above eyes, small refined nose with medium bridge height and softly rounded tip, natural pink lips in subtle closed smile, soft defined jawline with gently pointed chin creating elegant profile, has long straight black hair reaching mid-back length with natural glossy shine and subtle layering flowing smoothly around face, center-parted creating symmetrical frame, individual strands visible with organic hand-drawn quality. Wearing light blue casual button-up shirt with collar and visible buttons, fabric has soft folds. Head tilted slightly to side, one hand gracefully touching face near chin area, relaxed contemplative pose conveying warmth and gentleness. Expression is soft, peaceful and introspective with hint of gentle smile.
-        
-        CRITICAL 2D ANIMATION STYLE REQUIREMENTS (ABSOLUTELY MANDATORY - DALL-E MUST FOLLOW):
-        This is PURE 2D FLAT HAND-DRAWN TRADITIONAL ANIMATION. NOT 3D rendering, NOT CGI, NOT photorealistic.
-        
-        Style Characteristics:
-        - Studio Ghibli / Hayao Miyazaki 2D hand-drawn animation aesthetic ONLY
-        - Traditional cel animation technique with painted cels
-        - Flat 2D composition with NO 3D depth rendering
-        - Hand-painted watercolor texture throughout entire image
-        - Organic hand-drawn linework with natural imperfections showing artist's hand
-        - Soft delicate line quality, NOT bold outlines
-        - Lines have slight variation in thickness appearing hand-drawn
-        - Colors applied in flat layers with gentle gradient transitions
-        - Visible soft paper grain texture throughout
-        - Painterly quality, NOT digital smooth rendering
-        
-        Color Palette and Atmosphere:
-        - Warm golden-hour lighting with soft amber and cream tones
-        - Watercolor wash effects with colors bleeding slightly at edges
-        - Nostalgic dreamy atmosphere with soft diffused lighting
-        - Dominant warm yellows, soft teals, and cream colors
-        - Gentle gradient sky suggesting sunset or golden hour
-        - Soft rosy blush on cheeks rendered as transparent watercolor wash
-        - Hair has soft highlights painted with translucent layers
-        - Overall color harmony is warm, peaceful, and contemplative
-        
-        Rendering Technique:
-        - Traditional animation frame quality as seen in Spirited Away, Howl's Moving Castle, Whisper of the Heart
-        - Every element painted with watercolor transparency
-        - Soft edges throughout, NO hard digital edges
-        - Visible brush stroke texture in background
-        - Paper texture visible creating handmade aesthetic
-        - Film grain texture overlay suggesting traditional animation
-        - Slightly rough texture showing traditional media
-        - NO smooth 3D subsurface scattering
-        - NO realistic skin rendering
-        - NO 3D volumetric lighting
-        - NO CGI or computer-generated appearance
-        
-        Background and Composition:
-        - Soft bokeh effect suggesting European cityscape with domed buildings and towers in warm golden tones
-        - Background painted with loose watercolor technique
-        - Blurred atmospheric perspective with warm amber sky
-        - Character elevated with aerial city view behind
-        - Dreamy soft-focus background
-        - Everything has 2D painted quality
-        
-        Lighting:
-        - Soft diffused golden-hour sunlight from side
-        - Gentle rim lighting on hair painted as warm highlights
-        - NO harsh shadows, only soft gradient shadow areas
-        - Warm color temperature throughout
-        - Ethereal dreamy lighting quality
-        - Light appears painted, not rendered
-        
-        ABSOLUTE REQUIREMENTS:
-        ✓ 2D FLAT hand-drawn animation - NO 3D RENDERING
-        ✓ Watercolor painted texture - NO photorealistic skin
-        ✓ Hand-drawn organic lines - NO clean vector lines  
-        ✓ Traditional cel animation - NO CGI appearance
-        ✓ Ghibli/Miyazaki aesthetic - reference Spirited Away visual style
-        ✓ Paper grain texture visible
-        ✓ Painterly quality throughout
-        
-        This is a traditional 2D hand-painted animation frame, NOT a 3D model or CGI render.
-        Must look like it was painted by Studio Ghibli artists using traditional animation techniques.
-        No 3D depth rendering, no realistic 3D skin, no modern CGI effects.
-        Maintain exact facial features and identity while rendering in pure 2D animated painting style."
-        
-        ═══════════════════════════════════════
-        NOW CREATE YOUR DALL-E PROMPT
-        ═══════════════════════════════════════
-        
-        REQUESTED STYLE: %s
-        
-        USER'S STYLE REQUEST:
-        %s
-        
-        DETAILED IMAGE ANALYSIS:
-        %s
-        
-        ═══════════════════════════════════════
-        
-        Following the EXACT pattern and detail level of the %s example above:
-        1. Preserve all facial features from analysis
-        2. Apply style-specific characteristics with EXTREME detail
-        3. For Ghibli: EMPHASIZE 2D flat, hand-drawn, watercolor, NOT 3D
-        4. Include all technical rendering requirements
-        5. Maintain identity throughout transformation
-        6. 300-400 words, single dense paragraph
-        
-        OUTPUT ONLY THE DALL-E PROMPT.
-        """, style.toUpperCase(), userPrompt, imageAnalysis, style.toUpperCase());
+I'm teaching you HOW to convert ANY person's photo into %s style.
+
+This is a METHODOLOGY, not a specific example. Learn the PATTERN.
+
+═══════════════════════════════════════
+METHODOLOGY PATTERN
+═══════════════════════════════════════
+
+STEP 1: Extract Identity Features (from Vision Analysis)
+- Face shape, skin tone, eyes, eyebrows, nose, mouth, jaw
+- Hair: color, length, texture, style
+- Clothing, pose, expression
+
+STEP 2: Write Identity Section (EXACT preservation)
+Start prompt with: "A person with [face shape] face shape, [skin tone] skin tone, [eye details], [nose details], [mouth details], [jaw details], has [complete hair description], wearing [clothing], [pose and expression]."
+
+Use EXACT + MUST + IDENTICAL keywords for every feature.
+
+STEP 3: Apply Style Characteristics
+
+FOR GHIBLI STYLE:
+Add these EXACT words after identity section:
+
+"Rendered in Studio Ghibli 2D hand-drawn animation style. CRITICAL: This is PURE 2D FLAT traditional animation, NOT 3D rendering. Hand-painted watercolor texture throughout, organic hand-drawn linework with natural imperfections, soft delicate lines with slight thickness variation, flat 2D composition with NO 3D depth, colors applied in flat layers with gentle gradients, visible soft paper grain texture, painterly quality NOT digital smooth. Warm golden-hour lighting with soft amber tones, watercolor wash effects with bleeding edges, nostalgic dreamy atmosphere, dominant warm yellows and soft teals. Traditional cel animation technique as seen in Spirited Away and Howl's Moving Castle. Soft rosy blush as transparent watercolor wash. Background painted with loose watercolor bokeh effect in warm golden tones. Every element has 2D painted quality with visible brush strokes. NO smooth 3D subsurface scattering, NO realistic skin rendering, NO CGI appearance. Film grain overlay suggesting traditional animation."
+
+FOR PIXAR STYLE:
+Add these EXACT words after identity section:
+
+"Rendered in Pixar's signature 3D animation style with smooth subsurface scattering on skin showing realistic translucency, individual hair strands with natural physics and light refraction, soft rim lighting from back-right, vibrant but naturalistic color palette, high-quality CGI render with fabric texture detail, soft volumetric lighting with cinematic quality. Professional Pixar-quality animation render matching Toy Story and Inside Out quality level. 8k resolution with studio lighting setup: warm key light from front-left and soft fill light. Clean gradient background. EXACT facial structure and proportions from description must be maintained."
+
+FOR ANIMAL CROSSING STYLE:
+Add these EXACT words after identity section:
+
+"Transformed into Nintendo Animal Crossing New Horizons chibi style. CRITICAL CHIBI PROPORTIONS (MANDATORY): Head-to-body ratio EXACTLY 2.5:1 where head occupies 65%% of total height, body is 20%% as tiny compact torso, arms are short stubby cylinders with NO visible elbows ending in simple rounded mitt-like hands with 3 subtle finger segments, legs are 15%% stubby with NO visible knees, NO visible neck with head connecting directly to shoulders. Despite chibi transformation, person's UNIQUE facial features must remain RECOGNIZABLE in simplified form - NOT a generic chibi template. Rendered as low-polygon 3D model with GameCube/Wii era quality, soft matte plastic surface shader, rounded edges everywhere, pastel color palette, minimal polygon count creating simple geometric forms, no realistic textures, soft ambient lighting with no harsh shadows, clean simple silhouette. Hair simplified into chunky rounded sections maintaining original color and general style."
+
+STEP 4: Add Verification Checklist
+
+Always end with:
+
+"IDENTITY VERIFICATION CHECKLIST:
+✓ Face shape EXACTLY matches? NOT different person?
+✓ Eye shape and color PRESERVED? NOT generic eyes?
+✓ Hair color, length, texture MAINTAINED? NOT different hair?
+✓ Expression and pose IDENTICAL? NOT different mood?
+✓ Style applied WITHOUT losing identity? NOT a template?
+
+PROHIBITIONS (CRITICAL):
+DO NOT create a different person.
+DO NOT create a different person.
+DO NOT create a different person.
+DO NOT use generic features.
+DO NOT make a template.
+
+FINAL STATEMENT:
+This is a SPECIFIC UNIQUE PERSON rendered in %s style.
+Creating a different person = complete failure.
+All identifying characteristics from analysis MUST be preserved."
+
+═══════════════════════════════════════
+NOW APPLY THIS METHODOLOGY
+═══════════════════════════════════════
+
+TARGET STYLE: %s
+
+USER'S ORIGINAL REQUEST:
+%s
+
+VISION ANALYSIS TO TRANSFORM:
+%s
+
+═══════════════════════════════════════
+
+YOUR TASK:
+1. Extract identity features from Vision Analysis (STEP 1)
+2. Write identity section with EXACT/MUST keywords (STEP 2)  
+3. Apply %s style characteristics from methodology (STEP 3)
+4. Add verification checklist (STEP 4)
+5. Output ONE dense paragraph, 300-400 words
+6. NO line breaks, NO markdown, just flowing text
+
+This is a METHODOLOGY that works for ANY photo being transformed into %s style.
+
+OUTPUT ONLY THE DALL-E PROMPT. NO EXPLANATIONS.
+""",
+                    style.toUpperCase(),
+                    style.toLowerCase(),
+                    style.toUpperCase(),
+                    userPrompt,
+                    imageAnalysis,
+                    style.toLowerCase(),
+                    style.toLowerCase());
 
             String dallePrompt = chatClient.prompt()
                     .system(DALLE_EXPERT_SYSTEM_MESSAGE)
@@ -917,7 +1202,10 @@ OUTPUT: Clear structured bullet points covering all categories above. 200-300 wo
                     prompt.contains("사진") ||
                     prompt.contains("그려줘") ||
                     prompt.contains("만들어줘") ||
-                    prompt.contains("생성해줘");
+                    prompt.contains("생성해줘") ||
+                    prompt.contains("바꿔줘") ||
+                    prompt.contains("변환") ||
+                    prompt.contains("스타일");
 
             if (!isImageRequest) {
                 ChatClient chatClient = chatClientBuilder.build();
@@ -932,101 +1220,43 @@ OUTPUT: Clear structured bullet points covering all categories above. 200-300 wo
                         .build();
             }
 
-            // === Phase 1: 스타일 감지 ===
-            System.out.println("=== Phase 1: 스타일 감지 시작 ===");
+            // === 1. 스타일 감지 ===
             String detectedStyle = detectRequestedStyle(prompt);
-            System.out.println("감지된 스타일: " + (detectedStyle != null ? detectedStyle : "없음"));
-            System.out.println("Known 스타일 여부: " + isKnownStyle(detectedStyle));
-            System.out.println("================================");
 
-            // === 이미지 분석 ===
-            System.out.println("=== 이미지 분석 시작 ===");
-            long startTime = System.currentTimeMillis();
+            // === 2. Vision 분석 ===
             String imageAnalysis = analyzeImageWithExtremeDetail(imageUrls);
-            long analysisTime = System.currentTimeMillis() - startTime;
 
-            System.out.println("분석 완료 시간: " + analysisTime + "ms");
-            System.out.println("분석 결과 길이: " + imageAnalysis.length() + " 문자");
-            System.out.println("================================");
-
-            // === Phase 1: Known 스타일 처리 ===
+            // === 3. DALL-E 프롬프트 생성 ===
             String dallePrompt;
 
-            if (isKnownStyle(detectedStyle)) {
-                System.out.println("=== Known 스타일 프롬프트 생성 ===");
-                System.out.println("스타일: " + detectedStyle);
-                startTime = System.currentTimeMillis();
-
+            if (detectedStyle != null && isKnownStyle(detectedStyle)) {
+                // Known 스타일: Few-shot 방법론
                 dallePrompt = createPromptWithKnownStyle(detectedStyle, prompt, imageAnalysis);
-
-                long promptTime = System.currentTimeMillis() - startTime;
-                System.out.println("프롬프트 생성 시간: " + promptTime + "ms");
-                System.out.println("생성된 프롬프트 길이: " + dallePrompt.split(" ").length + " 단어");
-                System.out.println("================================");
             } else if (detectedStyle != null) {
-                // Phase 2: Unknown 스타일 처리
-                System.out.println("=== Phase 2: Unknown 스타일 처리 ===");
-                System.out.println("스타일: " + detectedStyle);
-
-                // 1. 스타일 특성 분석
-                startTime = System.currentTimeMillis();
+                // Unknown 스타일: 스타일 분석 후 적용
                 String styleAnalysis = analyzeStyleCharacteristics(detectedStyle);
-                long styleAnalysisTime = System.currentTimeMillis() - startTime;
-                System.out.println("스타일 분석 시간: " + styleAnalysisTime + "ms");
-
-                // 2. Unknown 스타일 프롬프트 생성
-                startTime = System.currentTimeMillis();
-                dallePrompt = createPromptWithUnknownStyle(
-                        detectedStyle,
-                        styleAnalysis,
-                        prompt,
-                        imageAnalysis
-                );
-                long promptTime = System.currentTimeMillis() - startTime;
-                System.out.println("프롬프트 생성 시간: " + promptTime + "ms");
-                System.out.println("생성된 프롬프트 길이: " + dallePrompt.split(" ").length + " 단어");
-                System.out.println("================================");
-
+                dallePrompt = createPromptWithUnknownStyle(detectedStyle, styleAnalysis, prompt, imageAnalysis);
             } else {
-                // 스타일 미지정 - 원본 스타일 유지 (수정!)
-                System.out.println("=== 스타일 미지정: 원본 스타일 유지 ===");
-                startTime = System.currentTimeMillis();
-
+                // 스타일 미지정: 원본 유지
                 dallePrompt = createPromptWithoutStyle(prompt, imageAnalysis);
-
-                long promptTime = System.currentTimeMillis() - startTime;
-                System.out.println("프롬프트 생성 시간: " + promptTime + "ms");
-                System.out.println("================================");
             }
 
-            // === DALL-E 이미지 생성 ===
-            System.out.println("=== DALL-E 3 이미지 생성 ===");
-            startTime = System.currentTimeMillis();
+            // === 4. DALL-E Generation 호출 ===
+            String resultImageUrl;
 
-            String imageUrl;
-            if (detectedStyle == null) {
-                // 스타일 미지정 - 사실적/원본 유지
-                System.out.println("설정: HD + Natural (사실적)");
-                imageUrl = imageService.generateImageRealistic(dallePrompt);
+            if (detectedStyle != null && (detectedStyle.equals("ghibli") ||
+                    detectedStyle.equals("pixar") ||
+                    detectedStyle.equals("animal_crossing"))) {
+                // Known 스타일: HD + vivid
+                resultImageUrl = imageService.generateImageHD(dallePrompt);
             } else {
-                // 스타일 적용 - 애니메이션/게임
-                System.out.println("설정: HD + Vivid (화려한)");
-                imageUrl = imageService.generateImageHD(dallePrompt);
+                // 원본 유지 또는 Unknown 스타일: HD + natural
+                resultImageUrl = imageService.generateImageRealistic(dallePrompt);
             }
-
-            long imageTime = System.currentTimeMillis() - startTime;
-
-            System.out.println("이미지 생성 완료: " + imageUrl);
-            System.out.println("생성 시간: " + imageTime + "ms");
-            System.out.println("================================");
-
-            System.out.println("이미지 생성 완료: " + imageUrl);
-            System.out.println("생성 시간: " + imageTime + "ms");
-            System.out.println("================================");
 
             return GptRunResult.builder()
                     .resultType(ResultType.IMAGE)
-                    .resultImageUrl(imageUrl)
+                    .resultImageUrl(resultImageUrl)
                     .build();
 
         } catch (Exception e) {
@@ -1037,4 +1267,5 @@ OUTPUT: Clear structured bullet points covering all categories above. 200-300 wo
             );
         }
     }
+
 }
