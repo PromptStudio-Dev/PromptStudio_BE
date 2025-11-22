@@ -17,4 +17,5 @@ public interface PromptService {
     List<PromptCardNewsResponse> getViewedPrompts(Long memberId);
     PromptCopyResponse copyPrompt(Long promptId);
     PromptUpdateResponse updatePrompt(Long memberId, Long promptId, PromptUpdateRequest request);
+    void deletePrompt(Long memberId, Long promptId);
 }

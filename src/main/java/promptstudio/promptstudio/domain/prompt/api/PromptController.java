@@ -106,4 +106,12 @@ public class PromptController {
         PromptUpdateResponse response = promptService.updatePrompt(memberId, promptId, request);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/members/{memberId}/prompts/{promptId}")
+    @Operation(summary = "프롬프트 삭제", description = "프롬프트 삭제 API")
+    public ResponseEntity<Void> deletePrompt(@PathVariable("memberId") Long memberId,
+                                             @PathVariable("promptId") Long promptId) {
+        promptService.deletePrompt(memberId, promptId);
+        return ResponseEntity.noContent().build();
+    }
 }

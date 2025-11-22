@@ -373,5 +373,24 @@ public class PromptServiceImpl implements PromptService {
         return response;
     }
 
+    @Override
+    public void deletePrompt(Long memberId, Long promptId) {
+
+        Prompt prompt = promptRepository.findById(promptId)
+                .orElseThrow(() -> new NotFoundException("프롬프트가 존재하지 않습니다."));
+
+        if (!prompt.getMember().getId().equals(memberId)) {
+            throw new ForbiddenException("삭제 권한이 없습니다.");
+        }
+
+        boolean wasVisible = prompt.isVisible();
+
+        promptRepository.delete(prompt);
+
+        if (wasVisible) {
+            promptIndexService.deletePrompt(promptId);
+        }
+
+    }
 
 }
