@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface PromptPlaceholderRepository extends JpaRepository<PromptPlaceholder, Long> {
     List<PromptPlaceholder> findByPromptIdOrderByIdAsc(Long promptId);
+    void deleteByPromptId(Long promptId);
 }

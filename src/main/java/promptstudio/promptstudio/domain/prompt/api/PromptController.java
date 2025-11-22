@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.prompt.application.PromptService;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCopyResponse;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
-import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
+import promptstudio.promptstudio.domain.prompt.dto.*;
 
 import java.net.URI;
 import java.util.List;
@@ -99,5 +96,27 @@ public class PromptController {
     public ResponseEntity<PromptCopyResponse> copyPrompt(@PathVariable("promptId") Long promptId) {
         PromptCopyResponse response = promptService.copyPrompt(promptId);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping(
+            value = "/members/{memberId}/prompts/{promptId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @Operation(summary = "프롬프트 수정", description = "프롬프트 수정 API")
+    public ResponseEntity<PromptUpdateResponse> updatePrompt(@PathVariable Long memberId,
+                                                             @PathVariable Long promptId,
+                                                             @ModelAttribute PromptUpdateRequest request,
+                                                             @RequestPart(value = "file", required = false) MultipartFile file) {
+        PromptUpdateResponse response =
+                promptService.updatePrompt(memberId, promptId, request, file);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/members/{memberId}/prompts/{promptId}")
+    @Operation(summary = "프롬프트 삭제", description = "프롬프트 삭제 API")
+    public ResponseEntity<Void> deletePrompt(@PathVariable("memberId") Long memberId,
+                                             @PathVariable("promptId") Long promptId) {
+        promptService.deletePrompt(memberId, promptId);
+        return ResponseEntity.noContent().build();
     }
 }
