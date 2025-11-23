@@ -12,12 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(nullable = false, length = 30)
     private String name;
+
+    @Column(unique = true)
+    private String email;
 
     @Column(length = 2048)
     private String profileImageUrl;
@@ -26,8 +28,9 @@ public class Member extends BaseEntity {
     private String introduction;
 
     @Builder
-    public Member(String name, String profileImageUrl, String introduction) {
+    public Member(String name,String email, String profileImageUrl, String introduction) {
         this.name = name;
+        this.email = email;
         this.profileImageUrl = profileImageUrl;
         this.introduction = introduction;
     }
