@@ -21,7 +21,7 @@ public class AuthController {
     @PostMapping("/google")
     @Operation(summary = "구글 로그인", description = "구글 로그인 API")
     public ResponseEntity<GoogleLoginResponse> googleLogin(@RequestBody GoogleLoginRequest request){
-        GoogleLoginResponse response = authService.loginWithGoogle(request);;
+        GoogleLoginResponse response = authService.loginWithGoogle(request);
         return ResponseEntity.ok(response);
     }
 
