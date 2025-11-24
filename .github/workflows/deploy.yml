@@ -67,6 +67,9 @@ jobs:
           CORS_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
           OLLAMA_URL: ${{ secrets.OLLAMA_URL }}
           QDRANT_HOST: ${{ secrets.QDRANT_HOST }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: |
           echo "$EC2_KEY" > private_key.pem
           chmod 600 private_key.pem
@@ -111,6 +114,9 @@ jobs:
               -e CORS_ALLOWED_ORIGINS='$CORS_ORIGINS' \
               -e OLLAMA_URL='$OLLAMA_URL' \
               -e QDRANT_HOST='$QDRANT_HOST' \
+              -e JWT_SECRET='$JWT_SECRET' \
+              -e GOOGLE_CLIENT_ID='$GOOGLE_CLIENT_ID' \
+              -e GOOGLE_CLIENT_SECRET='$GOOGLE_CLIENT_SECRET' \
               $ECR_REGISTRY/promptstudio-server:latest
           
             # 사용하지 않는 이미지 정리
