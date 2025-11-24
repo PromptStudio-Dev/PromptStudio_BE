@@ -26,10 +26,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
+
+                        // OPTIONS 요청 허용
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        
                         // 조회, 검색 관련 경로
                         .requestMatchers(HttpMethod.GET, "/api/prompts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/prompts/hot").permitAll()
