@@ -35,11 +35,11 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // 복사 경로
-                        .requestMatchers(HttpMethod.PATCH, "/api/prompts/*/copy").permitAll()
+                        .requestMatchers("/api/prompts/*/copy").permitAll()
 
                         // 로그인 관련 경로
-                        .requestMatchers(HttpMethod.POST, "/api/auth/google").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/reissue").permitAll()
+                        .requestMatchers("/api/auth/google").permitAll()
+                        .requestMatchers("/api/auth/reissue").permitAll()
 
                         // 상태 검사 경로
                         .requestMatchers("/actuator/**").permitAll()
