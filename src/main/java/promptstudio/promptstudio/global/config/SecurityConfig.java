@@ -41,6 +41,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/google").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/reissue").permitAll()
 
+                        // 상태 검사 경로
+                        .requestMatchers("/actuator/**").permitAll()
+                        // swagger 경로
+                        .requestMatchers("/swagger-ui/index.html").permitAll()
+
                         .anyRequest().authenticated()
                 )
 
