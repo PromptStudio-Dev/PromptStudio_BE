@@ -868,97 +868,91 @@ OUTPUT: Clear structured bullet points covering all categories above. 200-300 wo
                     .build();
 
             String userMessage = String.format("""
-I'm teaching you HOW to convert ANY person's photo into %s style.
-
-This is a METHODOLOGY, not a specific example. Learn the PATTERN.
+Learn from these EXAMPLES how to transform photos into %s style.
 
 ═══════════════════════════════════════
-METHODOLOGY PATTERN
+EXAMPLE 1: GHIBLI STYLE
 ═══════════════════════════════════════
+INPUT:
+"Person with soft facial lines, light skin tone, calm eyes, long straight black hair, light blue shirt, gentle relaxed pose."
 
-STEP 1: Extract Identity Features (from Vision Analysis)
-- Face shape, skin tone, eyes, eyebrows, nose, mouth, jaw
-- Hair: color, length, texture, style
-- Clothing, pose, expression
-
-STEP 2: Write Identity Section (EXACT preservation)
-Start prompt with: "A person with [face shape] face shape, [skin tone] skin tone, [eye details], [nose details], [mouth details], [jaw details], has [complete hair description], wearing [clothing], [pose and expression]."
-
-Use EXACT + MUST + IDENTICAL keywords for every feature.
-
-STEP 3: Apply Style Characteristics
-
-FOR GHIBLI STYLE:
-Add these EXACT words after identity section:
-
-"Rendered in Studio Ghibli 2D hand-drawn animation style. CRITICAL: This is PURE 2D FLAT traditional animation, NOT 3D rendering. Hand-painted watercolor texture throughout, organic hand-drawn linework with natural imperfections, soft delicate lines with slight thickness variation, flat 2D composition with NO 3D depth, colors applied in flat layers with gentle gradients, visible soft paper grain texture, painterly quality NOT digital smooth. Warm golden-hour lighting with soft amber tones, watercolor wash effects with bleeding edges, nostalgic dreamy atmosphere, dominant warm yellows and soft teals. Traditional cel animation technique as seen in Spirited Away and Howl's Moving Castle. Soft rosy blush as transparent watercolor wash. Background painted with loose watercolor bokeh effect in warm golden tones. Every element has 2D painted quality with visible brush strokes. NO smooth 3D subsurface scattering, NO realistic skin rendering, NO CGI appearance. Film grain overlay suggesting traditional animation."
-
-FOR PIXAR STYLE:
-Add these EXACT words after identity section:
-
-"Rendered in Pixar's signature 3D animation style with smooth subsurface scattering on skin showing realistic translucency, individual hair strands with natural physics and light refraction, soft rim lighting from back-right, vibrant but naturalistic color palette, high-quality CGI render with fabric texture detail, soft volumetric lighting with cinematic quality. Professional Pixar-quality animation render matching Toy Story and Inside Out quality level. 8k resolution with studio lighting setup: warm key light from front-left and soft fill light. Clean gradient background. EXACT facial structure and proportions from description must be maintained."
-
-FOR ANIMAL CROSSING STYLE:
-Add these EXACT words after identity section:
-
-"Transformed into Nintendo Animal Crossing New Horizons chibi style. CRITICAL CHIBI PROPORTIONS (MANDATORY): Head-to-body ratio EXACTLY 2.5:1 where head occupies 65%% of total height, body is 20%% as tiny compact torso, arms are short stubby cylinders with NO visible elbows ending in simple rounded mitt-like hands with 3 subtle finger segments, legs are 15%% stubby with NO visible knees, NO visible neck with head connecting directly to shoulders. Despite chibi transformation, person's UNIQUE facial features must remain RECOGNIZABLE in simplified form - NOT a generic chibi template. Rendered as low-polygon 3D model with GameCube/Wii era quality, soft matte plastic surface shader, rounded edges everywhere, pastel color palette, minimal polygon count creating simple geometric forms, no realistic textures, soft ambient lighting with no harsh shadows, clean simple silhouette. Hair simplified into chunky rounded sections maintaining original color and general style."
-
-STEP 4: Add Verification Checklist
-
-Always end with:
-
-"IDENTITY VERIFICATION CHECKLIST:
-✓ Face shape EXACTLY matches? NOT different person?
-✓ Eye shape and color PRESERVED? NOT generic eyes?
-✓ Hair color, length, texture MAINTAINED? NOT different hair?
-✓ Expression and pose IDENTICAL? NOT different mood?
-✓ Style applied WITHOUT losing identity? NOT a template?
-
-PROHIBITIONS (CRITICAL):
-DO NOT create a different person.
-DO NOT create a different person.
-DO NOT create a different person.
-DO NOT use generic features.
-DO NOT make a template.
-
-FINAL STATEMENT:
-This is a SPECIFIC UNIQUE PERSON rendered in %s style.
-Creating a different person = complete failure.
-All identifying characteristics from analysis MUST be preserved."
+OUTPUT:
+"A person with soft facial lines, light skin tone, calm natural eyes, and long straight black hair wearing a light blue casual shirt. The relaxed pose is preserved exactly as described. Rendered in a Ghibli‑inspired 2D illustration style emphasizing warm watercolor washes, soft hand‑painted textures, and gentle diffused lighting. Linework appears organically sketched with mild imperfections, and shadows are expressed through subtle layered gradients rather than hard edges. Colors lean toward warm creams, light teals, and muted earth tones to create a nostalgic and soothing mood. Background is loosely painted with soft bokeh-like forms to keep focus on the subject. The overall look evokes traditional cel‑animation charm with delicate brush strokes and a dreamy, atmospheric quality while maintaining the subject's silhouette, pose, and clothing colors."
 
 ═══════════════════════════════════════
-NOW APPLY THIS METHODOLOGY
+EXAMPLE 2: GHIBLI STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with rounded facial structure, medium skin tone, bright eyes, short wavy dark hair, teal top, soft smile."
+
+OUTPUT:
+"A person with gently rounded facial contours, medium toned skin, bright expressive eyes, short wavy dark hair, and a teal top, all preserved exactly as described. Rendered in a Ghibli‑inspired hand‑drawn aesthetic featuring warm natural lighting and soft watercolor textures layered with translucent shading. Line art remains clean yet organic, giving a traditional 2D animation feeling. Colors blend through subtle gradients with warm earth tones and harmonizing teal hues. Highlights and shadows are expressed softly, avoiding hard outlines. Background elements are lightly suggested with loose watercolor strokes to maintain focus on the subject. The overall mood conveys warmth, comfort, and nostalgic charm with painterly brush textures while respecting the subject's features, hair shape, and clothing details."
+
+═══════════════════════════════════════
+EXAMPLE 3: ANIMAL CROSSING STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with soft face shape, light skin, simple expressive eyes, long dark hair, blue jacket, cheerful pose with hand near cheek."
+
+OUTPUT:
+"A stylized chibi character inspired by the Animal Crossing aesthetic, based on the provided description. The soft face shape becomes a rounded simplified form, light skin rendered with matte pastel tones, and expressive eyes enlarged into signature round stylized shapes. Long dark hair becomes smooth chunky sections retaining the original length and flow. The blue jacket is simplified into clean geometric shapes. The cheerful pose with the hand near the cheek is preserved exactly. Chibi proportions follow a large head and small compact body with rounded limbs. Surfaces appear soft and toy‑like with uniform lighting, pastel coloring, and smooth contours. The final character keeps the recognizable silhouette, pose, and color scheme while expressing a friendly, playful mood."
+
+═══════════════════════════════════════
+EXAMPLE 4: ANIMAL CROSSING STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with angular face shape, tan skin, narrow eyes, short textured dark hair, green hoodie, relaxed confident stance."
+
+OUTPUT:
+"A stylized chibi figure inspired by the Animal Crossing aesthetic, reflecting the original description in simplified form. The angular face shape is adapted into a rounded chibi version while still hinting at the original structure. Tan skin is represented with soft peach‑tan pastel coloring, and narrow eyes are translated into simple expressive shapes. Short textured dark hair becomes low‑detail chunky segments. The green hoodie is rendered as a single smooth shape with minimal folds. The relaxed confident stance is preserved within chibi body proportions featuring a large head, compact torso, and short rounded limbs. Lighting is soft and even with matte plastic‑like textures. Colors remain bright and pastel, keeping the friendly and approachable style consistent."
+
+═══════════════════════════════════════
+EXAMPLE 5: PIXAR STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with balanced face shape, warm skin tone, expressive eyes, shoulder-length wavy hair, teal shirt, relaxed friendly pose."
+
+OUTPUT:
+"A character rendered in a Pixar‑inspired 3D animation style, based on the provided traits. The balanced facial structure and warm skin tone are represented with smooth stylized realism and subtle subsurface scattering. Expressive eyes receive soft reflections and rounded highlights. Shoulder‑length wavy hair is translated into detailed but stylized strands with gentle simulated movement. The teal shirt keeps its color while gaining soft fabric shading. The relaxed friendly pose is maintained exactly. Lighting uses a warm key light and soft fill to create cinematic depth, with smooth gradients and soft rim accents. Surfaces have clean glossy finishes typical of modern high‑end animation, producing a bright, inviting character while preserving the original pose, clothing color, and overall silhouette."
+
+═══════════════════════════════════════
+EXAMPLE 6: PIXAR STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with rounded face, fair skin, bright eyes, long straight light-colored hair, pink top, energetic enthusiastic pose."
+
+OUTPUT:
+"A Pixar‑inspired 3D character reflecting the described features in stylized form. The rounded face is rendered with soft contours and gentle shading, fair skin treated with warm subsurface scattering for natural luminance. Bright eyes become large expressive shapes with subtle internal reflections. Long straight light-colored hair is represented through stylized layered strands with smooth motion and soft highlights. The pink top retains its color while gaining lightly textured shading. The energetic enthusiastic pose is preserved exactly. Lighting includes warm directional highlights and subtle cool rim accents, creating a polished cinematic look. Colors are vivid yet natural, with smooth gradients and clean geometry typical of contemporary feature-quality animation."
+
+═══════════════════════════════════════
+NOW YOUR TURN
 ═══════════════════════════════════════
 
 TARGET STYLE: %s
 
-USER'S ORIGINAL REQUEST:
-%s
+USER REQUEST: %s
 
-VISION ANALYSIS TO TRANSFORM:
+VISION ANALYSIS:
 %s
 
 ═══════════════════════════════════════
 
-YOUR TASK:
-1. Extract identity features from Vision Analysis (STEP 1)
-2. Write identity section with EXACT/MUST keywords (STEP 2)  
-3. Apply %s style characteristics from methodology (STEP 3)
-4. Add verification checklist (STEP 4)
-5. Output ONE dense paragraph, 300-400 words
-6. NO line breaks, NO markdown, just flowing text
+TASK:
+Follow the EXAMPLE pattern for %s style above.
 
-This is a METHODOLOGY that works for ANY photo being transformed into %s style.
+1. Start with identity features from vision analysis
+2. State that features are "preserved exactly as described"
+3. Add style rendering while maintaining all identity features
+4. Output ONE flowing paragraph, 150-200 words
+5. Keep it simple and natural like the examples
 
-OUTPUT ONLY THE DALL-E PROMPT. NO EXPLANATIONS.
+OUTPUT ONLY THE DALL-E PROMPT.
 """,
                     style.toUpperCase(),
-                    style.toLowerCase(),
                     style.toUpperCase(),
                     userPrompt,
                     imageAnalysis,
-                    style.toLowerCase(),
-                    style.toLowerCase());
+                    style.toUpperCase());
 
             String dallePrompt = chatClient.prompt()
                     .system(DALLE_EXPERT_SYSTEM_MESSAGE)
@@ -976,7 +970,7 @@ OUTPUT ONLY THE DALL-E PROMPT. NO EXPLANATIONS.
             );
         }
     }
-    
+
     //스타일 미지정 일반 이미지 제작
     private String createPromptWithoutStyle(String userPrompt, String imageAnalysis) {
         try {
@@ -1267,5 +1261,85 @@ OUTPUT ONLY THE DALL-E PROMPT. NO EXPLANATIONS.
             );
         }
     }
+
+    private static final String HISTORY_TITLE_SYSTEM_MESSAGE = """
+당신은 히스토리 제목을 생성하는 전문가입니다.
+
+규칙:
+1. 제목은 한글로 작성하며, 15자 이내로 간결하게 작성합니다.
+2. 제목만 출력하고 다른 말은 하지 마세요.
+3. 큰따옴표나 마침표 없이 제목만 출력하세요.
+""";
+
+    private static final String FIRST_HISTORY_TITLE_TEMPLATE = """
+다음은 처음 생성된 프롬프트의 내용입니다:
+
+제목: {title}
+내용: {content}
+
+위 내용을 한 줄로 요약한 히스토리 제목을 생성해주세요.
+예시: "이미지 스타일 변환", "캐릭터 생성 프롬프트"
+
+제목만 출력하세요:
+""";
+
+    private static final String DIFF_HISTORY_TITLE_TEMPLATE = """
+이전 프롬프트:
+제목: {previousTitle}
+내용: {previousContent}
+
+현재 프롬프트:
+제목: {currentTitle}
+내용: {currentContent}
+
+이전 프롬프트와 비교하여 변경된 점을 한 줄로 요약한 제목을 생성해주세요.
+예시: "배경 제거 추가", "스타일을 픽사로 변경"
+
+제목만 출력하세요:
+""";
+
+    @Override
+    public String generateHistoryTitle(String currentTitle, String currentContent,
+                                       String previousTitle, String previousContent) {
+        try {
+            ChatClient chatClient = chatClientBuilder.build();
+
+            String userMessage;
+
+            if (previousTitle == null || previousContent == null) {
+                // 첫 번째 히스토리
+                PromptTemplate promptTemplate = new PromptTemplate(FIRST_HISTORY_TITLE_TEMPLATE);
+                Prompt prompt = promptTemplate.create(Map.of(
+                        "title", currentTitle != null ? currentTitle : "",
+                        "content", currentContent != null ? currentContent : ""
+                ));
+                userMessage = prompt.getContents();
+            } else {
+                // 변경점 요약
+                PromptTemplate promptTemplate = new PromptTemplate(DIFF_HISTORY_TITLE_TEMPLATE);
+                Prompt prompt = promptTemplate.create(Map.of(
+                        "previousTitle", previousTitle,
+                        "previousContent", previousContent,
+                        "currentTitle", currentTitle != null ? currentTitle : "",
+                        "currentContent", currentContent != null ? currentContent : ""
+                ));
+                userMessage = prompt.getContents();
+            }
+
+            String result = chatClient.prompt()
+                    .system(HISTORY_TITLE_SYSTEM_MESSAGE)
+                    .user(userMessage)
+                    .call()
+                    .content();
+
+            return result != null ? result.trim() : "프롬프트 실행";
+
+        } catch (Exception e) {
+            System.err.println("히스토리 제목 생성 실패: " + e.getMessage());
+            return "프롬프트 실행";
+        }
+    }
+
+
 
 }

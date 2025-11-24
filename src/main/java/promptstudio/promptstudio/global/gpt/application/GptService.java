@@ -12,4 +12,7 @@ public interface GptService {
     GptRunResult runPrompt(String prompt);
 
     GptRunResult runPromptWithImages(String prompt, List<String> imageUrls);
+
+    String generateHistoryTitle(String currentTitle, String currentContent,
+                                String previousTitle, String previousContent);
 }

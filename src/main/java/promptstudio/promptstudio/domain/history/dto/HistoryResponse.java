@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 @Builder
 public class HistoryResponse {
     private Long historyId;
-    private String snapshotTitle;
+    private String title;
     private LocalDateTime createdAt;
 
     public static HistoryResponse from(History history) {
         return HistoryResponse.builder()
                 .historyId(history.getId())
-                .snapshotTitle(history.getSnapshotTitle())
+                .title(history.getTitle())
                 .createdAt(history.getCreatedAt())
                 .build();
     }

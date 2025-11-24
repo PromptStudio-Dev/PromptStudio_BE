@@ -27,6 +27,9 @@ public class History {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Maker maker;
 
+    @Column(length = 500)
+    private String title;
+
     @Column(length = 255)
     private String snapshotTitle;
 
@@ -55,9 +58,10 @@ public class History {
     }
 
     @Builder
-    public History(Maker maker, String snapshotTitle, String snapshotContent,
+    public History(Maker maker, String title, String snapshotTitle, String snapshotContent,
                    ResultType resultType, String resultText, String resultImageUrl) {
         this.maker = maker;
+        this.title = title;
         this.snapshotTitle = snapshotTitle;
         this.snapshotContent = snapshotContent;
         this.resultType = resultType;

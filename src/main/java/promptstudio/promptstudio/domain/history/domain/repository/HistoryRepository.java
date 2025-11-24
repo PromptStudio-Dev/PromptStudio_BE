@@ -24,4 +24,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     Optional<History> findByIdWithImages(@Param("historyId") Long historyId);
 
     Page<History> findByMakerIdOrderByCreatedAtDesc(Long makerId, Pageable pageable);
+
+    Optional<History> findFirstByMakerIdOrderByCreatedAtDesc(Long makerId);
 }
