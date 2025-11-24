@@ -44,7 +44,11 @@ public class SecurityConfig {
                         // 상태 검사 경로
                         .requestMatchers("/actuator/**").permitAll()
                         // swagger 경로
-                        .requestMatchers("/swagger-ui/index.html").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
 
                         .anyRequest().authenticated()
                 )
