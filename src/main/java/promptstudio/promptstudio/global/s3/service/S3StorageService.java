@@ -280,9 +280,11 @@ public class S3StorageService {
 
     private byte[] downloadFromExternalUrl(String url) {
         try {
-            // 1. URL 정리 (빈 쿼리 파라미터 제거)
-            String cleanUrl = cleanInvalidQueryParams(url);
-            System.out.println("정리된 URL: " + cleanUrl);
+            String cleanUrl = url;
+            if (!url.contains("blob.core.windows.net")) {
+                cleanUrl = cleanInvalidQueryParams(url);
+            }
+            System.out.println("사용할 URL: " + cleanUrl);
 
             // RestTemplate 생성 (timeout 설정)
             RestTemplate restTemplate = new RestTemplate();

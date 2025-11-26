@@ -1263,40 +1263,41 @@ OUTPUT ONLY THE DALL-E PROMPT.
     }
 
     private static final String HISTORY_TITLE_SYSTEM_MESSAGE = """
-당신은 히스토리 제목을 생성하는 전문가입니다.
-
-규칙:
-1. 제목은 한글로 작성하며, 15자 이내로 간결하게 작성합니다.
-2. 제목만 출력하고 다른 말은 하지 마세요.
-3. 큰따옴표나 마침표 없이 제목만 출력하세요.
-""";
+    You are an expert at generating concise history titles.
+    
+    Rules:
+    1. Output must be in Korean (한글)
+    2. Keep the title within 15 characters
+    3. Output only the title, no additional explanation
+    4. No quotation marks or periods
+    """;
 
     private static final String FIRST_HISTORY_TITLE_TEMPLATE = """
-다음은 처음 생성된 프롬프트의 내용입니다:
-
-제목: {title}
-내용: {content}
-
-위 내용을 한 줄로 요약한 히스토리 제목을 생성해주세요.
-예시: "이미지 스타일 변환", "캐릭터 생성 프롬프트"
-
-제목만 출력하세요:
-""";
+    Here is the content of a newly created prompt:
+    
+    Title: {title}
+    Content: {content}
+    
+    Generate a concise one-line history title summarizing the above content.
+    Examples: "이미지 스타일 변환", "캐릭터 생성 프롬프트"
+    
+    Output only the title in Korean:
+    """;
 
     private static final String DIFF_HISTORY_TITLE_TEMPLATE = """
-이전 프롬프트:
-제목: {previousTitle}
-내용: {previousContent}
-
-현재 프롬프트:
-제목: {currentTitle}
-내용: {currentContent}
-
-이전 프롬프트와 비교하여 변경된 점을 한 줄로 요약한 제목을 생성해주세요.
-예시: "배경 제거 추가", "스타일을 픽사로 변경"
-
-제목만 출력하세요:
-""";
+    Previous prompt:
+    Title: {previousTitle}
+    Content: {previousContent}
+    
+    Current prompt:
+    Title: {currentTitle}
+    Content: {currentContent}
+    
+    Generate a concise one-line title summarizing what changed compared to the previous prompt.
+    Examples: "배경 제거 추가", "스타일을 픽사로 변경"
+    
+    Output only the title in Korean:
+    """;
 
     @Override
     public String generateHistoryTitle(String currentTitle, String currentContent,

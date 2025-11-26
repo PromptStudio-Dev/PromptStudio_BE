@@ -73,56 +73,20 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     private String generateTitle(Maker maker) {
-        // 1. 이전 히스토리 조회
-        Optional<History> previousHistoryOpt = historyRepository
-                .findFirstByMakerIdOrderByCreatedAtDesc(maker.getId());
-
-        if (previousHistoryOpt.isEmpty()) {
-            // 첫 번째 히스토리
+        try {
             return gptService.generateHistoryTitle(
                     maker.getTitle(),
                     maker.getContent(),
                     null,
                     null
             );
-        }
-
-        History previousHistory = previousHistoryOpt.get();
-
-        // 2. 내용 변경 확인
-        boolean titleChanged = !maker.getTitle().equals(previousHistory.getSnapshotTitle());
-        boolean contentChanged = !maker.getContent().equals(previousHistory.getSnapshotContent());
-
-        if (!titleChanged && !contentChanged) {
-            // 변경 없음 -> (1), (2) 붙이기
-            return appendCounter(previousHistory.getTitle());
-        } else {
-            // 변경 있음 -> GPT로 변경점 요약
-            return gptService.generateHistoryTitle(
-                    maker.getTitle(),
-                    maker.getContent(),
-                    previousHistory.getSnapshotTitle(),
-                    previousHistory.getSnapshotContent()
-            );
+        } catch (Exception e) {
+            // GPT 실패 시 기본값
+            System.err.println("히스토리 제목 생성 실패: " + e.getMessage());
+            return "프롬프트 실행";
         }
     }
 
-    private String appendCounter(String previousTitle) {
-        // "이미지 생성" -> "이미지 생성(1)"
-        // "이미지 생성(1)" -> "이미지 생성(2)"
-
-        if (previousTitle.matches(".*\\(\\d+\\)$")) {
-            // 이미 카운터가 있는 경우
-            int lastParenIndex = previousTitle.lastIndexOf('(');
-            String baseTitle = previousTitle.substring(0, lastParenIndex);
-            String counterStr = previousTitle.substring(lastParenIndex + 1, previousTitle.length() - 1);
-            int counter = Integer.parseInt(counterStr);
-            return baseTitle + "(" + (counter + 1) + ")";
-        } else {
-            // 카운터가 없는 경우
-            return previousTitle + "(1)";
-        }
-    }
     @Override
     @Transactional(readOnly = true)
     public Page<HistoryResponse> getHistoryList(Long makerId, Pageable pageable) {
