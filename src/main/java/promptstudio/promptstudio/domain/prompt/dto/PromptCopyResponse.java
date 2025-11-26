@@ -8,4 +8,5 @@ import lombok.Setter;
 public class PromptCopyResponse {
     private Long promptId;
     private long copyCount;
+    private String content;
 }

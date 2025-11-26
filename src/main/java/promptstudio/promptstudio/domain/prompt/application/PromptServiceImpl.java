@@ -16,22 +16,18 @@ import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.domain.repository.PromptRepository;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCopyResponse;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCreateRequest;
-import promptstudio.promptstudio.domain.prompt.dto.PromptResponse;
+import promptstudio.promptstudio.domain.prompt.dto.*;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
 import promptstudio.promptstudio.domain.viewrecord.domain.entity.ViewRecord;
 import promptstudio.promptstudio.domain.viewrecord.domain.repository.ViewRecordRepository;
+import promptstudio.promptstudio.global.exception.http.BadRequestException;
+import promptstudio.promptstudio.global.exception.http.ForbiddenException;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,6 +88,7 @@ public class PromptServiceImpl implements PromptService {
 
             promptPlaceholderRepository.save(placeholderEntity);
         }
+
 
         //vectorDB embedding
         if (saved.isVisible()) {
@@ -213,7 +210,7 @@ public class PromptServiceImpl implements PromptService {
 
         SearchRequest.Builder builder = SearchRequest.builder()
                 .query(query)
-                .topK(30);
+                .topK(100);
 
         if (category != null && !"전체".equals(category)) {
             builder.filterExpression("category == '" + category + "'");
@@ -259,7 +256,7 @@ public class PromptServiceImpl implements PromptService {
     }
 
     @Override
-    public PromptCopyResponse updateCopyCount(Long promptId) {
+    public PromptCopyResponse copyPrompt(Long promptId) {
         Prompt prompt = promptRepository.findById(promptId).orElseThrow(
                 () -> new NotFoundException("프롬프트가 존재하지 않습니다.")
         );
@@ -270,6 +267,7 @@ public class PromptServiceImpl implements PromptService {
 
         response.setPromptId(prompt.getId());
         response.setCopyCount(prompt.getCopyCount());
+        response.setContent(prompt.getContent());
 
         return response;
     }
@@ -309,19 +307,126 @@ public class PromptServiceImpl implements PromptService {
     private Set<String> extractPlaceholders(String content) {
         if (content == null) return Set.of();
 
-        Set<String> result = new HashSet<>();
+        Set<String> result = new LinkedHashSet<>();
 
         Pattern p = Pattern.compile("\\[([^\\]]+)]");
         Matcher m = p.matcher(content);
 
         while (m.find()) {
-            String fieldName = m.group(1).trim(); // "name", "date" 등
+            String fieldName = m.group(1).trim();
             if (!fieldName.isEmpty()) {
                 result.add(fieldName);
             }
         }
 
         return result;
+    }
+
+    @Override
+    public PromptUpdateResponse updatePrompt(Long memberId, Long promptId,
+                                             PromptUpdateRequest request, MultipartFile file) {
+
+        Prompt prompt = promptRepository.findById(promptId)
+                .orElseThrow(() -> new NotFoundException("프롬프트가 존재하지 않습니다."));
+
+        if (!prompt.getMember().getId().equals(memberId)) {
+            throw new ForbiddenException("수정 권한이 없습니다.");
+        }
+
+        boolean wasVisible = prompt.isVisible();
+
+        boolean removeImage = Boolean.TRUE.equals(request.getRemoveImage());
+        boolean hasNewFile = (file != null && !file.isEmpty());
+
+        if (removeImage && hasNewFile) {
+            throw new BadRequestException("이미지 삭제와 파일 업로드는 동시에 할 수 없습니다.");
+        }
+
+        String oldUrl = prompt.getImageUrl();
+
+        if (removeImage) {
+            if (oldUrl != null && !oldUrl.isBlank()) {
+                s3StorageService.deleteImage(oldUrl);
+            }
+            prompt.updateImageUrl(null);
+
+        } else if (hasNewFile) {
+            String newUrl = s3StorageService.uploadImage(
+                    file,
+                    String.format("prompt/%d", memberId)
+            );
+
+            prompt.updateImageUrl(newUrl);
+
+            if (oldUrl != null && !oldUrl.isBlank()) {
+                s3StorageService.deleteImage(oldUrl);
+            }
+        }
+
+        prompt.update(request);
+
+        boolean isVisible = prompt.isVisible();
+
+        if (isVisible) {
+            promptIndexService.indexPrompt(prompt);
+        }
+        else if (wasVisible) {
+            promptIndexService.deletePrompt(promptId);
+        }
+
+        if (request.getContent() != null) {
+            promptPlaceholderRepository.deleteByPromptId(promptId);
+
+            Set<String> placeholders = extractPlaceholders(prompt.getContent());
+            for (String fieldName : placeholders) {
+                promptPlaceholderRepository.save(
+                        PromptPlaceholder.builder()
+                                .prompt(prompt)
+                                .fieldName(fieldName)
+                                .build()
+                );
+            }
+        }
+
+        PromptUpdateResponse response = new PromptUpdateResponse();
+        response.setPromptId(prompt.getId());
+        response.setTitle(prompt.getTitle());
+        response.setIntroduction(prompt.getIntroduction());
+        response.setContent(prompt.getContent());
+        response.setCategory(prompt.getCategory());
+        response.setVisible(prompt.isVisible());
+        response.setImageUrl(prompt.getImageUrl());
+        response.setResult(prompt.getResult());
+        response.setImageRequired(prompt.isImageRequired());
+        response.setAiEnvironment(prompt.getAiEnvironment());
+
+        return response;
+    }
+
+    @Override
+    public void deletePrompt(Long memberId, Long promptId) {
+
+        Prompt prompt = promptRepository.findById(promptId)
+                .orElseThrow(() -> new NotFoundException("프롬프트가 존재하지 않습니다."));
+
+        if (!prompt.getMember().getId().equals(memberId)) {
+            throw new ForbiddenException("삭제 권한이 없습니다.");
+        }
+
+        boolean wasVisible = prompt.isVisible();
+
+        String imageUrl = prompt.getImageUrl();
+
+        promptRepository.delete(prompt);
+
+        if (wasVisible) {
+            promptIndexService.deletePrompt(promptId);
+        }
+
+        if (imageUrl != null && !imageUrl.isBlank()) {
+            s3StorageService.deleteImage(imageUrl);
+        }
+
     }
 
 }

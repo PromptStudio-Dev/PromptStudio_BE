@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import promptstudio.promptstudio.domain.member.domain.entity.Member;
+import promptstudio.promptstudio.domain.prompt.dto.PromptUpdateRequest;
 import promptstudio.promptstudio.global.common.entity.BaseEntity;
 
 @Entity
@@ -59,6 +60,21 @@ public class Prompt extends BaseEntity {
 
     public void updateCopyCount() {
         this.copyCount +=1;
+    }
+
+    public void update(PromptUpdateRequest request) {
+        if (request.getTitle() != null) this.title = request.getTitle();
+        if (request.getIntroduction() != null) this.introduction = request.getIntroduction();
+        if (request.getContent() != null) this.content = request.getContent();
+        if (request.getCategory() != null) this.category = request.getCategory();
+        if (request.getVisible() != null) this.visible = request.getVisible();
+        if (request.getResult() != null) this.result = request.getResult();
+        if (request.getImageRequired() != null) this.imageRequired = request.getImageRequired();
+        if (request.getAiEnvironment() != null) this.aiEnvironment = request.getAiEnvironment();
+    }
+
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     @Builder
