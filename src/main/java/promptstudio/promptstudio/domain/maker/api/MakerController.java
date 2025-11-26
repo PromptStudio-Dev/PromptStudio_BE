@@ -24,10 +24,9 @@ public class MakerController {
     @PostMapping("/members/{memberId}")
     @Operation(summary = "메이커 생성", description = "새로운 메이커를 생성합니다.")
     public ResponseEntity<MakerCreateResponse> createMaker(
-            @PathVariable Long memberId,
-            @RequestBody MakerCreateRequest request) {
+            @PathVariable Long memberId) {
 
-        Long makerId = makerService.createMaker(memberId, request);
+        Long makerId = makerService.createMaker(memberId);
 
         MakerCreateResponse response = MakerCreateResponse.builder()
                 .makerId(makerId)

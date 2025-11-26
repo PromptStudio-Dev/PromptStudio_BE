@@ -6,7 +6,7 @@ import promptstudio.promptstudio.domain.maker.dto.*;
 import java.util.List;
 
 public interface MakerService {
-    Long createMaker(Long memberId, MakerCreateRequest request);
+    Long createMaker(Long memberId);
 
     MakerUpdateResponse updateMaker(Long makerId, MakerUpdateRequest request, List<MultipartFile> newImages);
 
