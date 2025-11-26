@@ -34,14 +34,14 @@ public class MakerServiceImpl implements MakerService {
 
     @Override
     @Transactional
-    public Long createMaker(Long memberId, MakerCreateRequest request) {
+    public Long createMaker(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 
         Maker maker = Maker.builder()
                 .member(member)
-                .title(request.getTitle())
-                .content(request.getContent())
+                .title("")      // 빈 값으로 초기화
+                .content("")    // 빈 값으로 초기화
                 .build();
 
         Maker savedMaker = makerRepository.save(maker);
