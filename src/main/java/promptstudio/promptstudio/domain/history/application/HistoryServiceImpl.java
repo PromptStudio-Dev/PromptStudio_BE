@@ -19,6 +19,7 @@ import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.gpt.application.GptService;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -89,16 +90,17 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<HistoryResponse> getHistoryList(Long makerId, Pageable pageable) {
+    public List<HistoryResponse> getHistoryList(Long makerId) {
         if (!makerRepository.existsById(makerId)) {
             throw new NotFoundException("메이커를 찾을 수 없습니다.");
         }
 
-        Page<History> historyPage = historyRepository.findByMakerIdOrderByCreatedAtDesc(makerId, pageable);
+        List<History> histories = historyRepository.findByMakerIdOrderByCreatedAtDesc(makerId);
 
-        return historyPage.map(HistoryResponse::from);
+        return histories.stream()
+                .map(HistoryResponse::from)
+                .toList();
     }
-
     @Override
     @Transactional
     public HistoryDetailResponse restoreHistory(Long makerId, Long historyId) {

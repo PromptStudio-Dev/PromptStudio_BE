@@ -25,5 +25,5 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
 
     Page<History> findByMakerIdOrderByCreatedAtDesc(Long makerId, Pageable pageable);
 
-    Optional<History> findFirstByMakerIdOrderByCreatedAtDesc(Long makerId);
+    List<History> findByMakerIdOrderByCreatedAtDesc(Long makerId);
 }
