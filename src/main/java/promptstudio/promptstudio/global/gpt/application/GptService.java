@@ -21,4 +21,6 @@ public interface GptService {
 
     String generateHistoryTitle(String currentTitle, String currentContent,
                                 String previousTitle, String previousContent);
+
+    String generatePromptFeedback(String content);
 }
