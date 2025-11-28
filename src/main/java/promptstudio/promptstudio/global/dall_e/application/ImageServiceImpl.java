@@ -37,9 +37,6 @@ public class ImageServiceImpl implements ImageService {
         return generateAndUpload(prompt, "hd", "natural");
     }
 
-    /**
-     * DALL-E에서 Base64로 이미지를 받아 S3에 업로드 후 URL 반환
-     */
     private String generateAndUpload(String prompt, String quality, String style) {
         try {
             System.out.println("=== DALL-E 이미지 생성 시작 ===");

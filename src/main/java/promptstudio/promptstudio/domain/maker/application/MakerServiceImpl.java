@@ -12,6 +12,7 @@ import promptstudio.promptstudio.domain.maker.domain.repository.MakerRepository;
 import promptstudio.promptstudio.domain.maker.dto.*;
 import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
+import promptstudio.promptstudio.global.config.FeedbackRateLimiter;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 import promptstudio.promptstudio.global.gpt.application.GptService;
@@ -31,6 +32,7 @@ public class MakerServiceImpl implements MakerService {
     private final MemberRepository memberRepository;
     private final S3StorageService s3StorageService;
     private final GptService gptService;
+    private final FeedbackRateLimiter feedbackRateLimiter;
 
     @Override
     @Transactional
@@ -304,4 +306,19 @@ public class MakerServiceImpl implements MakerService {
                 .build();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PromptFeedbackResponse getPromptFeedback(Long makerId) {
+        // Rate Limit 체크
+        feedbackRateLimiter.checkLimit(makerId);
+
+        Maker maker = makerRepository.findById(makerId)
+                .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
+
+        String feedback = gptService.generatePromptFeedback(maker.getContent());
+
+        return PromptFeedbackResponse.builder()
+                .feedback(feedback)
+                .build();
+    }
 }

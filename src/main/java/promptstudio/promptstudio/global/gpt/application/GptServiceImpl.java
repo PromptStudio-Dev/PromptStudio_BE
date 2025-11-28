@@ -934,6 +934,11 @@ OUTPUT: Clear structured bullet points covering all categories above. 200-300 wo
                     .call()
                     .content();
 
+            jsonResponse = jsonResponse
+                    .replaceAll("```json\\s*", "")
+                    .replaceAll("```\\s*", "")
+                    .trim();
+
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
             String type = jsonNode.get("type").asText();
 
@@ -1517,6 +1522,73 @@ OUTPUT ONLY THE DALL-E PROMPT.
         }
     }
 
+    private static final String PROMPT_FEEDBACK_SYSTEM_MESSAGE = """
+    You are a friendly prompt coach who helps users improve their AI image generation prompts.
+    
+    Rules:
+    1. Output must be in Korean (한글)
+    2. Keep feedback within 2-3 sentences (50-100 characters)
+    3. Use friendly, casual tone with "~요" endings
+    4. Point out 1-2 specific areas that could be improved
+    5. Be encouraging, not critical
+    6. Focus on: clarity, specificity, missing details (composition, color, lighting, style, etc.)
+    
+    Analysis criteria:
+    - Composition/Layout: full body? upper body? close-up?
+    - Color/Tone: specific colors, contrast, saturation
+    - Lighting: direction, intensity, mood
+    - Style: is the art style clear?
+    - Background: is background description sufficient?
+    - Details: clothing, accessories, expression, etc.
+    
+    Special cases:
+    - If prompt is empty: kindly ask to write something
+    - If prompt is too short (under 10 chars): ask for more details
+    - If prompt is already excellent: give a short compliment
+    
+    Output only the feedback message, no additional explanation.
+    """;
+
+    private static final String PROMPT_FEEDBACK_USER_TEMPLATE = """
+    Please analyze this image generation prompt and provide brief, friendly feedback:
+    
+    Prompt:
+    {content}
+    
+    Feedback in Korean:
+    """;
+
+    //피드백 생성
+    @Override
+    public String generatePromptFeedback(String content) {
+        try {
+            // 빈 프롬프트 처리
+            if (content == null || content.isBlank()) {
+                return "아직 프롬프트가 비어있어요! 어떤 이미지를 만들고 싶은지 작성해보세요 ✨";
+            }
+
+            // 너무 짧은 프롬프트 처리
+            if (content.trim().length() < 10) {
+                return "조금 더 구체적으로 작성하면 원하는 결과를 얻기 쉬워요!";
+            }
+
+            ChatClient chatClient = chatClientBuilder.build();
+
+            PromptTemplate promptTemplate = new PromptTemplate(PROMPT_FEEDBACK_USER_TEMPLATE);
+            Prompt prompt = promptTemplate.create(Map.of("content", content));
+
+            String result = chatClient.prompt(prompt)
+                    .system(PROMPT_FEEDBACK_SYSTEM_MESSAGE)
+                    .call()
+                    .content();
+
+            return result != null ? result.trim() : "프롬프트를 분석하는 중 문제가 발생했어요.";
+
+        } catch (Exception e) {
+            System.err.println("프롬프트 피드백 생성 실패: " + e.getMessage());
+            return "피드백을 생성하는 중 오류가 발생했어요.";
+        }
+    }
 
 
 

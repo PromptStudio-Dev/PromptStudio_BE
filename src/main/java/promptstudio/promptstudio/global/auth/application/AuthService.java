@@ -120,4 +120,5 @@ public class AuthService {
 
         return googleIdTokenVerifierClient.verify(tokenRes.getIdToken());
     }
+
 }

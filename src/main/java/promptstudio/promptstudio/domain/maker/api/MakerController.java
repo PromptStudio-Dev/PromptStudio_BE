@@ -84,4 +84,14 @@ public class MakerController {
         TextUpgradeResponse response = makerService.reupgradeText(request);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/{makerId}/feedback")
+    @Operation(summary = "프롬프트 피드백", description = "현재 프롬프트에 대한 피드백을 제공합니다.")
+    public ResponseEntity<PromptFeedbackResponse> getPromptFeedback(
+            @PathVariable Long makerId) {
+
+        PromptFeedbackResponse response = makerService.getPromptFeedback(makerId);
+        return ResponseEntity.ok(response);
+    }
+
 }

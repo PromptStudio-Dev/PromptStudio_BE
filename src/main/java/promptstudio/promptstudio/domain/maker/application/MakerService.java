@@ -15,4 +15,6 @@ public interface MakerService {
     TextUpgradeResponse upgradeText(TextUpgradeRequest request);
 
     TextUpgradeResponse reupgradeText(TextReupgradeRequest request);
+
+    PromptFeedbackResponse getPromptFeedback(Long makerId);
 }
