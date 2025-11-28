@@ -444,4 +444,48 @@ public class PromptServiceImpl implements PromptService {
 
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> searchLikedPrompts(
+            Long memberId,
+            String category,
+            String query
+    ) {
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        if (query == null || query.isBlank()) {
+            return promptRepository.findLikedPromptsByMemberId(memberId, category);
+        }
+
+        return promptRepository.searchLikedPromptsByMemberId(memberId, category, query);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PromptCardNewsResponse> searchMyPrompts(
+            Long memberId,
+            String category,
+            String visibility,
+            String query
+    ) {
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("멤버가 존재하지 않습니다.");
+        }
+
+        Boolean visible = switch (visibility) {
+            case "all" -> null;
+            case "public" -> true;
+            case "private" -> false;
+            default -> throw new BadRequestException("잘못된 visibility 값: " + visibility);
+        };
+
+        if (query == null || query.isBlank()) {
+            return promptRepository.findMyPromptsWithCategory(memberId, category, visible);
+        }
+
+        return promptRepository.searchMyPromptsWithCategory(memberId, category, visible, query);
+    }
+
 }
