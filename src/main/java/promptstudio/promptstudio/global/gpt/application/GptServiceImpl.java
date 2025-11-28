@@ -934,6 +934,11 @@ OUTPUT: Clear structured bullet points covering all categories above. 200-300 wo
                     .call()
                     .content();
 
+            jsonResponse = jsonResponse
+                    .replaceAll("```json\\s*", "")
+                    .replaceAll("```\\s*", "")
+                    .trim();
+
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
             String type = jsonNode.get("type").asText();
 
