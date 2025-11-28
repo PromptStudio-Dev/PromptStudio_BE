@@ -3,9 +3,14 @@ package promptstudio.promptstudio.domain.maker.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import promptstudio.promptstudio.domain.history.domain.entity.History;
+import promptstudio.promptstudio.domain.history.domain.repository.HistoryRepository;
 import promptstudio.promptstudio.domain.maker.domain.entity.Maker;
 import promptstudio.promptstudio.domain.maker.domain.entity.MakerImage;
 import promptstudio.promptstudio.domain.maker.domain.repository.MakerRepository;
@@ -33,6 +38,7 @@ public class MakerServiceImpl implements MakerService {
     private final S3StorageService s3StorageService;
     private final GptService gptService;
     private final FeedbackRateLimiter feedbackRateLimiter;
+    private final HistoryRepository historyRepository;
 
     @Override
     @Transactional
@@ -319,6 +325,62 @@ public class MakerServiceImpl implements MakerService {
 
         return PromptFeedbackResponse.builder()
                 .feedback(feedback)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MakerPageResponse getMyMakers(Long memberId, boolean hasHistory, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Maker> makerPage;
+        if (hasHistory) {
+            makerPage = makerRepository.findByMemberIdWithHistory(memberId, pageable);
+        } else {
+            makerPage = makerRepository.findByMemberIdWithoutHistory(memberId, pageable);
+        }
+
+        List<MakerListResponse> makers = makerPage.getContent().stream()
+                .map(maker -> buildMakerListResponse(maker, hasHistory))
+                .collect(Collectors.toList());
+
+        return MakerPageResponse.builder()
+                .makers(makers)
+                .currentPage(makerPage.getNumber())
+                .totalPages(makerPage.getTotalPages())
+                .totalElements(makerPage.getTotalElements())
+                .hasNext(makerPage.hasNext())
+                .build();
+    }
+
+    private MakerListResponse buildMakerListResponse(Maker maker, boolean hasHistory) {
+        if (hasHistory) {
+            // 가장 최신 History 조회
+            History latestHistory = historyRepository.findFirstByMakerIdOrderByIdDesc(maker.getId())
+                    .orElse(null);
+
+            if (latestHistory != null) {
+                return MakerListResponse.builder()
+                        .makerId(maker.getId())
+                        .title(maker.getTitle())
+                        .resultType(latestHistory.getResultType().name())
+                        .resultText(latestHistory.getResultText())
+                        .resultImageUrl(latestHistory.getResultImageUrl())
+                        .content(null)
+                        .updatedAt(maker.getUpdatedAt())
+                        .build();
+            }
+        }
+
+        // hasHistory=false인 경우
+        return MakerListResponse.builder()
+                .makerId(maker.getId())
+                .title(maker.getTitle())
+                .resultType(null)
+                .resultText(null)
+                .resultImageUrl(null)
+                .content(maker.getContent())
+                .updatedAt(maker.getUpdatedAt())
                 .build();
     }
 }

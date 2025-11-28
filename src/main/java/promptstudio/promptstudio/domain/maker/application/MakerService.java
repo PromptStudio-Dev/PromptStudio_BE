@@ -17,4 +17,6 @@ public interface MakerService {
     TextUpgradeResponse reupgradeText(TextReupgradeRequest request);
 
     PromptFeedbackResponse getPromptFeedback(Long makerId);
+
+    MakerPageResponse getMyMakers(Long memberId, boolean hasHistory, int page, int size);
 }

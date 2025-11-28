@@ -94,4 +94,16 @@ public class MakerController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("")
+    @Operation(summary = "메이커 전체 조회", description = "내 메이커 목록을 조회합니다.")
+    public ResponseEntity<MakerPageResponse> getMyMakers(
+            @AuthenticationPrincipal Long memberId,
+            @RequestParam(value = "hasHistory") boolean hasHistory,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "9") int size) {
+
+        MakerPageResponse response = makerService.getMyMakers(memberId, hasHistory, page, size);
+        return ResponseEntity.ok(response);
+    }
+
 }
