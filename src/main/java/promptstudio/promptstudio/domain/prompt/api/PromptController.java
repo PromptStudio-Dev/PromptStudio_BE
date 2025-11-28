@@ -122,4 +122,23 @@ public class PromptController {
         promptService.deletePrompt(memberId, promptId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/prompts/likes/search")
+    @Operation(summary = "좋아요한 프롬프트 검색", description = "좋아요한 프롬프트 검색 API")
+    public ResponseEntity<List<PromptCardNewsResponse>> searchLikedPrompts(@AuthenticationPrincipal Long memberId,
+                                                                           @RequestParam(value = "category", defaultValue = "전체") String category,
+                                                                           @RequestParam("q") String query) {
+        List<PromptCardNewsResponse> response = promptService.searchLikedPrompts(memberId, category, query);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/prompts/me/search")
+    @Operation(summary = "내 프롬프트 검색", description = "내 프롬프트 검색 API")
+    public ResponseEntity<List<PromptCardNewsResponse>> searchMyPrompts(@AuthenticationPrincipal Long memberId,
+                                                                        @RequestParam(value = "category", defaultValue = "전체") String category,
+                                                                        @RequestParam(value = "visibility", defaultValue = "all") String visibility,
+                                                                        @RequestParam("q") String query) {
+        List<PromptCardNewsResponse> response = promptService.searchMyPrompts(memberId, category, visibility, query);
+        return ResponseEntity.ok(response);
+    }
 }

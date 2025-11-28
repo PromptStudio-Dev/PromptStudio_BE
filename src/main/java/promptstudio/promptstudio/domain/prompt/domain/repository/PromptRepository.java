@@ -381,5 +381,90 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
             Pageable pageable
     );
 
+    @Query("""
+        select new promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse(
+            p.id,
+            p.member.id,
+            p.category,
+            p.aiEnvironment,
+            p.title,
+            p.introduction,
+            p.imageUrl,
+            true,
+            count(lAll.id)
+        )
+        from Likes lMine
+        join lMine.prompt p
+        left join Likes lAll
+            on lAll.prompt.id = p.id
+        where lMine.member.id = :memberId
+          and p.visible = true
+          and (:category = '전체' or p.category = :category)
+          and (
+                lower(p.title) like lower(concat('%', :query, '%'))
+             or lower(p.introduction) like lower(concat('%', :query, '%'))
+             or lower(p.content) like lower(concat('%', :query, '%'))
+          )
+        group by p.id,
+                 p.member.id,
+                 p.category,
+                 p.aiEnvironment,
+                 p.title,
+                 p.introduction,
+                 p.imageUrl,
+                 lMine.createdAt,
+                 p.createdAt
+        order by lMine.createdAt desc
+    """)
+    List<PromptCardNewsResponse> searchLikedPromptsByMemberId(
+            @Param("memberId") Long memberId,
+            @Param("category") String category,
+            @Param("query") String query
+    );
+
+    @Query("""
+        select new promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse(
+            p.id,
+            p.member.id,
+            p.category,
+            p.aiEnvironment,
+            p.title,
+            p.introduction,
+            p.imageUrl,
+            case when max(case when lMine.id is not null then 1 else 0 end) = 1
+                 then true else false end,
+            count(lAll.id)
+        )
+        from Prompt p
+        left join Likes lAll
+            on lAll.prompt.id = p.id
+        left join Likes lMine
+            on lMine.prompt.id = p.id
+           and lMine.member.id = :memberId
+        where p.member.id = :memberId
+          and (:visible is null or p.visible = :visible)
+          and (:category = '전체' or p.category = :category)
+          and (
+                lower(p.title) like lower(concat('%', :query, '%'))
+             or lower(p.introduction) like lower(concat('%', :query, '%'))
+             or lower(p.content) like lower(concat('%', :query, '%'))
+          )
+        group by p.id,
+                 p.member.id,
+                 p.category,
+                 p.aiEnvironment,
+                 p.title,
+                 p.introduction,
+                 p.imageUrl,
+                 p.createdAt
+        order by p.createdAt desc
+    """)
+    List<PromptCardNewsResponse> searchMyPromptsWithCategory(
+            @Param("memberId") Long memberId,
+            @Param("category") String category,
+            @Param("visible") Boolean visible,
+            @Param("query") String query
+    );
+
 
 }
