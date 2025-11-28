@@ -478,7 +478,7 @@ public class PromptServiceImpl implements PromptService {
             case "all" -> null;
             case "public" -> true;
             case "private" -> false;
-            default -> throw new IllegalArgumentException("잘못된 visibility 값: " + visibility);
+            default -> throw new BadRequestException("잘못된 visibility 값: " + visibility);
         };
 
         if (query == null || query.isBlank()) {
