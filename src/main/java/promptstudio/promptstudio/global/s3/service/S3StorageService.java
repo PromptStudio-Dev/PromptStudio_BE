@@ -35,7 +35,7 @@ public class S3StorageService {
     @Value("${app.s3.public-read:false}")
     private boolean publicRead;
 
-    private static final Set<String> ALLOWED = Set.of("jpg", "jpeg", "png", "webp");
+    private static final Set<String> ALLOWED = Set.of("jpg", "jpeg", "png", "webp", "gif", "bmp", "svg", "heic", "heif");
 
     public String uploadImage(MultipartFile file, String keyPrefix) {
         if (file == null || file.isEmpty()) {
@@ -46,7 +46,7 @@ public class S3StorageService {
         String ext = (original != null && original.contains(".")) ?
                 original.substring(original.lastIndexOf('.') + 1).toLowerCase() : "";
         if (!ALLOWED.contains(ext)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미지 확장자만 허용됩니다. (jpg, jpeg, png, webp)");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미지 확장자만 허용됩니다. (jpg, jpeg, png, webp, gif, bmp, svg, heic, heif)");
         }
 
         String key = "%s/%s/%s.%s".formatted(
