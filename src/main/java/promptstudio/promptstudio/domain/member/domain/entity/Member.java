@@ -1,5 +1,6 @@
 package promptstudio.promptstudio.domain.member.domain.entity;
 
+import promptstudio.promptstudio.domain.prompt.dto.PromptUpdateRequest;
 import promptstudio.promptstudio.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -26,6 +27,10 @@ public class Member extends BaseEntity {
 
     @Column
     private String introduction;
+
+    public void updateIntroduction(String introduction) {
+        this.introduction = introduction;
+    }
 
     @Builder
     public Member(String name,String email, String profileImageUrl, String introduction) {

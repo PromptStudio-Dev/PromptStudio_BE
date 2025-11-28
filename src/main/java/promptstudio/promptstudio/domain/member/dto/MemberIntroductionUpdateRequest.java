@@ -5,8 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MemberResponse {
-    private String name;
-    private String profileImageUrl;
+public class MemberIntroductionUpdateRequest {
     private String introduction;
 }
