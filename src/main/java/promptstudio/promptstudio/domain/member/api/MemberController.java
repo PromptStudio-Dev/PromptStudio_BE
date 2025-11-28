@@ -5,15 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import promptstudio.promptstudio.domain.member.application.MemberService;
+import promptstudio.promptstudio.domain.member.dto.MemberIntroductionUpdateRequest;
+import promptstudio.promptstudio.domain.member.dto.MemberIntroductionUpdateResponse;
 import promptstudio.promptstudio.domain.member.dto.MemberResponse;
-import promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -27,6 +23,14 @@ public class MemberController {
     @Operation(summary = "유저 정보 조회", description = "유저 정보 조회 API")
     public ResponseEntity<MemberResponse> getMember(@AuthenticationPrincipal Long memberId) {
         MemberResponse response = memberService.getMember(memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/members/me")
+    @Operation(summary = "한줄소개 수정", description = "한줄소개 수정 API")
+    public ResponseEntity<MemberIntroductionUpdateResponse> updateIntroduction(@AuthenticationPrincipal Long memberId,
+                                                                               @RequestBody MemberIntroductionUpdateRequest request) {
+        MemberIntroductionUpdateResponse response = memberService.updateIntroduction(memberId, request);
         return ResponseEntity.ok(response);
     }
 }
