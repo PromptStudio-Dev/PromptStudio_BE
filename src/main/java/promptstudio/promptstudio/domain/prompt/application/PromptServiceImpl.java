@@ -163,13 +163,20 @@ public class PromptServiceImpl implements PromptService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PromptCardNewsResponse> getMyPrompts(Long memberId, String category) {
+    public List<PromptCardNewsResponse> getMyPrompts(Long memberId, String category, String visibility) {
 
         if (!memberRepository.existsById(memberId)) {
             throw new NotFoundException("멤버가 존재하지 않습니다.");
         }
 
-        return promptRepository.findMyPromptsWithCategory(memberId, category);
+        Boolean visible = switch (visibility) {
+            case "all" -> null;
+            case "public" -> true;
+            case "private" -> false;
+            default -> throw new BadRequestException("잘못된 visibility 값: " + visibility);
+        };
+
+        return promptRepository.findMyPromptsWithCategory(memberId, category, visible);
     }
 
     @Override

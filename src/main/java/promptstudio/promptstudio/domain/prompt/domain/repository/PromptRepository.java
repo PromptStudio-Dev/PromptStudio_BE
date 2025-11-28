@@ -279,7 +279,7 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
             on lMine.prompt.id = p.id
            and lMine.member.id = :memberId
         where p.member.id = :memberId
-          and p.visible = true
+          and (:visible is null or p.visible = :visible)
           and (:category = '전체' or p.category = :category)
         group by p.id,
                  p.member.id,
@@ -293,8 +293,11 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
     """)
     List<PromptCardNewsResponse> findMyPromptsWithCategory(
             @Param("memberId") Long memberId,
-            @Param("category") String category
+            @Param("category") String category,
+            @Param("visible") Boolean visible
     );
+
+
 
     @Modifying(clearAutomatically = false, flushAutomatically = false)
     @Query("""
