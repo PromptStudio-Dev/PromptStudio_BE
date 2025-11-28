@@ -38,38 +38,4 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    //TODO: 백엔드용 테스트용 구글 로그인
-    @Value("${google.client-id}")
-    private String clientId;
-
-    @Value("${google.redirect-uri}")
-    private String redirectUri;
-
-    @Profile("local")
-    @GetMapping("/google/login")
-    @Operation(summary = "[DEV] 구글 로그인 페이지", description = "브라우저에서 직접 구글 로그인")
-    public void googleLoginRedirect(HttpServletResponse response) throws IOException {
-        String googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth"
-                + "?client_id=" + clientId
-                + "&redirect_uri=" + redirectUri
-                + "&response_type=code"
-                + "&scope=email%20profile"
-                + "&access_type=offline";
-
-        response.sendRedirect(googleAuthUrl);
-    }
-
-    @Profile("local")
-    @GetMapping("/google/callback")
-    @Operation(summary = "[DEV] 구글 로그인 콜백", description = "구글 로그인 후 콜백 처리")
-    public ResponseEntity<GoogleLoginResponse> googleCallback(@RequestParam String code) {
-        GoogleLoginRequest request = new GoogleLoginRequest();
-        request.setCode(code);
-        request.setRedirectUri(redirectUri);
-
-        GoogleLoginResponse response = authService.loginWithGoogle(request);
-        return ResponseEntity.ok(response);
-    }
-    //TODO: 여기까지 전부 삭제해야함
-
 }
