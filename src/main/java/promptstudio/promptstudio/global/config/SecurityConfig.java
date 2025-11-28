@@ -42,6 +42,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/prompts/*/copy").permitAll()
 
                         .requestMatchers("/api/auth/google").permitAll()
+                        .requestMatchers("/api/auth/google/login").permitAll()
+                        .requestMatchers("/api/auth/google/callback").permitAll()
                         .requestMatchers("/api/auth/reissue").permitAll()
 
                         .requestMatchers("/actuator/**").permitAll()
