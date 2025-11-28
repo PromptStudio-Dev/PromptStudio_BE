@@ -100,17 +100,25 @@ public class PromptServiceImpl implements PromptService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PromptCardNewsResponse> getAllPrompts(Long memberId, String category) {
+    public List<PromptCardNewsResponse> getAllPrompts(Long memberId, String category, String sortBy) {
 
         if (memberId == null) {
-            return promptRepository.findAllOrderByLikeCountDescGuestWithCategory(category);
+            return switch (sortBy) {
+                case "like" -> promptRepository.findAllOrderByLikeCountDescGuestWithCategory(category);
+                case "desc" -> promptRepository.findAllOrderByCreatedAtDescGuestWithCategory(category);
+                default -> throw new BadRequestException("지원하지 않는 정렬 타입: " + sortBy);
+            };
         }
 
         if (!memberRepository.existsById(memberId)) {
             throw new NotFoundException("멤버가 존재하지 않습니다.");
         }
 
-        return promptRepository.findAllOrderByLikeCountDescWithCategory(memberId, category);
+        return switch (sortBy) {
+            case "like" -> promptRepository.findAllOrderByLikeCountDescWithCategory(memberId, category);
+            case "desc" -> promptRepository.findAllOrderByCreatedAtDescWithCategory(memberId, category);
+            default -> throw new BadRequestException("지원하지 않는 정렬 타입: " + sortBy);
+        };
     }
 
     @Override

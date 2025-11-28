@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PromptService {
     Long createPrompt(Long memberId, PromptCreateRequest request, MultipartFile file);
-    List<PromptCardNewsResponse> getAllPrompts(Long memberId, String category);
+    List<PromptCardNewsResponse> getAllPrompts(Long memberId, String category, String sortBy);
     List<PromptCardNewsResponse> getHotPrompts(Long memberId, String category);
     List<PromptCardNewsResponse> getLikedPrompts(Long memberId, String category);
     List<PromptCardNewsResponse> getMyPrompts(Long memberId, String category);

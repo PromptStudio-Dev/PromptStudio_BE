@@ -39,8 +39,9 @@ public class PromptController {
     @GetMapping("/prompts")
     @Operation(summary = "프롬프트 전체 조회", description = "프롬프트 전체 조회 API")
     public ResponseEntity<List<PromptCardNewsResponse>> getAllPrompts(@AuthenticationPrincipal Long memberId,
-                                                                      @RequestParam(value = "category", defaultValue = "전체") String category) {
-        List<PromptCardNewsResponse> response = promptService.getAllPrompts(memberId, category);
+                                                                      @RequestParam(value = "category", defaultValue = "전체") String category,
+                                                                      @RequestParam(value = "sort", defaultValue = "like") String sortBy) {
+        List<PromptCardNewsResponse> response = promptService.getAllPrompts(memberId, category, sortBy);
         return ResponseEntity.ok(response);
     }
 

@@ -131,6 +131,74 @@ public interface PromptRepository extends JpaRepository<Prompt, Long> {
             p.title,
             p.introduction,
             p.imageUrl,
+            case when max(case when l2.id is not null then 1 else 0 end) = 1
+                 then true else false end,
+            count(l.id)
+        )
+        from Prompt p
+        left join Likes l
+            on l.prompt.id = p.id
+        left join Likes l2
+            on l2.prompt.id = p.id
+           and l2.member.id = :memberId
+        where p.visible = true
+          and (:category = '전체' or p.category = :category)
+        group by p.id,
+                 p.member.id,
+                 p.category,
+                 p.aiEnvironment,
+                 p.title,
+                 p.introduction,
+                 p.imageUrl,
+                 p.createdAt
+        order by p.createdAt desc
+    """)
+    List<PromptCardNewsResponse> findAllOrderByCreatedAtDescWithCategory(
+            @Param("memberId") Long memberId,
+            @Param("category") String category
+    );
+
+    @Query("""
+        select new promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse(
+            p.id,
+            p.member.id,
+            p.category,
+            p.aiEnvironment,
+            p.title,
+            p.introduction,
+            p.imageUrl,
+            false,
+            count(l.id)
+        )
+        from Prompt p
+        left join Likes l
+            on l.prompt.id = p.id
+        where p.visible = true
+          and (:category = '전체' or p.category = :category)
+        group by p.id,
+                 p.member.id,
+                 p.category,
+                 p.aiEnvironment,
+                 p.title,
+                 p.introduction,
+                 p.imageUrl,
+                 p.createdAt
+        order by p.createdAt desc
+    """)
+    List<PromptCardNewsResponse> findAllOrderByCreatedAtDescGuestWithCategory(
+            @Param("category") String category
+    );
+
+
+    @Query("""
+        select new promptstudio.promptstudio.domain.prompt.dto.PromptCardNewsResponse(
+            p.id,
+            p.member.id,
+            p.category,
+            p.aiEnvironment,
+            p.title,
+            p.introduction,
+            p.imageUrl,
             false,
             count(lThisWeek.id)
         )
