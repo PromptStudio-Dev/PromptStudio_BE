@@ -19,4 +19,6 @@ public interface MakerService {
     PromptFeedbackResponse getPromptFeedback(Long makerId);
 
     MakerPageResponse getMyMakers(Long memberId, boolean hasHistory, int page, int size);
+
+    void deleteMaker(Long memberId, Long makerId);
 }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.history.domain.entity.History;
+import promptstudio.promptstudio.domain.history.domain.entity.HistorySnapshotImage;
+import promptstudio.promptstudio.domain.history.domain.entity.ResultType;
 import promptstudio.promptstudio.domain.history.domain.repository.HistoryRepository;
 import promptstudio.promptstudio.domain.maker.domain.entity.Maker;
 import promptstudio.promptstudio.domain.maker.domain.entity.MakerImage;
@@ -18,6 +20,7 @@ import promptstudio.promptstudio.domain.maker.dto.*;
 import promptstudio.promptstudio.domain.member.domain.entity.Member;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
 import promptstudio.promptstudio.global.config.FeedbackRateLimiter;
+import promptstudio.promptstudio.global.exception.http.ForbiddenException;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
 import promptstudio.promptstudio.global.gpt.application.GptService;
@@ -383,4 +386,41 @@ public class MakerServiceImpl implements MakerService {
                 .updatedAt(maker.getUpdatedAt())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public void deleteMaker(Long memberId, Long makerId) {
+        // 1. Maker 조회 (with images)
+        Maker maker = makerRepository.findByIdWithImages(makerId)
+                .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
+
+        // 2. 권한 검증 (본인 확인)
+        if (!maker.getMember().getId().equals(memberId)) {
+            throw new ForbiddenException("삭제 권한이 없습니다.");
+        }
+
+        // 3. MakerImage S3 삭제
+        for (MakerImage image : maker.getImages()) {
+            s3StorageService.deleteImage(image.getImageUrl());
+        }
+
+        // 4. History 조회 (with SnapshotImages)
+        List<History> histories = historyRepository.findAllByMakerIdWithImages(makerId);
+
+        for (History history : histories) {
+            // 5. History resultImageUrl S3 삭제 (IMAGE 타입만)
+            if (history.getResultType() == ResultType.IMAGE && history.getResultImageUrl() != null) {
+                s3StorageService.deleteImage(history.getResultImageUrl());
+            }
+
+            // 6. HistorySnapshotImage S3 삭제
+            for (HistorySnapshotImage snapshotImage : history.getSnapshotImages()) {
+                s3StorageService.deleteImage(snapshotImage.getImageUrl());
+            }
+        }
+
+        // 7. Maker 삭제 (CASCADE로 MakerImage, History, HistorySnapshotImage DB 자동 삭제)
+        makerRepository.delete(maker);
+    }
+
 }
