@@ -28,8 +28,8 @@ public class Member extends BaseEntity {
     @Column
     private String introduction;
 
-    public void updateIntroduction(String request) {
-        this.introduction = request;
+    public void updateIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 
     @Builder
