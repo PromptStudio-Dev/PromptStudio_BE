@@ -64,8 +64,9 @@ public class PromptController {
     @GetMapping("/prompts/me")
     @Operation(summary = "내 프롬프트 조회", description = "내 프롬프트 조회 API")
     public ResponseEntity<List<PromptCardNewsResponse>> getMyPrompts(@AuthenticationPrincipal Long memberId,
-                                                                     @RequestParam(value = "category", defaultValue = "전체") String category) {
-        List<PromptCardNewsResponse> response = promptService.getMyPrompts(memberId, category);
+                                                                     @RequestParam(value = "category", defaultValue = "전체") String category,
+                                                                     @RequestParam(value = "visibility", defaultValue = "all") String visibility) {
+        List<PromptCardNewsResponse> response = promptService.getMyPrompts(memberId, category, visibility);
         return ResponseEntity.ok(response);
     }
 
