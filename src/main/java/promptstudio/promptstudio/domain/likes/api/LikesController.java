@@ -22,7 +22,7 @@ public class LikesController {
 
     @PostMapping("/prompts/{promptId}/likes")
     @Operation(summary = "좋아요 토글", description = "좋아요 토글 API")
-    public ResponseEntity<LikesToggleResponse> toggleHeart(
+    public ResponseEntity<LikesToggleResponse> toggleLikes(
             @AuthenticationPrincipal Long memberId,
             @PathVariable("promptId") Long promptId) {
         LikesToggleResponse response = likesService.toggleLikes(memberId, promptId);
