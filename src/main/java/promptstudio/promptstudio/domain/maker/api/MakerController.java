@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import promptstudio.promptstudio.domain.maker.application.MakerService;
@@ -21,10 +22,10 @@ public class MakerController {
 
     private final MakerService makerService;
 
-    @PostMapping("/members/{memberId}")
+    @PostMapping("")
     @Operation(summary = "메이커 생성", description = "새로운 메이커를 생성합니다.")
     public ResponseEntity<MakerCreateResponse> createMaker(
-            @PathVariable Long memberId) {
+            @AuthenticationPrincipal Long memberId) {
 
         Long makerId = makerService.createMaker(memberId);
 
