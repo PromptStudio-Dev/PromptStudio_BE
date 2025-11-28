@@ -8,6 +8,8 @@ import promptstudio.promptstudio.domain.member.domain.entity.SocialLogin;
 import promptstudio.promptstudio.domain.member.domain.entity.SocialProvider;
 import promptstudio.promptstudio.domain.member.domain.repository.MemberRepository;
 import promptstudio.promptstudio.domain.member.domain.repository.SocialLoginRepository;
+import promptstudio.promptstudio.domain.member.dto.MemberResponse;
+import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.google.dto.GoogleUserInfo;
 
 @Service
@@ -43,5 +45,20 @@ public class MemberServiceImpl implements MemberService {
 
                     return member;
                 });
+    }
+
+    @Override
+    public MemberResponse getMember(Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("멤버가 존재하지 않습니다."));
+
+        MemberResponse response = new MemberResponse();
+
+        response.setName(member.getName());
+        response.setProfileImageUrl(member.getProfileImageUrl());
+        response.setIntroduction(member.getIntroduction());
+
+        return response;
     }
 }
