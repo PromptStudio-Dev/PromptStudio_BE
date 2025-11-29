@@ -3,7 +3,6 @@ package promptstudio.promptstudio.domain.prompt.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,6 +18,7 @@ public class PromptResponse {
     private String content;
     private String imageUrl;
     private String result;
+    private boolean imageRequired;
     private long likeCount;
     private long copyCount;
     private long viewCount;
