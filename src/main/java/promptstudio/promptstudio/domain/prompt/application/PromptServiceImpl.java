@@ -309,6 +309,7 @@ public class PromptServiceImpl implements PromptService {
         dto.setContent(prompt.getContent());
         dto.setImageUrl(prompt.getImageUrl());
         dto.setResult(prompt.getResult());
+        dto.setImageRequired(prompt.isImageRequired());
         dto.setLikeCount(likeCount);
         dto.setLiked(liked);
         dto.setCopyCount(prompt.getCopyCount());
