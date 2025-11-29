@@ -15,6 +15,7 @@ public class PromptResponse {
     private String introduction;
     private String aiEnvironment;
     private String category;
+    private boolean visible;
     private String content;
     private String imageUrl;
     private String result;

@@ -311,6 +311,7 @@ public class PromptServiceImpl implements PromptService {
         dto.setIntroduction(prompt.getIntroduction());
         dto.setAiEnvironment(prompt.getAiEnvironment());
         dto.setCategory(prompt.getCategory());
+        dto.setVisible(prompt.isVisible());
         dto.setContent(prompt.getContent());
         dto.setImageUrl(prompt.getImageUrl());
         dto.setResult(prompt.getResult());
