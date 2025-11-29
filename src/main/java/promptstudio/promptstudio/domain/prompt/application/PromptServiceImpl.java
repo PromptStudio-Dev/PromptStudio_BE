@@ -60,6 +60,11 @@ public class PromptServiceImpl implements PromptService {
             );
         }
 
+        String result = request.getResult();
+        if (result != null && result.isEmpty()) {
+            result = null;
+        }
+
         //프롬프트 저장
         Prompt prompt = Prompt.builder()
                 .member(member)
@@ -69,7 +74,7 @@ public class PromptServiceImpl implements PromptService {
                 .category(request.getCategory())
                 .visible(request.isVisible())
                 .imageUrl(imageUrl)
-                .result(request.getResult())
+                .result(result)
                 .imageRequired(request.isImageRequired())
                 .aiEnvironment(request.getAiEnvironment())
                 .copyCount(0)
@@ -306,6 +311,7 @@ public class PromptServiceImpl implements PromptService {
         dto.setIntroduction(prompt.getIntroduction());
         dto.setAiEnvironment(prompt.getAiEnvironment());
         dto.setCategory(prompt.getCategory());
+        dto.setVisible(prompt.isVisible());
         dto.setContent(prompt.getContent());
         dto.setImageUrl(prompt.getImageUrl());
         dto.setResult(prompt.getResult());

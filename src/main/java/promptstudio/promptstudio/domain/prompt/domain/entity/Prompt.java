@@ -68,7 +68,14 @@ public class Prompt extends BaseEntity {
         if (request.getContent() != null) this.content = request.getContent();
         if (request.getCategory() != null) this.category = request.getCategory();
         if (request.getVisible() != null) this.visible = request.getVisible();
-        if (request.getResult() != null) this.result = request.getResult();
+        if (request.getResult() != null) {
+            String r = request.getResult();
+            if (r.isEmpty()) {
+                this.result = null;
+            } else {
+                this.result = r;
+            }
+        }
         if (request.getImageRequired() != null) this.imageRequired = request.getImageRequired();
         if (request.getAiEnvironment() != null) this.aiEnvironment = request.getAiEnvironment();
     }
