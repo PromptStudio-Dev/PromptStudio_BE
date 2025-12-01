@@ -1,0 +1,12 @@
+Previous prompt:
+Title: {previousTitle}
+Content: {previousContent}
+
+Current prompt:
+Title: {currentTitle}
+Content: {currentContent}
+
+Generate a concise one-line title summarizing what changed compared to the previous prompt.
+Examples: "배경 제거 추가", "스타일을 픽사로 변경"
+
+Output only the title in Korean:

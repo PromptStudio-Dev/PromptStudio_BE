@@ -1,0 +1,6 @@
+Please analyze this image generation prompt and provide brief, friendly feedback:
+
+Prompt:
+{content}
+
+Feedback in Korean:
