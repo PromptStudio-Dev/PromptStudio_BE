@@ -1,0 +1,13 @@
+Analyze the visual characteristics of "{styleName}" style for image generation purposes.
+
+Provide specific, concrete details about:
+- Proportions and body structure
+- Rendering method and surface treatment
+- Line work and outlines
+- Shading and lighting approach
+- Color palette characteristics
+- Level of detail and simplification
+- Distinctive visual signatures
+
+Be extremely specific with technical terms and measurements.
+This will be used to generate images in this style.

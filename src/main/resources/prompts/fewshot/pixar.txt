@@ -1,0 +1,16 @@
+EXAMPLE 1: PIXAR STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with balanced face shape, warm skin tone, expressive eyes, shoulder-length wavy hair, teal shirt, relaxed friendly pose."
+
+OUTPUT:
+"A character rendered in a Pixar‑inspired 3D animation style, based on the provided traits. The balanced facial structure and warm skin tone are represented with smooth stylized realism and subtle subsurface scattering. Expressive eyes receive soft reflections and rounded highlights. Shoulder‑length wavy hair is translated into detailed but stylized strands with gentle simulated movement. The teal shirt keeps its color while gaining soft fabric shading. The relaxed friendly pose is maintained exactly. Lighting uses a warm key light and soft fill to create cinematic depth, with smooth gradients and soft rim accents. Surfaces have clean glossy finishes typical of modern high‑end animation, producing a bright, inviting character while preserving the original pose, clothing color, and overall silhouette."
+
+═══════════════════════════════════════
+EXAMPLE 2: PIXAR STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with rounded face, fair skin, bright eyes, long straight light-colored hair, pink top, energetic enthusiastic pose."
+
+OUTPUT:
+"A Pixar‑inspired 3D character reflecting the described features in stylized form. The rounded face is rendered with soft contours and gentle shading, fair skin treated with warm subsurface scattering for natural luminance. Bright eyes become large expressive shapes with subtle internal reflections. Long straight light-colored hair is represented through stylized layered strands with smooth motion and soft highlights. The pink top retains its color while gaining lightly textured shading. The energetic enthusiastic pose is preserved exactly. Lighting includes warm directional highlights and subtle cool rim accents, creating a polished cinematic look. Colors are vivid yet natural, with smooth gradients and clean geometry typical of contemporary feature-quality animation."

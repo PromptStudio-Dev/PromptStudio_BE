@@ -1,0 +1,31 @@
+Learn from these EXAMPLES how to transform photos into {style} style.
+
+═══════════════════════════════════════
+STYLE EXAMPLES
+═══════════════════════════════════════
+
+{fewshotExamples}
+
+═══════════════════════════════════════
+NOW YOUR TURN
+═══════════════════════════════════════
+
+TARGET STYLE: {style}
+
+USER REQUEST: {userPrompt}
+
+VISION ANALYSIS:
+{imageAnalysis}
+
+═══════════════════════════════════════
+
+TASK:
+Follow the EXAMPLE pattern for {style} style above.
+
+1. Start with identity features from vision analysis
+2. State that features are "preserved exactly as described"
+3. Add style rendering while maintaining all identity features
+4. Output ONE flowing paragraph, 150-200 words
+5. Keep it simple and natural like the examples
+
+OUTPUT ONLY THE DALL-E PROMPT.

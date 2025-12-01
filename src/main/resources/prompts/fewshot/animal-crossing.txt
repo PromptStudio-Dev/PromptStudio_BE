@@ -1,0 +1,16 @@
+EXAMPLE 1: ANIMAL CROSSING STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with soft face shape, light skin, simple expressive eyes, long dark hair, blue jacket, cheerful pose with hand near cheek."
+
+OUTPUT:
+"A stylized chibi character inspired by the Animal Crossing aesthetic, based on the provided description. The soft face shape becomes a rounded simplified form, light skin rendered with matte pastel tones, and expressive eyes enlarged into signature round stylized shapes. Long dark hair becomes smooth chunky sections retaining the original length and flow. The blue jacket is simplified into clean geometric shapes. The cheerful pose with the hand near the cheek is preserved exactly. Chibi proportions follow a large head and small compact body with rounded limbs. Surfaces appear soft and toy‑like with uniform lighting, pastel coloring, and smooth contours. The final character keeps the recognizable silhouette, pose, and color scheme while expressing a friendly, playful mood."
+
+═══════════════════════════════════════
+EXAMPLE 2: ANIMAL CROSSING STYLE
+═══════════════════════════════════════
+INPUT:
+"Person with angular face shape, tan skin, narrow eyes, short textured dark hair, green hoodie, relaxed confident stance."
+
+OUTPUT:
+"A stylized chibi figure inspired by the Animal Crossing aesthetic, reflecting the original description in simplified form. The angular face shape is adapted into a rounded chibi version while still hinting at the original structure. Tan skin is represented with soft peach‑tan pastel coloring, and narrow eyes are translated into simple expressive shapes. Short textured dark hair becomes low‑detail chunky segments. The green hoodie is rendered as a single smooth shape with minimal folds. The relaxed confident stance is preserved within chibi body proportions featuring a large head, compact torso, and short rounded limbs. Lighting is soft and even with matte plastic‑like textures. Colors remain bright and pastel, keeping the friendly and approachable style consistent."
