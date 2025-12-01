@@ -25,7 +25,10 @@ public enum PromptType {
     VISION_ANALYSIS_SYSTEM("prompts/vision/analysis-system.txt"),
     VISION_DALLE_EXPERT_SYSTEM("prompts/vision/dalle-expert-system.txt"),
     VISION_STYLE_ANALYZER_SYSTEM("prompts/vision/style-analyzer-system.txt"),
+    VISION_STYLE_ANALYZER_USER("prompts/vision/style-analyzer-user-template.txt"),
     VISION_FEWSHOT_TEMPLATE("prompts/vision/fewshot-template.txt"),
+    VISION_NO_STYLE_TEMPLATE("prompts/vision/no-style-template.txt"),
+    VISION_UNKNOWN_STYLE_TEMPLATE("prompts/vision/unknown-style-template.txt"),
 
     // 히스토리
     HISTORY_SYSTEM("prompts/history/system.txt"),

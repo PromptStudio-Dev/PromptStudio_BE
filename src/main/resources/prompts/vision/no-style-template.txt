@@ -1,0 +1,45 @@
+Create a DALL-E 3 prompt that maintains the original photographic/realistic style.
+
+USER'S REQUEST:
+{userPrompt}
+
+DETAILED IMAGE ANALYSIS:
+{imageAnalysis}
+
+═══════════════════════════════════════
+
+TASK:
+Create a single detailed DALL-E 3 prompt (250-350 words) that:
+
+1. PRESERVES EXACT CHARACTER APPEARANCE:
+   - All facial features (face shape, eyes, nose, mouth, jaw)
+   - Exact hair description (color, length, texture, style)
+   - Clothing and accessories
+   - Pose and expression
+
+2. MAINTAINS REALISTIC/PHOTOGRAPHIC STYLE:
+   - Keep natural realistic proportions
+   - Use photographic lighting and rendering
+   - Realistic skin texture and details
+   - Natural color palette
+   - High-quality photography aesthetic
+
+3. FULFILL USER'S SPECIFIC REQUEST:
+   - If user asks to "remove background" → describe with clean/simple background
+   - If user asks to "change lighting" → adjust lighting description
+   - If user asks for specific modifications → apply only those changes
+   - Otherwise maintain everything as close to original as possible
+
+4. TECHNICAL QUALITY:
+   - "Professional photography"
+   - "High resolution, sharp focus"
+   - "Natural lighting"
+   - Specific camera/lens details if appropriate
+
+CRITICAL RULES:
+- NO cartoon, anime, or artistic stylization unless requested
+- Maintain photorealistic quality
+- Single dense paragraph, no line breaks
+- End with: "Photorealistic style maintaining exact identifying characteristics from analysis."
+
+OUTPUT ONLY THE DALL-E PROMPT.
