@@ -105,7 +105,7 @@ public class S3StorageService {
     }
 
     private String extractKeyFromUrl(String url) {
-        // 쿼리 파라미터 먼저 제거
+
         String cleanUrl = url;
         int queryIndex = url.indexOf('?');
         if (queryIndex > 0) {
@@ -115,7 +115,15 @@ public class S3StorageService {
         String amazonDomain = "amazonaws.com/";
         int keyStartIndex = cleanUrl.indexOf(amazonDomain);
         if (keyStartIndex > 0) {
-            return cleanUrl.substring(keyStartIndex + amazonDomain.length());
+            String extracted = cleanUrl.substring(keyStartIndex + amazonDomain.length());
+
+            // Path 스타일인 경우 bucket 이름 제거
+            if (extracted.startsWith(bucket + "/")) {
+                extracted = extracted.substring(bucket.length() + 1);
+            }
+
+            System.out.println("URL에서 추출된 key: " + extracted);
+            return extracted;
         }
 
         int lastSlash = cleanUrl.lastIndexOf('/');
