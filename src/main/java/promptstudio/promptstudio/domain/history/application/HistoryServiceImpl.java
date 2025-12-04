@@ -101,6 +101,8 @@ public class HistoryServiceImpl implements HistoryService {
                 .map(HistoryResponse::from)
                 .toList();
     }
+
+
     @Override
     @Transactional
     public HistoryDetailResponse restoreHistory(Long makerId, Long historyId) {
@@ -114,12 +116,15 @@ public class HistoryServiceImpl implements HistoryService {
             throw new NotFoundException("해당 메이커의 히스토리가 아닙니다.");
         }
 
-        for (MakerImage image : maker.getImages()) {
-            s3StorageService.deleteImage(image.getImageUrl());
-        }
+        // 1. 삭제할 이미지 URL 미리 저장
+        List<String> urlsToDelete = maker.getImages().stream()
+                .map(MakerImage::getImageUrl)
+                .toList();
 
+        // 2. DB에서 이미지 클리어
         maker.clearImages();
 
+        // 3. 복원 작업
         maker.updateTitle(history.getSnapshotTitle());
         maker.updateContent(history.getSnapshotContent());
 
@@ -135,6 +140,13 @@ public class HistoryServiceImpl implements HistoryService {
             maker.addImage(makerImage);
         }
 
+        // 4. 복사 완료 후 기존 이미지 S3에서 삭제
+        for (String url : urlsToDelete) {
+            s3StorageService.deleteImage(url);
+        }
+
         return HistoryDetailResponse.from(history);
     }
+
+
 }
