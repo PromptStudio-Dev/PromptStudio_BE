@@ -21,6 +21,8 @@ import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -116,15 +118,21 @@ public class HistoryServiceImpl implements HistoryService {
             throw new NotFoundException("해당 메이커의 히스토리가 아닙니다.");
         }
 
-        // 1. 삭제할 이미지 URL 미리 저장
+        // 1. 복원할 히스토리의 원본 URL 목록 (이건 절대 삭제하면 안 됨)
+        Set<String> snapshotUrls = history.getSnapshotImages().stream()
+                .map(HistorySnapshotImage::getImageUrl)
+                .collect(Collectors.toSet());
+
+        // 2. 삭제할 이미지 URL 미리 저장
         List<String> urlsToDelete = maker.getImages().stream()
                 .map(MakerImage::getImageUrl)
+                .filter(url -> !snapshotUrls.contains(url))  // 스냅샷 원본은 삭제 제외!
                 .toList();
 
-        // 2. DB에서 이미지 클리어
+        // 3. DB에서 이미지 클리어
         maker.clearImages();
 
-        // 3. 복원 작업
+        // 4. 복원 작업
         maker.updateTitle(history.getSnapshotTitle());
         maker.updateContent(history.getSnapshotContent());
 
@@ -140,13 +148,12 @@ public class HistoryServiceImpl implements HistoryService {
             maker.addImage(makerImage);
         }
 
-        // 4. 복사 완료 후 기존 이미지 S3에서 삭제
+        // 5. 복사 완료 후 기존 이미지 S3에서 삭제 (스냅샷 원본 제외)
         for (String url : urlsToDelete) {
             s3StorageService.deleteImage(url);
         }
 
         return HistoryDetailResponse.from(history);
     }
-
 
 }
