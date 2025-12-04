@@ -163,9 +163,16 @@ public class S3StorageService {
     private String copyWithinS3(String sourceUrl) {
         System.out.println("→ S3 내부 복사 방식");
 
-        // 기존 copyImage() 로직 그대로
         String sourceKey = extractKeyFromUrl(sourceUrl);
         System.out.println("추출된 sourceKey: " + sourceKey);
+
+        // 1. 원본 파일 존재 여부 확인
+        if (!doesObjectExist(sourceKey)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "원본 이미지가 S3에 존재하지 않습니다: " + sourceKey
+            );
+        }
 
         String ext = sourceKey.contains(".")
                 ? sourceKey.substring(sourceKey.lastIndexOf('.') + 1).toLowerCase()
@@ -178,6 +185,7 @@ public class S3StorageService {
         );
         System.out.println("새 key: " + newKey);
 
+        // 2. 복사 실행
         CopyObjectRequest copyRequest = CopyObjectRequest.builder()
                 .sourceBucket(bucket)
                 .sourceKey(sourceKey)
@@ -187,10 +195,33 @@ public class S3StorageService {
 
         s3Client.copyObject(copyRequest);
 
+        // 3. 복사 후 파일 존재 검증
+        if (!doesObjectExist(newKey)) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "이미지 복사 후 파일이 존재하지 않습니다: " + newKey
+            );
+        }
+
+        System.out.println("복사 완료 및 검증 성공: " + newKey);
+
         if (publicRead) {
             return "https://%s.s3.%s.amazonaws.com/%s".formatted(bucket, region, newKey);
         } else {
             return s3Template.createSignedGetURL(bucket, newKey, Duration.ofMinutes(15)).toString();
+        }
+    }
+
+    // 파일 존재 여부 확인 메서드 추가
+    private boolean doesObjectExist(String key) {
+        try {
+            s3Client.headObject(builder -> builder.bucket(bucket).key(key));
+            return true;
+        } catch (software.amazon.awssdk.services.s3.model.NoSuchKeyException e) {
+            return false;
+        } catch (Exception e) {
+            System.err.println("S3 파일 존재 확인 실패: " + key + " - " + e.getMessage());
+            return false;
         }
     }
 
@@ -202,8 +233,8 @@ public class S3StorageService {
             byte[] imageBytes = downloadImageFromUrl(externalUrl);
             System.out.println("다운로드 완료: " + imageBytes.length + " bytes");
 
-            // 2. 확장자 추출 (URL에서 또는 기본값)
-            String ext = "png";  // DALL-E는 보통 PNG
+            // 2. 확장자 추출
+            String ext = "png";
             if (externalUrl.contains(".png")) {
                 ext = "png";
             } else if (externalUrl.contains(".jpg") || externalUrl.contains(".jpeg")) {
@@ -222,9 +253,19 @@ public class S3StorageService {
             String contentType = ext.equals("png") ? "image/png" : "image/jpeg";
             String s3Url = uploadBytes(imageBytes, newKey, contentType, "max-age=31536000");
 
-            System.out.println("S3 업로드 완료: " + s3Url);
+            // 5. 업로드 후 파일 존재 검증
+            if (!doesObjectExist(newKey)) {
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "이미지 업로드 후 파일이 존재하지 않습니다: " + newKey
+                );
+            }
+
+            System.out.println("S3 업로드 완료 및 검증 성공: " + s3Url);
             return s3Url;
 
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
@@ -233,6 +274,7 @@ public class S3StorageService {
             );
         }
     }
+
 
     public byte[] downloadImageFromUrl(String imageUrl) {
         try {
