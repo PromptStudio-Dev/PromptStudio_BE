@@ -26,4 +26,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     List<History> findByMakerIdOrderByCreatedAtDesc(Long makerId);
 
     Optional<History> findFirstByMakerIdOrderByIdDesc(Long makerId);
+
+
 }
