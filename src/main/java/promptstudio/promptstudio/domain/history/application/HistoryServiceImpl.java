@@ -1,8 +1,6 @@
 package promptstudio.promptstudio.domain.history.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import promptstudio.promptstudio.domain.history.domain.entity.History;
@@ -16,9 +14,9 @@ import promptstudio.promptstudio.domain.maker.domain.repository.MakerRepository;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.gpt.application.GptService;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
+import promptstudio.promptstudio.domain.history.dto.ImageDownloadData;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -153,35 +151,32 @@ public class HistoryServiceImpl implements HistoryService {
         return HistoryDetailResponse.from(history);
     }
 
-
     @Override
     @Transactional(readOnly = true)
-    public ImageDownloadResponse getImageDownloadUrl(Long makerId, Long historyId) {
+    public ImageDownloadData downloadImage(Long makerId, Long historyId) {
         History history = historyRepository.findById(historyId)
                 .orElseThrow(() -> new NotFoundException("히스토리를 찾을 수 없습니다."));
 
-        // Maker 소속 검증
         if (!history.getMaker().getId().equals(makerId)) {
             throw new NotFoundException("해당 메이커의 히스토리가 아닙니다.");
         }
 
-        // 이미지 타입 검증
         if (history.getResultType() != ResultType.IMAGE || history.getResultImageUrl() == null) {
             throw new NotFoundException("이미지 결과가 없는 히스토리입니다.");
         }
 
-        // 파일명 생성 (history_123_20241213.png 형식)
-        String fileName = "promptstudio_history_%d_%s.png".formatted(
+        // S3에서 이미지 다운로드
+        byte[] imageBytes = s3StorageService.downloadImageFromUrl(history.getResultImageUrl());
+
+        String fileName = "promptstudio_%d_%s.png".formatted(
                 historyId,
                 history.getCreatedAt().toLocalDate().toString().replace("-", "")
         );
 
-        return ImageDownloadResponse.builder()
-                .historyId(historyId)
-                .downloadUrl(history.getResultImageUrl())
+        return ImageDownloadData.builder()
                 .fileName(fileName)
+                .imageBytes(imageBytes)
                 .build();
     }
-
 
 }

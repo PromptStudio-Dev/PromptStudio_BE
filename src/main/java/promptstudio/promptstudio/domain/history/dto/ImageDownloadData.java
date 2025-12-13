@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ImageDownloadResponse {
-    private Long historyId;
-    private String downloadUrl;
+public class ImageDownloadData {
     private String fileName;
+    private byte[] imageBytes;
 }

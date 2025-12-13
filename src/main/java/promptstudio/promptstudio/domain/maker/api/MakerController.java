@@ -88,9 +88,10 @@ public class MakerController {
     @PostMapping("/{makerId}/feedback")
     @Operation(summary = "프롬프트 피드백", description = "현재 프롬프트에 대한 피드백을 제공합니다.")
     public ResponseEntity<PromptFeedbackResponse> getPromptFeedback(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long makerId) {
 
-        PromptFeedbackResponse response = makerService.getPromptFeedback(makerId);
+        PromptFeedbackResponse response = makerService.getPromptFeedback(memberId, makerId);
         return ResponseEntity.ok(response);
     }
 
