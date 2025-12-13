@@ -11,6 +11,7 @@ public class PromptResponse {
     private Long memberId;
     private Long promptId;
     private String name;
+    private String profileImageUrl;
     private String title;
     private String introduction;
     private String aiEnvironment;
