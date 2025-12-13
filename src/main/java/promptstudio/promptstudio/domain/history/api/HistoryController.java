@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import promptstudio.promptstudio.domain.history.application.HistoryService;
 import promptstudio.promptstudio.domain.history.domain.repository.HistoryRepository;
-import promptstudio.promptstudio.domain.history.dto.GptRunResult;
-import promptstudio.promptstudio.domain.history.dto.HistoryDetailResponse;
-import promptstudio.promptstudio.domain.history.dto.HistoryResponse;
-import promptstudio.promptstudio.domain.history.dto.HistoryRunResponse;
+import promptstudio.promptstudio.domain.history.dto.*;
 import promptstudio.promptstudio.domain.maker.domain.entity.Maker;
 import promptstudio.promptstudio.domain.maker.domain.entity.MakerImage;
 import promptstudio.promptstudio.domain.maker.domain.repository.MakerRepository;
@@ -76,6 +73,16 @@ public class HistoryController {
             @PathVariable Long historyId
     ) {
         HistoryDetailResponse response = historyService.restoreHistory(makerId, historyId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "결과 이미지 다운로드 URL 조회", description = "History 결과 이미지의 다운로드 URL을 반환합니다.")
+    @GetMapping("/{historyId}/image/download")
+    public ResponseEntity<ImageDownloadResponse> getImageDownloadUrl(
+            @PathVariable Long makerId,
+            @PathVariable Long historyId
+    ) {
+        ImageDownloadResponse response = historyService.getImageDownloadUrl(makerId, historyId);
         return ResponseEntity.ok(response);
     }
 }

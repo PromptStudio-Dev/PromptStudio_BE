@@ -7,11 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import promptstudio.promptstudio.domain.history.domain.entity.History;
 import promptstudio.promptstudio.domain.history.domain.entity.HistorySnapshotImage;
+import promptstudio.promptstudio.domain.history.domain.entity.ResultType;
 import promptstudio.promptstudio.domain.history.domain.repository.HistoryRepository;
-import promptstudio.promptstudio.domain.history.dto.GptRunResult;
-import promptstudio.promptstudio.domain.history.dto.HistoryDetailResponse;
-import promptstudio.promptstudio.domain.history.dto.HistoryResponse;
-import promptstudio.promptstudio.domain.history.dto.HistoryRunResponse;
+import promptstudio.promptstudio.domain.history.dto.*;
 import promptstudio.promptstudio.domain.maker.domain.entity.Maker;
 import promptstudio.promptstudio.domain.maker.domain.entity.MakerImage;
 import promptstudio.promptstudio.domain.maker.domain.repository.MakerRepository;
@@ -154,7 +152,36 @@ public class HistoryServiceImpl implements HistoryService {
         }
         return HistoryDetailResponse.from(history);
     }
-    
-    
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public ImageDownloadResponse getImageDownloadUrl(Long makerId, Long historyId) {
+        History history = historyRepository.findById(historyId)
+                .orElseThrow(() -> new NotFoundException("히스토리를 찾을 수 없습니다."));
+
+        // Maker 소속 검증
+        if (!history.getMaker().getId().equals(makerId)) {
+            throw new NotFoundException("해당 메이커의 히스토리가 아닙니다.");
+        }
+
+        // 이미지 타입 검증
+        if (history.getResultType() != ResultType.IMAGE || history.getResultImageUrl() == null) {
+            throw new NotFoundException("이미지 결과가 없는 히스토리입니다.");
+        }
+
+        // 파일명 생성 (history_123_20241213.png 형식)
+        String fileName = "promptstudio_history_%d_%s.png".formatted(
+                historyId,
+                history.getCreatedAt().toLocalDate().toString().replace("-", "")
+        );
+
+        return ImageDownloadResponse.builder()
+                .historyId(historyId)
+                .downloadUrl(history.getResultImageUrl())
+                .fileName(fileName)
+                .build();
+    }
+
 
 }
