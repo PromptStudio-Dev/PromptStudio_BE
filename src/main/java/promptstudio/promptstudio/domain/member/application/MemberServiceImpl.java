@@ -14,6 +14,9 @@ import promptstudio.promptstudio.domain.member.dto.MemberResponse;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.google.dto.GoogleUserInfo;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -32,7 +35,7 @@ public class MemberServiceImpl implements MemberService {
                             Member.builder()
                                     .name(info.getName() != null ? info.getName() : "unknown")
                                     .email(info.getEmail())
-                                    .profileImageUrl(info.getPicture())
+                                    .profileImageUrl(pickDefaultProfileImage())
                                     .introduction(null)
                                     .build()
                     );
@@ -77,5 +80,15 @@ public class MemberServiceImpl implements MemberService {
         response.setIntroduction(member.getIntroduction());
 
         return response;
+    }
+
+    private static final List<String> DEFAULT_PROFILE_URLS = List.of(
+            "https://promptstudio-bucket.s3.ap-northeast-2.amazonaws.com/profile_image/Fish.png",
+            "https://promptstudio-bucket.s3.ap-northeast-2.amazonaws.com/profile_image/Shell.png",
+            "https://promptstudio-bucket.s3.ap-northeast-2.amazonaws.com/profile_image/StarfIsh.png"
+    );
+
+    private static String pickDefaultProfileImage() {
+        return DEFAULT_PROFILE_URLS.get(ThreadLocalRandom.current().nextInt(DEFAULT_PROFILE_URLS.size()));
     }
 }
