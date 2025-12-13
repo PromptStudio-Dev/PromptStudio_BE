@@ -302,11 +302,13 @@ public class PromptServiceImpl implements PromptService {
 
 
     private PromptResponse toPromptResponse(Prompt prompt, long likeCount, boolean liked) {
+        Member member = prompt.getMember();
         PromptResponse dto = new PromptResponse();
 
-        dto.setMemberId(prompt.getMember().getId());
+        dto.setMemberId(member.getId());
         dto.setPromptId(prompt.getId());
-        dto.setName(prompt.getMember().getName());
+        dto.setName(member.getName());
+        dto.setProfileImageUrl(member.getProfileImageUrl());
         dto.setTitle(prompt.getTitle());
         dto.setIntroduction(prompt.getIntroduction());
         dto.setAiEnvironment(prompt.getAiEnvironment());
