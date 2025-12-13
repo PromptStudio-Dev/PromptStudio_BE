@@ -6,7 +6,16 @@ Current prompt:
 Title: {currentTitle}
 Content: {currentContent}
 
-Generate a concise one-line title summarizing what changed compared to the previous prompt.
-Examples: "배경 제거 추가", "스타일을 픽사로 변경"
+Compare the two prompts carefully and identify the SPECIFIC change made.
+Focus on: added words, removed words, changed style, modified details, new instructions.
+
+Even minor changes should be reflected in the title.
+Examples:
+- "배경을 숲으로 변경"
+- "조명 설명 추가"
+- "의상 색상 수정"
+- "표정 묘사 삭제"
+- "픽사 스타일 적용"
+- "카메라 앵글 변경"
 
 Output only the title in Korean:
