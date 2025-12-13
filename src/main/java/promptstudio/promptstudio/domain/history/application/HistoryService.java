@@ -4,7 +4,7 @@ import promptstudio.promptstudio.domain.history.dto.GptRunResult;
 import promptstudio.promptstudio.domain.history.dto.HistoryDetailResponse;
 import promptstudio.promptstudio.domain.history.dto.HistoryResponse;
 import promptstudio.promptstudio.domain.history.dto.HistoryRunResponse;
-import promptstudio.promptstudio.domain.history.dto.ImageDownloadResponse;
+import promptstudio.promptstudio.domain.history.dto.ImageDownloadData;
 
 import java.util.List;
 
@@ -16,5 +16,5 @@ public interface HistoryService {
 
     HistoryDetailResponse restoreHistory(Long makerId, Long historyId);
 
-    ImageDownloadResponse getImageDownloadUrl(Long makerId, Long historyId);
+    ImageDownloadData downloadImage(Long makerId, Long historyId);
 }

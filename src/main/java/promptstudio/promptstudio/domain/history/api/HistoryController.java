@@ -3,6 +3,8 @@ package promptstudio.promptstudio.domain.history.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import promptstudio.promptstudio.domain.history.application.HistoryService;
@@ -76,13 +78,18 @@ public class HistoryController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "결과 이미지 다운로드 URL 조회", description = "History 결과 이미지의 다운로드 URL을 반환합니다.")
+    @Operation(summary = "결과 이미지 다운로드", description = "History 결과 이미지를 다운로드합니다.")
     @GetMapping("/{historyId}/image/download")
-    public ResponseEntity<ImageDownloadResponse> getImageDownloadUrl(
+    public ResponseEntity<byte[]> downloadImage(
             @PathVariable Long makerId,
             @PathVariable Long historyId
     ) {
-        ImageDownloadResponse response = historyService.getImageDownloadUrl(makerId, historyId);
-        return ResponseEntity.ok(response);
+        ImageDownloadData data = historyService.downloadImage(makerId, historyId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + data.getFileName() + "\"")
+                .contentType(MediaType.IMAGE_PNG)
+                .body(data.getImageBytes());
     }
+
 }

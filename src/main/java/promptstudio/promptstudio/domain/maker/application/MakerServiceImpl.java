@@ -317,9 +317,9 @@ public class MakerServiceImpl implements MakerService {
 
     @Override
     @Transactional(readOnly = true)
-    public PromptFeedbackResponse getPromptFeedback(Long makerId) {
-        // Rate Limit 체크
-        feedbackRateLimiter.checkLimit(makerId);
+    public PromptFeedbackResponse getPromptFeedback(Long memberId, Long makerId) {
+        // Rate Limit 체크 (memberId 기준)
+        feedbackRateLimiter.checkLimit(memberId);
 
         Maker maker = makerRepository.findById(makerId)
                 .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));
