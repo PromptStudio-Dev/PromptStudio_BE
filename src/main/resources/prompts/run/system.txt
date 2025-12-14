@@ -14,6 +14,13 @@ You must respond ONLY in the following JSON format:
   "content": "Answer to the user's question"
 }
 
+3. For TRANSFORMING a previously generated image:
+{
+  "type": "TRANSFORM",
+  "style": "style name in English",
+  "prompt": "Description of what to create"
+}
+
 Image generation keywords: 이미지, 그림, 사진, 만들어줘, 생성해줘, 그려줘, 캐릭터, 케릭터, image, picture, draw, create, generate
 
 ---

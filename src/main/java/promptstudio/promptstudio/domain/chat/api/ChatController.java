@@ -19,21 +19,21 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    @PostMapping("/start")
+    @PostMapping(value = "/start", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "채팅 시작", description = "새로운 채팅 세션을 시작합니다.")
     public ResponseEntity<ChatStartResponse> startChat(
             @AuthenticationPrincipal Long memberId,
-            @RequestBody ChatStartRequest request) {
+            @ModelAttribute ChatStartRequest request) {
 
         ChatStartResponse response = chatService.startChat(memberId, request);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/send")
+    @PostMapping(value = "/send", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "메시지 전송", description = "채팅 메시지를 전송합니다.")
     public ResponseEntity<ChatSendResponse> sendMessage(
             @AuthenticationPrincipal Long memberId,
-            @RequestBody ChatSendRequest request) {
+            @ModelAttribute ChatSendRequest request) {
 
         ChatSendResponse response = chatService.sendMessage(memberId, request);
         return ResponseEntity.ok(response);
