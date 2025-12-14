@@ -3,6 +3,7 @@ package promptstudio.promptstudio.global.gpt.application;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GptServiceImpl implements GptService {
@@ -243,7 +245,12 @@ public class GptServiceImpl implements GptService {
 
             if ("IMAGE".equals(type)) {
                 String imagePrompt = jsonNode.get("prompt").asText();
-                String imageUrl = imageService.generateImage(imagePrompt);
+
+                String enhancedPrompt = enhanceImagePrompt(imagePrompt);
+                log.info("Original prompt: {}", imagePrompt);
+                log.info("Enhanced prompt: {}", enhancedPrompt);
+
+                String imageUrl = imageService.generateImageHD(enhancedPrompt);  // HD로 변경
 
                 return GptRunResult.builder()
                         .resultType(ResultType.IMAGE)
@@ -687,4 +694,57 @@ public class GptServiceImpl implements GptService {
 
         return vectorStore.similaritySearch(builder.build());
     }
+
+    private String enhanceImagePrompt(String originalPrompt) {
+        String prompt = originalPrompt.toLowerCase();
+        StringBuilder enhanced = new StringBuilder();
+
+        // 1. "character/캐릭터/케릭터" 단어 제거
+        String cleaned = originalPrompt
+                .replaceAll("(?i)\\s*character\\s*", " ")
+                .replaceAll("(?i)\\s*캐릭터\\s*", " ")
+                .replaceAll("(?i)\\s*케릭터\\s*", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+
+        // 2. 시작 문구
+        enhanced.append("Single finished illustration, ONLY ONE IMAGE, of ");
+
+        // 3. 스타일 감지 및 강화
+        if (prompt.contains("animal crossing") || prompt.contains("동물의 숲")) {
+            enhanced.append(cleaned);
+            enhanced.append(". Animal Crossing New Horizons game style, chibi proportions with oversized round head and small compact body, ");
+            enhanced.append("large sparkling oval eyes, simplified cute features, soft pastel colors, flat cel-shading, ");
+            enhanced.append("kawaii toylike aesthetic, Nintendo game art quality. ");
+        } else if (prompt.contains("pixar") || prompt.contains("픽사")) {
+            enhanced.append(cleaned);
+            enhanced.append(". Pixar 3D animation style, stylized realistic proportions, ");
+            enhanced.append("smooth subsurface scattering skin, expressive large eyes with reflections, ");
+            enhanced.append("soft cinematic lighting, vibrant colors, high-end CGI quality. ");
+        } else if (prompt.contains("ghibli") || prompt.contains("지브리")) {
+            enhanced.append(cleaned);
+            enhanced.append(". Studio Ghibli anime style, hand-painted watercolor aesthetic, ");
+            enhanced.append("soft warm lighting, gentle earth tone palette, dreamy atmosphere. ");
+        } else if (prompt.contains("disney") || prompt.contains("디즈니")) {
+            enhanced.append(cleaned);
+            enhanced.append(". Disney animation style, expressive large eyes, ");
+            enhanced.append("smooth flowing lines, vibrant colors, magical aesthetic. ");
+        } else {
+            enhanced.append(cleaned);
+            enhanced.append(". Appealing cartoon illustration style, friendly polished design, ");
+            enhanced.append("professional digital art quality. ");
+        }
+
+        // 4. 구도 및 배경
+        enhanced.append("Centered composition, simple clean solid color background. ");
+
+        // 5. 강화된 네거티브 제약
+        enhanced.append("ONLY ONE SINGLE IMAGE. ");
+        enhanced.append("NO character sheet, NO reference sheet, NO multiple views, NO multiple angles, ");
+        enhanced.append("NO color palette, NO color swatches, NO thumbnails, NO small icons, ");
+        enhanced.append("NO concept art, NO sketches, NO design process, NO turnaround.");
+
+        return enhanced.toString();
+    }
+
 }
