@@ -350,15 +350,14 @@ public class ChatServiceImpl implements ChatService {
                 .replaceAll("\\s+", " ")
                 .trim();
 
-        // 2. 시작 문구
-        enhanced.append("Single finished illustration, ONLY ONE IMAGE, of ");
+        // 2. 시작 문구 (더 강화)
+        enhanced.append("A single illustration showing only one subject, ");
 
         // 3. 스타일 감지 및 강화
         if (prompt.contains("animal crossing") || prompt.contains("동물의 숲")) {
-            enhanced.append(cleaned);
-            enhanced.append(". Animal Crossing New Horizons game style, chibi proportions with oversized round head and small compact body, ");
-            enhanced.append("large sparkling oval eyes, simplified cute features, soft pastel colors, flat cel-shading, ");
-            enhanced.append("kawaii toylike aesthetic, Nintendo game art quality. ");
+            enhanced.append("a cute capybara in Animal Crossing New Horizons style. ");
+            enhanced.append("Chibi proportions, oversized round head, small compact body, ");
+            enhanced.append("large sparkling oval eyes, soft pastel colors, flat cel-shading, kawaii toylike aesthetic. ");
         } else if (prompt.contains("pixar") || prompt.contains("픽사")) {
             enhanced.append(cleaned);
             enhanced.append(". Pixar 3D animation style, stylized realistic proportions, ");
@@ -379,17 +378,19 @@ public class ChatServiceImpl implements ChatService {
         }
 
         // 4. 구도 및 배경
-        enhanced.append("Centered composition, simple clean solid color background. ");
+        enhanced.append("Plain solid color background, centered subject. ");
 
-        // 5. 강화된 네거티브 제약
-        enhanced.append("ONLY ONE SINGLE IMAGE. ");
-        enhanced.append("NO character sheet, NO reference sheet, NO multiple views, NO multiple angles, ");
-        enhanced.append("NO color palette, NO color swatches, NO thumbnails, NO small icons, ");
-        enhanced.append("NO concept art, NO sketches, NO design process, NO turnaround.");
+        // 5. 매우 강화된 네거티브 제약 (핵심!)
+        enhanced.append("The image must contain ONLY ONE single subject with NOTHING else. ");
+        enhanced.append("Absolutely NO color palette, NO color swatches, NO color samples. ");
+        enhanced.append("Absolutely NO additional characters, NO thumbnails, NO small versions. ");
+        enhanced.append("Absolutely NO character sheet, NO reference sheet, NO model sheet. ");
+        enhanced.append("Absolutely NO multiple views, NO multiple angles, NO turnaround. ");
+        enhanced.append("Absolutely NO text, NO labels, NO annotations. ");
+        enhanced.append("Just one clean illustration of the subject alone.");
 
         return enhanced.toString();
     }
-
     @lombok.Getter
     @lombok.Builder
     private static class ChatGptResult {
