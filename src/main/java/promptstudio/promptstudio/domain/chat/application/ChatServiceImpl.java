@@ -22,6 +22,7 @@ import promptstudio.promptstudio.global.exception.http.BadRequestException;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.gpt.prompt.PromptRegistry;
 import promptstudio.promptstudio.global.gpt.prompt.PromptType;
+import promptstudio.promptstudio.global.s3.service.S3StorageService;
 
 import java.util.*;
 
@@ -38,6 +39,8 @@ public class ChatServiceImpl implements ChatService {
     private final ImageService imageService;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
+    private final S3StorageService s3StorageService;
+
 
     @Value("${spring.ai.openai.api-key}")
     private String apiKey;
@@ -252,11 +255,14 @@ public class ChatServiceImpl implements ChatService {
 
             if ("IMAGE".equals(type)) {
                 String imagePrompt = jsonNode.get("prompt").asText();
-                String imageUrl = imageService.generateImage(imagePrompt);
+                String dalleImageUrl = imageService.generateImage(imagePrompt);
+
+                // S3에 저장 후 S3 URL 반환
+                String s3ImageUrl = s3StorageService.copyImage(dalleImageUrl);
 
                 return ChatGptResult.builder()
                         .resultType("IMAGE")
-                        .imageUrl(imageUrl)
+                        .imageUrl(s3ImageUrl)
                         .build();
             } else {
                 String content = jsonNode.get("content").asText();
@@ -269,7 +275,6 @@ public class ChatServiceImpl implements ChatService {
 
         } catch (Exception e) {
             log.error("GPT 응답 파싱 실패, 원본 텍스트 반환: {}", e.getMessage());
-            // JSON 파싱 실패 시 원본 텍스트 반환
             return ChatGptResult.builder()
                     .resultType("TEXT")
                     .content(gptResponse)
@@ -283,5 +288,21 @@ public class ChatServiceImpl implements ChatService {
         private String resultType;
         private String content;
         private String imageUrl;
+    }
+
+    @Override
+    public ChatImageDownloadData downloadImage(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new BadRequestException("이미지 URL이 필요합니다.");
+        }
+
+        byte[] imageBytes = s3StorageService.downloadImageFromUrl(imageUrl);
+
+        String fileName = "chat_image_" + System.currentTimeMillis() + ".png";
+
+        return ChatImageDownloadData.builder()
+                .fileName(fileName)
+                .imageBytes(imageBytes)
+                .build();
     }
 }

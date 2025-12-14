@@ -7,4 +7,6 @@ public interface ChatService {
     ChatStartResponse startChat(Long memberId, ChatStartRequest request);
 
     ChatSendResponse sendMessage(Long memberId, ChatSendRequest request);
+
+    ChatImageDownloadData downloadImage(String imageUrl);
 }
