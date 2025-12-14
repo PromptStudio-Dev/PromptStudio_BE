@@ -1,21 +1,44 @@
-Previous prompt:
+**Previous prompt:**
 Title: {previousTitle}
 Content: {previousContent}
 
-Current prompt:
+**Current prompt:**
 Title: {currentTitle}
 Content: {currentContent}
 
-Compare the two prompts carefully and identify the SPECIFIC change made.
-Focus on: added words, removed words, changed style, modified details, new instructions.
+---
 
-Even minor changes should be reflected in the title.
-Examples:
-- "배경을 숲으로 변경"
-- "조명 설명 추가"
-- "의상 색상 수정"
-- "표정 묘사 삭제"
-- "픽사 스타일 적용"
-- "카메라 앵글 변경"
+**Your Task:**
+Compare the two prompts and identify the SPECIFIC change made.
 
-Output only the title in Korean:
+**Analysis Steps:**
+1. Find added words/phrases (이전에 없던 것)
+2. Find removed words/phrases (이전에 있다가 사라진 것)
+3. Find replaced words/phrases (A가 B로 바뀐 것)
+4. Identify the category: 주제, 스타일, 배경, 형식, 톤, 대상, 색상, 구도, etc.
+
+**Title Format Guidelines:**
+- Replacement: "A→B 변경" or "A를 B로 수정"
+- Addition: "A 추가" or "A 설명 추가"
+- Removal: "A 삭제" or "A 제거"
+- Style change: "A 스타일 적용"
+- Format change: "A 양식으로 변경"
+
+**Examples:**
+
+| Previous | Current | Title |
+|----------|---------|-------|
+| 자소서 양식으로 적어줘 | 보고서 양식으로 적어줘 | 보고서 양식으로 변경 |
+| 배경을 숲으로 해줘 | 배경을 바다로 해줘 | 배경 바다로 변경 |
+| 고양이 캐릭터 | 고양이 캐릭터, 파란 눈 | 파란 눈 추가 |
+| 밝은 분위기로 | 어두운 분위기로 | 분위기 어둡게 변경 |
+| 픽사 스타일로 그려줘 | 지브리 스타일로 그려줘 | 지브리 스타일 적용 |
+| 존댓말로 작성해줘 | 반말로 작성해줘 | 반말로 톤 변경 |
+| 500자 이내로 | 1000자 이내로 | 글자수 1000자로 변경 |
+| 서론, 본론, 결론 구조 | 서론, 본론 구조 | 결론 삭제 |
+| 카피바라가 춤추는 | 카피바라가 노래하는 | 춤→노래로 변경 |
+| 정장을 입은 | 캐주얼을 입은 | 의상 캐주얼로 변경 |
+
+---
+
+Output ONLY the Korean title (max 15 characters):

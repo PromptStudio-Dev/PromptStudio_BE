@@ -2,24 +2,24 @@ package promptstudio.promptstudio.domain.chat.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Builder
 public class ChatSession {
-    private String sessionId;
-    private Long memberId;
+    private final String sessionId;
+    private final Long memberId;
+
+    @Setter
+    private String lastGeneratedImageUrl;
 
     @Builder.Default
-    private List<ChatMessage> messages = new ArrayList<>();
-
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private final List<ChatMessage> messages = new ArrayList<>();
 
     public void addMessage(ChatMessage message) {
-        this.messages.add(message);
+        messages.add(message);
     }
 }
