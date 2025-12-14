@@ -255,9 +255,14 @@ public class ChatServiceImpl implements ChatService {
 
             if ("IMAGE".equals(type)) {
                 String imagePrompt = jsonNode.get("prompt").asText();
-                String dalleImageUrl = imageService.generateImage(imagePrompt);
 
-                // S3에 저장 후 S3 URL 반환
+                String enhancedPrompt = enhanceImagePrompt(imagePrompt);
+
+                log.info("Original prompt: {}", imagePrompt);
+                log.info("Enhanced prompt: {}", enhancedPrompt);
+
+                String dalleImageUrl = imageService.generateImageHD(enhancedPrompt); // HD로 변경
+
                 String s3ImageUrl = s3StorageService.copyImage(dalleImageUrl);
 
                 return ChatGptResult.builder()
@@ -280,6 +285,74 @@ public class ChatServiceImpl implements ChatService {
                     .content(gptResponse)
                     .build();
         }
+    }
+
+    private String enhanceImagePrompt(String originalPrompt) {
+        String prompt = originalPrompt.toLowerCase();
+        StringBuilder enhanced = new StringBuilder();
+
+        // 1. 시작 문구
+        enhanced.append("Single finished illustration of ");
+
+        // 2. 스타일 감지 및 강화
+        if (prompt.contains("animal crossing") || prompt.contains("동물의 숲")) {
+            // "character" 단어 제거하고 스타일 키워드 추가
+            String cleaned = originalPrompt
+                    .replaceAll("(?i)character", "")
+                    .replaceAll("(?i)캐릭터", "")
+                    .replaceAll("(?i)케릭터", "")
+                    .trim();
+            enhanced.append(cleaned);
+            enhanced.append(". Animal Crossing New Horizons game style, chibi proportions with oversized round head and small compact body, ");
+            enhanced.append("large sparkling oval eyes, simplified cute features, soft pastel colors, flat cel-shading, ");
+            enhanced.append("kawaii toylike aesthetic, Nintendo game art quality. ");
+        } else if (prompt.contains("pixar") || prompt.contains("픽사")) {
+            String cleaned = originalPrompt
+                    .replaceAll("(?i)character", "")
+                    .replaceAll("(?i)캐릭터", "")
+                    .replaceAll("(?i)케릭터", "")
+                    .trim();
+            enhanced.append(cleaned);
+            enhanced.append(". Pixar 3D animation style, stylized realistic proportions, ");
+            enhanced.append("smooth subsurface scattering skin, expressive large eyes with reflections, ");
+            enhanced.append("soft cinematic lighting, vibrant colors, high-end CGI quality. ");
+        } else if (prompt.contains("ghibli") || prompt.contains("지브리")) {
+            String cleaned = originalPrompt
+                    .replaceAll("(?i)character", "")
+                    .replaceAll("(?i)캐릭터", "")
+                    .replaceAll("(?i)케릭터", "")
+                    .trim();
+            enhanced.append(cleaned);
+            enhanced.append(". Studio Ghibli anime style, hand-painted watercolor aesthetic, ");
+            enhanced.append("soft warm lighting, natural flowing lines, gentle earth tone palette, ");
+            enhanced.append("nostalgic dreamy atmosphere, traditional 2D animation quality. ");
+        } else if (prompt.contains("disney") || prompt.contains("디즈니")) {
+            String cleaned = originalPrompt
+                    .replaceAll("(?i)character", "")
+                    .replaceAll("(?i)캐릭터", "")
+                    .replaceAll("(?i)케릭터", "")
+                    .trim();
+            enhanced.append(cleaned);
+            enhanced.append(". Disney classic animation style, expressive large eyes, ");
+            enhanced.append("smooth flowing lines, vibrant colors, appealing design, magical aesthetic. ");
+        } else {
+            // 스타일 미지정
+            String cleaned = originalPrompt
+                    .replaceAll("(?i)character", "")
+                    .replaceAll("(?i)캐릭터", "")
+                    .replaceAll("(?i)케릭터", "")
+                    .trim();
+            enhanced.append(cleaned);
+            enhanced.append(". Appealing cartoon illustration style, friendly polished design, ");
+            enhanced.append("professional digital art quality, clean rendering. ");
+        }
+
+        // 3. 공통 제약 조건
+        enhanced.append("Centered composition, one subject only, simple clean background. ");
+        enhanced.append("NOT a character sheet, NOT multiple views or angles, NOT concept art, ");
+        enhanced.append("NOT sketches, NOT design process, NOT reference sheet, NOT turnaround, NOT color palette.");
+
+        return enhanced.toString();
     }
 
     @lombok.Getter
