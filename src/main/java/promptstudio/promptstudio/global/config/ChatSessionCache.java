@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class ChatSessionCache {
 
     private final Cache<String, ChatSession> sessionCache = Caffeine.newBuilder()
-            .expireAfterAccess(30, TimeUnit.MINUTES)  // 30분 미사용 시 삭제
+            .expireAfterAccess(6, TimeUnit.HOURS)
             .maximumSize(10000)                        // 최대 10,000개 세션
             .build();
 

@@ -15,7 +15,6 @@ import promptstudio.promptstudio.domain.chat.domain.ChatSession;
 import promptstudio.promptstudio.domain.chat.dto.*;
 import promptstudio.promptstudio.domain.prompt.domain.entity.Prompt;
 import promptstudio.promptstudio.domain.prompt.domain.repository.PromptRepository;
-import promptstudio.promptstudio.domain.promptplaceholder.domain.entity.PromptPlaceholder;
 import promptstudio.promptstudio.domain.promptplaceholder.domain.repository.PromptPlaceholderRepository;
 import promptstudio.promptstudio.global.config.ChatSessionCache;
 import promptstudio.promptstudio.global.dall_e.application.ImageService;
@@ -131,7 +130,7 @@ public class ChatServiceImpl implements ChatService {
         StringBuilder sb = new StringBuilder();
 
         // promptId가 있으면 프롬프트 조회 및 치환
-        if (request.getPromptId() != null) {
+        if (request.getPromptId() != null && request.getPromptId() > 0) {
             Prompt prompt = promptRepository.findById(request.getPromptId())
                     .orElseThrow(() -> new NotFoundException("프롬프트가 존재하지 않습니다."));
 
