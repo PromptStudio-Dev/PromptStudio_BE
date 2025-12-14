@@ -16,7 +16,7 @@ spring:
       api-key: ${OPENAI_API_KEY}
       chat:
         options:
-          model: ${OPENAI_MODEL:gpt-4o-mini}
+          model: ${OPENAI_MODEL:gpt-4o}
     ollama:
       base-url: ${OLLAMA_URL:http://localhost:11434}
       embedding:
