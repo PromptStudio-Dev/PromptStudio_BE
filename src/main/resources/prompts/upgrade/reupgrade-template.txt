@@ -1,19 +1,18 @@
-[전체 텍스트]
+[Full Context]
 {fullContext}
 
-[선택 텍스트]
+[Selected Text]
 {selectedText}
 
-[이전 개선 방향]
+[Previous Direction]
 {prevDirection}
 
-[이전 결과]
+[Previous Result]
 {prevResult}
 
-[현재 개선 방향]
+[Current Direction]
 {direction}
 
-위의 이전 요청 정보(이전 개선 방향/결과)는 참고용으로 활용하되,
-현재 개선 방향과 상충할 경우에는 반드시 현재 개선 방향을 우선하세요.
+The previous direction/result is for reference only. If it conflicts with the current direction, prioritize the current direction.
 
-선택 텍스트를 현재 개선 방향에 맞게 업그레이드하여 출력하세요.
+Upgrade the selected text according to the CURRENT improvement direction. Output only the upgraded text.

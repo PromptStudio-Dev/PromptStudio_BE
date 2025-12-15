@@ -1,16 +1,15 @@
-[전체 텍스트]
+[Full Context]
 {fullContext}
 
-[선택 텍스트]
+[Selected Text]
 {selectedText}
 
-[개선 방향]
+[Improvement Direction]
 {direction}
 
-[참고 프롬프트]
+[Reference Prompts]
 {ragContext}
 
-참고 프롬프트는 스타일/구성/표현을 참고하되,
-내용을 그대로 복사하지 말고 사용자 문맥에 맞게 재작성하세요.
+Use the reference prompts for style/structure inspiration only. Do NOT copy content directly—adapt to the user's context.
 
-선택 텍스트를 현재 개선 방향에 맞게 업그레이드하여 출력하세요.
+Upgrade the selected text according to the improvement direction. Output only the upgraded text.

@@ -1,10 +1,10 @@
-[전체 텍스트]
+[Full Context]
 {fullContext}
 
-[선택 텍스트]
+[Selected Text]
 {selectedText}
 
-[개선 방향]
+[Improvement Direction]
 {direction}
 
-선택 텍스트를 개선 방향에 맞게 업그레이드해서 출력하세요.
+Upgrade the selected text according to the improvement direction. Output only the upgraded text.
