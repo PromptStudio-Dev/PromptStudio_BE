@@ -7,4 +7,4 @@
 [Improvement Direction]
 {direction}
 
-Output the upgraded text that will directly replace the selected text. Preserve exact start and end boundaries.
+Find [Selected Text] in [Full Context]. Check what comes immediately before and after it. Output the upgraded text that connects perfectly with both sides.
