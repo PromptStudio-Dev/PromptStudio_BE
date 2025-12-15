@@ -16,7 +16,6 @@
 [Reference Prompts]
 {ragContext}
 
-Use reference prompts for style/structure inspiration only—do NOT copy directly.
-Previous direction/result is for reference. Prioritize the current direction if conflicts arise.
+Reference prompts are for style inspiration only. Previous info is for reference. Prioritize current direction.
 
-Upgrade the selected text according to the CURRENT improvement direction. Output only the upgraded text.
+Output the upgraded text that will directly replace the selected text. Preserve exact start and end boundaries.

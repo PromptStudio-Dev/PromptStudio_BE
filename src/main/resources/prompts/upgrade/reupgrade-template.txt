@@ -13,6 +13,6 @@
 [Current Direction]
 {direction}
 
-The previous direction/result is for reference only. If it conflicts with the current direction, prioritize the current direction.
+Previous info is for reference only. Prioritize current direction.
 
-Upgrade the selected text according to the CURRENT improvement direction. Output only the upgraded text.
+Output the upgraded text that will directly replace the selected text. Preserve exact start and end boundaries.

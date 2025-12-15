@@ -10,6 +10,6 @@
 [Reference Prompts]
 {ragContext}
 
-Use the reference prompts for style/structure inspiration only. Do NOT copy content directly—adapt to the user's context.
+Reference prompts are for style inspiration only. Do not copy content directly.
 
-Upgrade the selected text according to the improvement direction. Output only the upgraded text.
+Output the upgraded text that will directly replace the selected text. Preserve exact start and end boundaries.

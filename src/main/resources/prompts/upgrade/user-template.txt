@@ -7,4 +7,4 @@
 [Improvement Direction]
 {direction}
 
-Upgrade the selected text according to the improvement direction. Output only the upgraded text.
+Output the upgraded text that will directly replace the selected text. Preserve exact start and end boundaries.
