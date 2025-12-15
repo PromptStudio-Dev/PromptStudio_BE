@@ -14,10 +14,13 @@ import org.springframework.web.server.ResponseStatusException;
 import promptstudio.promptstudio.domain.chat.domain.ChatMessage;
 import promptstudio.promptstudio.domain.chat.domain.ChatSession;
 import promptstudio.promptstudio.domain.chat.dto.*;
+import promptstudio.promptstudio.domain.history.domain.entity.ResultType;
+import promptstudio.promptstudio.domain.history.dto.GptRunResult;
 import promptstudio.promptstudio.global.config.ChatSessionCache;
 import promptstudio.promptstudio.global.dall_e.application.ImageService;
 import promptstudio.promptstudio.global.exception.http.BadRequestException;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
+import promptstudio.promptstudio.global.gpt.application.GptService;
 import promptstudio.promptstudio.global.gpt.prompt.PromptRegistry;
 import promptstudio.promptstudio.global.gpt.prompt.PromptType;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
@@ -36,6 +39,7 @@ public class ChatServiceImpl implements ChatService {
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
     private final S3StorageService s3StorageService;
+    private final GptService gptService;
 
     @Value("${spring.ai.openai.api-key}")
     private String apiKey;
@@ -45,43 +49,37 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatStartResponse startChat(Long memberId, ChatStartRequest request) {
-        // 메시지 필수 검증
         if (request.getMessage() == null || request.getMessage().isBlank()) {
             throw new BadRequestException("메시지는 필수입니다.");
         }
 
-        // 이미지 개수 검증
         if (request.getImages() != null && request.getImages().size() > MAX_IMAGES) {
             throw new BadRequestException("이미지는 최대 " + MAX_IMAGES + "개까지 첨부할 수 있습니다.");
         }
 
-        // 이미지 파일 → S3 업로드 → URL 변환
         List<String> imageUrls = uploadImages(request.getImages());
 
-        // 세션 생성
         String sessionId = UUID.randomUUID().toString();
         ChatSession session = ChatSession.builder()
                 .sessionId(sessionId)
                 .memberId(memberId)
                 .build();
 
-        // 시스템 프롬프트 추가
         String systemPrompt = promptRegistry.get(PromptType.RUN_SYSTEM);
         session.addMessage(ChatMessage.system(systemPrompt));
-
-        // 유저 메시지 추가
         session.addMessage(ChatMessage.user(request.getMessage(), imageUrls));
 
-        // GPT 호출
-        String gptResponse = callGptApi(session.getMessages());
+        ChatGptResult result;
 
-        // 응답 파싱 (session 전달)
-        ChatGptResult result = parseGptResponse(gptResponse, session);
+        // ✅ 이미지가 있고 이미지 생성 요청이면 바로 Vision 파이프라인
+        if (!imageUrls.isEmpty() && isImageGenerationRequest(request.getMessage())) {
+            result = handleImageWithVision(request.getMessage(), imageUrls, session);
+        } else {
+            String gptResponse = callGptApi(session.getMessages());
+            result = parseGptResponse(gptResponse, session, imageUrls);
+            session.addMessage(ChatMessage.assistant(gptResponse));
+        }
 
-        // assistant 메시지 추가
-        session.addMessage(ChatMessage.assistant(gptResponse));
-
-        // 캐시에 저장
         chatSessionCache.put(sessionId, session);
 
         return ChatStartResponse.builder()
@@ -107,7 +105,6 @@ public class ChatServiceImpl implements ChatService {
             throw new BadRequestException("이미지는 최대 " + MAX_IMAGES + "개까지 첨부할 수 있습니다.");
         }
 
-        // 이미지 파일 → S3 업로드 → URL 변환
         List<String> imageUrls = uploadImages(request.getImages());
 
         // 이전 이미지 참조 감지 및 자동 첨부
@@ -121,17 +118,18 @@ public class ChatServiceImpl implements ChatService {
             log.info("이전 이미지 자동 첨부: {}", session.getLastGeneratedImageUrl());
         }
 
-        // 유저 메시지 추가
         session.addMessage(ChatMessage.user(request.getMessage(), imageUrls));
 
-        // GPT 호출
-        String gptResponse = callGptApi(session.getMessages());
+        ChatGptResult result;
 
-        // 응답 파싱
-        ChatGptResult result = parseGptResponse(gptResponse, session);
-
-        // assistant 메시지 추가
-        session.addMessage(ChatMessage.assistant(gptResponse));
+        // ✅ 이미지가 있고 이미지 생성 요청이면 바로 Vision 파이프라인
+        if (!imageUrls.isEmpty() && isImageGenerationRequest(request.getMessage())) {
+            result = handleImageWithVision(request.getMessage(), imageUrls, session);
+        } else {
+            String gptResponse = callGptApi(session.getMessages());
+            result = parseGptResponse(gptResponse, session, imageUrls);
+            session.addMessage(ChatMessage.assistant(gptResponse));
+        }
 
         return ChatSendResponse.builder()
                 .resultType(result.getResultType())
@@ -140,12 +138,65 @@ public class ChatServiceImpl implements ChatService {
                 .build();
     }
 
+    /**
+     * 이미지 생성 요청인지 판단
+     */
+    private boolean isImageGenerationRequest(String message) {
+        if (message == null) return false;
+        String lower = message.toLowerCase();
+
+        return lower.contains("그려") ||
+                lower.contains("만들어") ||
+                lower.contains("생성") ||
+                lower.contains("바꿔") ||
+                lower.contains("변환") ||
+                lower.contains("변경") ||
+                lower.contains("스타일") ||
+                lower.contains("이미지") ||
+                lower.contains("그림") ||
+                lower.contains("draw") ||
+                lower.contains("create") ||
+                lower.contains("generate") ||
+                lower.contains("transform") ||
+                lower.contains("convert") ||
+                lower.contains("style");
+    }
+
+    /**
+     * Vision 파이프라인으로 이미지 처리
+     */
+    private ChatGptResult handleImageWithVision(String message, List<String> imageUrls, ChatSession session) {
+        try {
+            GptRunResult result = gptService.runPromptWithImages(message, imageUrls);
+
+            if (result.getResultType() == ResultType.IMAGE) {
+                String s3ImageUrl = s3StorageService.copyImage(result.getResultImageUrl());
+                session.setLastGeneratedImageUrl(s3ImageUrl);
+
+                return ChatGptResult.builder()
+                        .resultType("IMAGE")
+                        .imageUrl(s3ImageUrl)
+                        .build();
+            } else {
+                return ChatGptResult.builder()
+                        .resultType("TEXT")
+                        .content(result.getResultText())
+                        .build();
+            }
+        } catch (Exception e) {
+            log.error("Vision 파이프라인 처리 실패: {}", e.getMessage());
+            return ChatGptResult.builder()
+                    .resultType("TEXT")
+                    .content("이미지 처리 중 오류가 발생했습니다: " + e.getMessage())
+                    .build();
+        }
+    }
+
     private boolean referencesPreviousImage(String message) {
         if (message == null) return false;
 
         String lower = message.toLowerCase();
 
-        // 이전 이미지 참조 키워드
         return lower.contains("방금") ||
                 lower.contains("아까") ||
                 lower.contains("이전") ||
@@ -161,7 +212,7 @@ public class ChatServiceImpl implements ChatService {
                 lower.contains("the image");
     }
 
-    private ChatGptResult parseGptResponse(String gptResponse, ChatSession session) {
+    private ChatGptResult parseGptResponse(String gptResponse, ChatSession session, List<String> currentImageUrls) {
         try {
             String cleanedResponse = gptResponse
                     .replaceAll("```json\\s*", "")
@@ -173,20 +224,18 @@ public class ChatServiceImpl implements ChatService {
 
             if ("IMAGE".equals(type)) {
                 String imagePrompt = jsonNode.get("prompt").asText();
-
                 String enhancedPrompt = enhanceImagePrompt(imagePrompt);
                 log.info("Original prompt: {}", imagePrompt);
                 log.info("Enhanced prompt: {}", enhancedPrompt);
 
-                String dalleImageUrl = imageService.generateImageHD(enhancedPrompt);
-                String s3ImageUrl = s3StorageService.copyImage(dalleImageUrl);
+                String resultImageUrl = imageService.generateImageHD(enhancedPrompt);
+                resultImageUrl = s3StorageService.copyImage(resultImageUrl);
 
-                // 마지막 생성 이미지 URL 저장
-                session.setLastGeneratedImageUrl(s3ImageUrl);
+                session.setLastGeneratedImageUrl(resultImageUrl);
 
                 return ChatGptResult.builder()
                         .resultType("IMAGE")
-                        .imageUrl(s3ImageUrl)
+                        .imageUrl(resultImageUrl)
                         .build();
             } else {
                 String content = jsonNode.get("content").asText();
@@ -214,7 +263,7 @@ public class ChatServiceImpl implements ChatService {
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile image : images) {
             if (image != null && !image.isEmpty()) {
-                String imageUrl = s3StorageService.uploadImage(image, "chat");  // ✅ uploadImage 사용
+                String imageUrl = s3StorageService.uploadImage(image, "chat");
                 imageUrls.add(imageUrl);
             }
         }
@@ -233,17 +282,14 @@ public class ChatServiceImpl implements ChatService {
                 Map<String, Object> apiMsg = new HashMap<>();
                 apiMsg.put("role", msg.getRole());
 
-                // 이미지가 있는 user 메시지인 경우
                 if ("user".equals(msg.getRole()) && msg.getImages() != null && !msg.getImages().isEmpty()) {
                     List<Map<String, Object>> contentParts = new ArrayList<>();
 
-                    // 텍스트 파트
                     Map<String, Object> textPart = new HashMap<>();
                     textPart.put("type", "text");
                     textPart.put("text", msg.getContent());
                     contentParts.add(textPart);
 
-                    // 이미지 파트들
                     for (String imageUrl : msg.getImages()) {
                         Map<String, Object> imagePart = new HashMap<>();
                         imagePart.put("type", "image_url");
@@ -293,56 +339,10 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private ChatGptResult parseGptResponse(String gptResponse) {
-        try {
-            String cleanedResponse = gptResponse
-                    .replaceAll("```json\\s*", "")
-                    .replaceAll("```\\s*", "")
-                    .trim();
-
-            JsonNode jsonNode = objectMapper.readTree(cleanedResponse);
-            String type = jsonNode.get("type").asText();
-
-            if ("IMAGE".equals(type)) {
-                String imagePrompt = jsonNode.get("prompt").asText();
-
-                // 프롬프트 강화
-                String enhancedPrompt = enhanceImagePrompt(imagePrompt);
-                log.info("Original prompt: {}", imagePrompt);
-                log.info("Enhanced prompt: {}", enhancedPrompt);
-
-                String dalleImageUrl = imageService.generateImageHD(enhancedPrompt);
-
-                // S3에 저장 후 S3 URL 반환
-                String s3ImageUrl = s3StorageService.copyImage(dalleImageUrl);
-
-                return ChatGptResult.builder()
-                        .resultType("IMAGE")
-                        .imageUrl(s3ImageUrl)
-                        .build();
-            } else {
-                String content = jsonNode.get("content").asText();
-
-                return ChatGptResult.builder()
-                        .resultType("TEXT")
-                        .content(content)
-                        .build();
-            }
-
-        } catch (Exception e) {
-            log.error("GPT 응답 파싱 실패, 원본 텍스트 반환: {}", e.getMessage());
-            return ChatGptResult.builder()
-                    .resultType("TEXT")
-                    .content(gptResponse)
-                    .build();
-        }
-    }
-
     private String enhanceImagePrompt(String originalPrompt) {
         String prompt = originalPrompt.toLowerCase();
         StringBuilder enhanced = new StringBuilder();
 
-        // 1. "character/캐릭터/케릭터" 단어 제거
         String cleaned = originalPrompt
                 .replaceAll("(?i)\\s*character\\s*", " ")
                 .replaceAll("(?i)\\s*캐릭터\\s*", " ")
@@ -350,13 +350,11 @@ public class ChatServiceImpl implements ChatService {
                 .replaceAll("\\s+", " ")
                 .trim();
 
-        // 2. 시작 문구 (더 강화)
         enhanced.append("A single illustration showing only one subject, ");
 
-        // 3. 스타일 감지 및 강화
         if (prompt.contains("animal crossing") || prompt.contains("동물의 숲")) {
-            enhanced.append("a cute capybara in Animal Crossing New Horizons style. ");
-            enhanced.append("Chibi proportions, oversized round head, small compact body, ");
+            enhanced.append(cleaned);
+            enhanced.append(". Animal Crossing New Horizons style, chibi proportions, oversized round head, ");
             enhanced.append("large sparkling oval eyes, soft pastel colors, flat cel-shading, kawaii toylike aesthetic. ");
         } else if (prompt.contains("pixar") || prompt.contains("픽사")) {
             enhanced.append(cleaned);
@@ -377,10 +375,8 @@ public class ChatServiceImpl implements ChatService {
             enhanced.append("professional digital art quality. ");
         }
 
-        // 4. 구도 및 배경
         enhanced.append("Plain solid color background, centered subject. ");
 
-        // 5. 매우 강화된 네거티브 제약 (핵심!)
         enhanced.append("The image must contain ONLY ONE single subject with NOTHING else. ");
         enhanced.append("Absolutely NO color palette, NO color swatches, NO color samples. ");
         enhanced.append("Absolutely NO additional characters, NO thumbnails, NO small versions. ");
@@ -391,6 +387,7 @@ public class ChatServiceImpl implements ChatService {
 
         return enhanced.toString();
     }
+
     @lombok.Getter
     @lombok.Builder
     private static class ChatGptResult {
@@ -406,7 +403,6 @@ public class ChatServiceImpl implements ChatService {
         }
 
         byte[] imageBytes = s3StorageService.downloadImageFromUrl(imageUrl);
-
         String fileName = "chat_image_" + System.currentTimeMillis() + ".png";
 
         return ChatImageDownloadData.builder()
