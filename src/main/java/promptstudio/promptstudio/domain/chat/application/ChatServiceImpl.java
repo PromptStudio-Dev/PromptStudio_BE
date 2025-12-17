@@ -21,6 +21,7 @@ import promptstudio.promptstudio.global.dall_e.application.ImageService;
 import promptstudio.promptstudio.global.exception.http.BadRequestException;
 import promptstudio.promptstudio.global.exception.http.NotFoundException;
 import promptstudio.promptstudio.global.gpt.application.GptService;
+import promptstudio.promptstudio.global.gpt.application.GptServiceImpl;
 import promptstudio.promptstudio.global.gpt.prompt.PromptRegistry;
 import promptstudio.promptstudio.global.gpt.prompt.PromptType;
 import promptstudio.promptstudio.global.s3.service.S3StorageService;
@@ -40,6 +41,7 @@ public class ChatServiceImpl implements ChatService {
     private final RestTemplate restTemplate;
     private final S3StorageService s3StorageService;
     private final GptService gptService;
+    private final GptServiceImpl gptServiceImpl;
 
     @Value("${spring.ai.openai.api-key}")
     private String apiKey;
@@ -224,7 +226,7 @@ public class ChatServiceImpl implements ChatService {
 
             if ("IMAGE".equals(type)) {
                 String imagePrompt = jsonNode.get("prompt").asText();
-                String enhancedPrompt = enhanceImagePrompt(imagePrompt);
+                String enhancedPrompt = gptServiceImpl.enhanceImagePrompt(imagePrompt);
                 log.info("Original prompt: {}", imagePrompt);
                 log.info("Enhanced prompt: {}", enhancedPrompt);
 
@@ -339,54 +341,6 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-    private String enhanceImagePrompt(String originalPrompt) {
-        String prompt = originalPrompt.toLowerCase();
-        StringBuilder enhanced = new StringBuilder();
-
-        String cleaned = originalPrompt
-                .replaceAll("(?i)\\s*character\\s*", " ")
-                .replaceAll("(?i)\\s*캐릭터\\s*", " ")
-                .replaceAll("(?i)\\s*케릭터\\s*", " ")
-                .replaceAll("\\s+", " ")
-                .trim();
-
-        enhanced.append("A single illustration showing only one subject, ");
-
-        if (prompt.contains("animal crossing") || prompt.contains("동물의 숲")) {
-            enhanced.append(cleaned);
-            enhanced.append(". Animal Crossing New Horizons style, chibi proportions, oversized round head, ");
-            enhanced.append("large sparkling oval eyes, soft pastel colors, flat cel-shading, kawaii toylike aesthetic. ");
-        } else if (prompt.contains("pixar") || prompt.contains("픽사")) {
-            enhanced.append(cleaned);
-            enhanced.append(". Pixar 3D animation style, stylized realistic proportions, ");
-            enhanced.append("smooth subsurface scattering skin, expressive large eyes with reflections, ");
-            enhanced.append("soft cinematic lighting, vibrant colors, high-end CGI quality. ");
-        } else if (prompt.contains("ghibli") || prompt.contains("지브리")) {
-            enhanced.append(cleaned);
-            enhanced.append(". Studio Ghibli anime style, hand-painted watercolor aesthetic, ");
-            enhanced.append("soft warm lighting, gentle earth tone palette, dreamy atmosphere. ");
-        } else if (prompt.contains("disney") || prompt.contains("디즈니")) {
-            enhanced.append(cleaned);
-            enhanced.append(". Disney animation style, expressive large eyes, ");
-            enhanced.append("smooth flowing lines, vibrant colors, magical aesthetic. ");
-        } else {
-            enhanced.append(cleaned);
-            enhanced.append(". Appealing cartoon illustration style, friendly polished design, ");
-            enhanced.append("professional digital art quality. ");
-        }
-
-        enhanced.append("Plain solid color background, centered subject. ");
-
-        enhanced.append("The image must contain ONLY ONE single subject with NOTHING else. ");
-        enhanced.append("Absolutely NO color palette, NO color swatches, NO color samples. ");
-        enhanced.append("Absolutely NO additional characters, NO thumbnails, NO small versions. ");
-        enhanced.append("Absolutely NO character sheet, NO reference sheet, NO model sheet. ");
-        enhanced.append("Absolutely NO multiple views, NO multiple angles, NO turnaround. ");
-        enhanced.append("Absolutely NO text, NO labels, NO annotations. ");
-        enhanced.append("Just one clean illustration of the subject alone.");
-
-        return enhanced.toString();
-    }
 
     @lombok.Getter
     @lombok.Builder

@@ -247,6 +247,11 @@ public class GptServiceImpl implements GptService {
                 String imagePrompt = jsonNode.get("prompt").asText();
 
                 String enhancedPrompt = enhanceImagePrompt(imagePrompt);
+                log.info("=== DALL-E 프롬프트 (Text Only - Enhanced) ===");
+                log.info("원본 프롬프트: {}", imagePrompt);
+                log.info("Enhanced 프롬프트:\n{}", enhancedPrompt);
+                log.info("==========================================");
+
                 log.info("Original prompt: {}", imagePrompt);
                 log.info("Enhanced prompt: {}", enhancedPrompt);
 
@@ -373,6 +378,12 @@ public class GptServiceImpl implements GptService {
                     .call()
                     .content();
 
+            log.info("=== DALL-E 프롬프트 (Known Style: {}) ===", style);
+            log.info("Vision 분석 길이: {} chars", imageAnalysis.length());
+            log.info("DALL-E 프롬프트 길이: {} words", dallePrompt.split(" ").length);
+            log.info("DALL-E 프롬프트 전문:\n{}", dallePrompt);
+            log.info("==========================================");
+
             return dallePrompt.trim();
 
         } catch (Exception e) {
@@ -412,6 +423,12 @@ public class GptServiceImpl implements GptService {
             System.out.println("프롬프트 생성 완료 (원본 스타일 유지)");
             System.out.println("길이: " + dallePrompt.split(" ").length + " 단어");
             System.out.println("================================");
+
+            log.info("=== DALL-E 프롬프트 (No Style) ===");
+            log.info("Vision 분석 길이: {} chars", imageAnalysis.length());
+            log.info("DALL-E 프롬프트 길이: {} words", dallePrompt.split(" ").length);
+            log.info("DALL-E 프롬프트 전문:\n{}", dallePrompt);
+            log.info("==========================================");
 
             return dallePrompt.trim();
 
@@ -492,9 +509,19 @@ public class GptServiceImpl implements GptService {
                     .call()
                     .content();
 
+            log.info("=== DALL-E 프롬프트 (Unknown Style: {}) ===", styleName);
+            log.info("스타일 분석 길이: {} chars", styleAnalysis.length());
+            log.info("Vision 분석 길이: {} chars", imageAnalysis.length());
+            log.info("DALL-E 프롬프트 길이: {} words", dallePrompt.split(" ").length);
+            log.info("DALL-E 프롬프트 전문:\n{}", dallePrompt);
+            log.info("==========================================");
+
             System.out.println("프롬프트 생성 완료");
             System.out.println("길이: " + dallePrompt.split(" ").length + " 단어");
             System.out.println("================================");
+
+
+
 
             return dallePrompt.trim();
 
@@ -505,6 +532,8 @@ public class GptServiceImpl implements GptService {
                     e
             );
         }
+
+
     }
 
     @Override
@@ -695,11 +724,11 @@ public class GptServiceImpl implements GptService {
         return vectorStore.similaritySearch(builder.build());
     }
 
-    private String enhanceImagePrompt(String originalPrompt) {
-        String prompt = originalPrompt.toLowerCase();
+    public String enhanceImagePrompt(String originalPrompt) {
+        String promptLower = originalPrompt.toLowerCase();
         StringBuilder enhanced = new StringBuilder();
 
-        // 1. "character/캐릭터/케릭터" 단어 제거
+        // 1. "character/캐릭터" 단어 정리
         String cleaned = originalPrompt
                 .replaceAll("(?i)\\s*character\\s*", " ")
                 .replaceAll("(?i)\\s*캐릭터\\s*", " ")
@@ -707,45 +736,89 @@ public class GptServiceImpl implements GptService {
                 .replaceAll("\\s+", " ")
                 .trim();
 
-        // 2. 시작 문구 (더 강화)
-        enhanced.append("A single illustration showing only one subject, ");
+        // 2. 시작 문구
+        enhanced.append("A single illustration of ");
 
-        // 3. 스타일 감지 및 강화
-        if (prompt.contains("animal crossing") || prompt.contains("동물의 숲")) {
-            enhanced.append("a cute capybara in Animal Crossing New Horizons style. ");
-            enhanced.append("Chibi proportions, oversized round head, small compact body, ");
-            enhanced.append("large sparkling oval eyes, soft pastel colors, flat cel-shading, kawaii toylike aesthetic. ");
-        } else if (prompt.contains("pixar") || prompt.contains("픽사")) {
-            enhanced.append(cleaned);
-            enhanced.append(". Pixar 3D animation style, stylized realistic proportions, ");
-            enhanced.append("smooth subsurface scattering skin, expressive large eyes with reflections, ");
-            enhanced.append("soft cinematic lighting, vibrant colors, high-end CGI quality. ");
-        } else if (prompt.contains("ghibli") || prompt.contains("지브리")) {
-            enhanced.append(cleaned);
-            enhanced.append(". Studio Ghibli anime style, hand-painted watercolor aesthetic, ");
-            enhanced.append("soft warm lighting, gentle earth tone palette, dreamy atmosphere. ");
-        } else if (prompt.contains("disney") || prompt.contains("디즈니")) {
-            enhanced.append(cleaned);
-            enhanced.append(". Disney animation style, expressive large eyes, ");
-            enhanced.append("smooth flowing lines, vibrant colors, magical aesthetic. ");
+        // 3. 원본 프롬프트 추가
+        enhanced.append(cleaned);
+
+        // 4. 스타일 감지 및 적용
+        String styleDescription = detectAndGetStyle(promptLower);
+        if (styleDescription != null) {
+            enhanced.append(". ").append(styleDescription).append(". ");
         } else {
-            enhanced.append(cleaned);
-            enhanced.append(". Appealing cartoon illustration style, friendly polished design, ");
-            enhanced.append("professional digital art quality. ");
+            enhanced.append(". High quality digital illustration, clean professional style. ");
         }
 
-        // 4. 구도 및 배경
-        enhanced.append("Plain solid color background, centered subject. ");
-
-        // 5. 매우 강화된 네거티브 제약 (핵심!)
-        enhanced.append("The image must contain ONLY ONE single subject with NOTHING else. ");
-        enhanced.append("Absolutely NO color palette, NO color swatches, NO color samples. ");
-        enhanced.append("Absolutely NO additional characters, NO thumbnails, NO small versions. ");
-        enhanced.append("Absolutely NO character sheet, NO reference sheet, NO model sheet. ");
-        enhanced.append("Absolutely NO multiple views, NO multiple angles, NO turnaround. ");
-        enhanced.append("Absolutely NO text, NO labels, NO annotations. ");
-        enhanced.append("Just one clean illustration of the subject alone.");
+        // 5. 구도 및 품질
+        enhanced.append("Centered composition, clean background. ");
+        enhanced.append("Single subject only, no multiple views, no text, no watermarks.");
 
         return enhanced.toString();
+    }
+
+    private String detectAndGetStyle(String promptLower) {
+        // 스타일 감지 (우선순위 순)
+        if (promptLower.contains("animal crossing") || promptLower.contains("동물의 숲") ||
+                promptLower.contains("모여봐요")) {
+            return "Animal Crossing New Horizons style, chibi proportions with oversized round head, small compact body, large sparkling oval eyes, soft pastel colors, flat cel-shading, kawaii toylike aesthetic";
+        }
+
+        if (promptLower.contains("pixar") || promptLower.contains("픽사")) {
+            return "Pixar 3D animation style, stylized realistic proportions, smooth subsurface scattering skin, expressive large eyes with reflections, soft cinematic lighting, vibrant colors, high-end CGI quality";
+        }
+
+        if (promptLower.contains("ghibli") || promptLower.contains("지브리") ||
+                promptLower.contains("totoro") || promptLower.contains("토토로")) {
+            return "Studio Ghibli anime style, hand-painted watercolor aesthetic, soft warm lighting, gentle earth tone palette, 2D animation with natural proportions, dreamy atmospheric quality";
+        }
+
+        if (promptLower.contains("disney") || promptLower.contains("디즈니")) {
+            return "Disney 2D animation style, expressive large eyes, smooth flowing lines, vibrant colors, magical whimsical aesthetic";
+        }
+
+        if (promptLower.contains("anime") || promptLower.contains("애니메") ||
+                promptLower.contains("애니") || promptLower.contains("만화")) {
+            return "Japanese anime style, large expressive eyes, clean line art, vibrant colors";
+        }
+
+        if (promptLower.contains("realistic") || promptLower.contains("실사") ||
+                promptLower.contains("사실적")) {
+            return "Photorealistic style, natural lighting, detailed textures, professional photography quality";
+        }
+
+        if (promptLower.contains("cartoon") || promptLower.contains("카툰")) {
+            return "Appealing cartoon illustration style, friendly polished design, clean lines, vibrant colors";
+        }
+
+        // 스타일 명시 없음 - null 반환 (기본 스타일 적용)
+        return null;
+    }
+
+
+    // 1. TRANSFORMATION_LEVEL enum 추가
+    enum TransformationLevel {
+        NONE,    // REALISTIC
+        LIGHT,   // GHIBLI, PIXAR
+        HEAVY    // ANIMAL_CROSSING
+    }
+
+    // 2. 스타일별 변환 강도 매핑
+    private TransformationLevel getTransformationLevel(String style) {
+        return switch (style) {
+            case "animal_crossing" -> TransformationLevel.HEAVY;
+            case "ghibli", "pixar" -> TransformationLevel.LIGHT;
+            default -> TransformationLevel.NONE;
+        };
+    }
+
+    // 3. Vision 출력을 JSON으로 변경
+    private String extractIdentityKernel(List<String> imageUrls) {
+        // 새로운 JSON 기반 Vision 프롬프트 사용
+    }
+
+    // 4. Composer 단계 추가
+    private String composePrompt(String identityJson, String style, TransformationLevel level) {
+        // ALLOW/FORBID 규칙 적용
     }
 }

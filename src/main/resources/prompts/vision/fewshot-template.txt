@@ -1,31 +1,32 @@
-Learn from these EXAMPLES how to transform photos into {style} style.
+Transform the image into {style} style artwork.
 
 ═══════════════════════════════════════
-STYLE EXAMPLES
+TARGET STYLE: {style}
 ═══════════════════════════════════════
 
+STYLE REFERENCE EXAMPLES:
 {fewshotExamples}
 
 ═══════════════════════════════════════
-NOW YOUR TURN
+SOURCE IMAGE ANALYSIS:
 ═══════════════════════════════════════
-
-TARGET STYLE: {style}
-
-USER REQUEST: {userPrompt}
-
-VISION ANALYSIS:
 {imageAnalysis}
 
 ═══════════════════════════════════════
+USER REQUEST: {userPrompt}
+═══════════════════════════════════════
 
-TASK:
-Follow the EXAMPLE pattern for {style} style above.
+YOUR TASK:
 
-1. Start with identity features from vision analysis
-2. State that features are "preserved exactly as described"
-3. Add style rendering while maintaining all identity features
-4. Output ONE flowing paragraph, 150-200 words
-5. Keep it simple and natural like the examples
+1. Write a prompt that STARTS with the style name
+2. Extract ONLY these from the analysis:
+   - Hair: color + length (e.g., "long dark hair")
+   - Clothing: type + color (e.g., "white crop top")
+   - Pose: simple description (e.g., "hand raised")
+3. Apply {style} visual characteristics from the examples
+4. IGNORE all realistic facial details from analysis
 
-OUTPUT ONLY THE DALL-E PROMPT.
+FOLLOW THE EXAMPLE OUTPUT FORMAT EXACTLY.
+50-80 words maximum.
+
+OUTPUT: Only the prompt, nothing else.

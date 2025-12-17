@@ -1,16 +1,11 @@
-EXAMPLE 1: GHIBLI STYLE
-═══════════════════════════════════════
-INPUT:
-"Person with soft facial lines, light skin tone, calm eyes, long straight black hair, light blue shirt, gentle relaxed pose."
+EXAMPLE 1:
+INPUT: Person with long dark wavy hair, bangs, white top, hand raised, natural expression
+OUTPUT: A young character in authentic Studio Ghibli anime style with long flowing dark hair and soft bangs, wearing a simple white top. Hand-painted 2D cel animation aesthetic with soft watercolor textures and warm earth tones. Gentle natural lighting, serene expression. One hand gracefully raised. Dreamy atmospheric background with soft colors. Like a frame from a Hayao Miyazaki film. Single character.
 
-OUTPUT:
-"A person with soft facial lines, light skin tone, calm natural eyes, and long straight black hair wearing a light blue casual shirt. The relaxed pose is preserved exactly as described. Rendered in a Ghibli‑inspired 2D illustration style emphasizing warm watercolor washes, soft hand‑painted textures, and gentle diffused lighting. Linework appears organically sketched with mild imperfections, and shadows are expressed through subtle layered gradients rather than hard edges. Colors lean toward warm creams, light teals, and muted earth tones to create a nostalgic and soothing mood. Background is loosely painted with soft bokeh-like forms to keep focus on the subject. The overall look evokes traditional cel‑animation charm with delicate brush strokes and a dreamy, atmospheric quality while maintaining the subject's silhouette, pose, and clothing colors."
+EXAMPLE 2:
+INPUT: Person with short brown hair, blue jacket, walking outdoors, peaceful mood
+OUTPUT: A character illustrated in classic Studio Ghibli 2D style with short brown hair, wearing a blue jacket. Traditional hand-drawn anime aesthetic, soft painterly textures, warm muted color palette. Walking with peaceful gentle expression. Soft natural lighting, nostalgic dreamy atmosphere. Impressionistic background suggesting outdoor scenery. Miyazaki animation quality. Single character.
 
-═══════════════════════════════════════
-EXAMPLE 2: GHIBLI STYLE
-═══════════════════════════════════════
-INPUT:
-"Person with rounded facial structure, medium skin tone, bright eyes, short wavy dark hair, teal top, soft smile."
-
-OUTPUT:
-"A person with gently rounded facial contours, medium toned skin, bright expressive eyes, short wavy dark hair, and a teal top, all preserved exactly as described. Rendered in a Ghibli‑inspired hand‑drawn aesthetic featuring warm natural lighting and soft watercolor textures layered with translucent shading. Line art remains clean yet organic, giving a traditional 2D animation feeling. Colors blend through subtle gradients with warm earth tones and harmonizing teal hues. Highlights and shadows are expressed softly, avoiding hard outlines. Background elements are lightly suggested with loose watercolor strokes to maintain focus on the subject. The overall mood conveys warmth, comfort, and nostalgic charm with painterly brush textures while respecting the subject's features, hair shape, and clothing details."
+EXAMPLE 3:
+INPUT: Person with red hair in braid, green dress, standing in field, wind blowing
+OUTPUT: A Ghibli-style character with flowing red braided hair, wearing a simple green dress. Authentic Studio Ghibli 2D animation aesthetic with hand-painted watercolor feel, warm sunlit tones. Hair and dress gently moving in the breeze. Soft diffused lighting, magical peaceful atmosphere. Painterly meadow background. Like a scene from a Miyazaki masterpiece. Single character.

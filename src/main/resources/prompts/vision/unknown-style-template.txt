@@ -1,48 +1,30 @@
-Create a DALL-E 3 prompt that combines character identity with style characteristics.
+Transform this image into {styleName} style.
 
 ═══════════════════════════════════════
-STYLE: {styleName}
+TARGET STYLE: {styleName}
 ═══════════════════════════════════════
 
-STYLE VISUAL CHARACTERISTICS:
+STYLE CHARACTERISTICS:
 {styleAnalysis}
 
 ═══════════════════════════════════════
-CHARACTER DESCRIPTION (MUST PRESERVE):
+SOURCE IMAGE:
 ═══════════════════════════════════════
-
 {imageAnalysis}
 
 ═══════════════════════════════════════
-USER'S REQUEST:
-═══════════════════════════════════════
-
-{userPrompt}
-
+USER REQUEST: {userPrompt}
 ═══════════════════════════════════════
 
 TASK:
-Create a single detailed DALL-E 3 prompt (250-350 words) that:
 
-1. PRESERVES CHARACTER IDENTITY:
-   - Start with precise facial features (face shape, eyes, nose, mouth, jaw)
-   - Include exact hair description (color, length, texture, style)
-   - Describe clothing and accessories
-   - Maintain pose and expression
+Write a DALL-E prompt that:
+1. STARTS with "{styleName} style illustration of..."
+2. Applies the style characteristics above
+3. Keeps only: hair color/style, clothing, pose
+4. Ignores realistic facial details
 
-2. APPLIES STYLE CHARACTERISTICS:
-   - Use the style analysis to determine rendering method
-   - Apply appropriate proportions for this style
-   - Describe line work and shading as specified
-   - Match color palette characteristics
-   - Include technical rendering details
+LENGTH: 50-80 words
+FORMAT: Single paragraph, style name first
 
-3. MAINTAIN QUALITY:
-   - Single dense paragraph, no line breaks
-   - Specific technical details throughout
-   - End with: "Must maintain unique identifying characteristics from analysis, not a generic template."
-
-CRITICAL: The character's face, hair, and body features must be recognizable despite style transformation.
-The style should ENHANCE, not REPLACE the person's unique characteristics.
-
-OUTPUT ONLY THE DALL-E PROMPT.
+OUTPUT: Only the DALL-E prompt.
