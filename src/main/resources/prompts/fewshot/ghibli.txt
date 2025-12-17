@@ -1,24 +1,28 @@
-TRANSFORMATION: LIGHT (soft simplification, keep silhouette)
-KEEP: hair, clothing, face_shape as soft reference
-SIMPLIFY: features become gentle and painterly
+TRANSFORMATION: LIGHT
+PRIORITY: User Intent > Style Rules > Identity
+USE: hair, clothing, general mood
+DROP: detailed face structure
 
 ═══════════════════════════════════════
 
 EXAMPLE 1:
-IDENTITY_KERNEL: {"face_shape": "oval", "hair": "long dark wavy with bangs", "clothing": "white top", "pose": "hand raised"}
+USER_INTENT: "dreamy atmosphere"
+KERNEL: {"hair": "long dark wavy", "clothing": "white top"}
 
-OUTPUT: A character in authentic Studio Ghibli 2D anime style with long flowing dark hair and soft bangs, wearing a simple white top. Hand-painted cel animation aesthetic with soft watercolor textures, warm earth tones, gentle natural lighting. Soft oval face with simplified serene features. One hand gracefully raised. Dreamy atmospheric background. Like a frame from a Miyazaki film. No photorealistic details. Single character.
+OUTPUT: A single finished Studio Ghibli-style illustration. Dreamy atmospheric quality with soft lighting. A character with long flowing dark hair wearing a simple white top in a sunlit meadow. Hand-painted 2D animation, soft watercolor textures, warm earth tones. Gentle breeze, peaceful mood. Not a character sheet. Not concept art. Single scene only.
 
 ═══════════════════════════════════════
 
 EXAMPLE 2:
-IDENTITY_KERNEL: {"face_shape": "round", "hair": "short brown", "clothing": "blue jacket", "pose": "walking"}
+USER_INTENT: "nostalgic countryside feel"
+KERNEL: {"hair": "short brown", "clothing": "blue jacket"}
 
-OUTPUT: A Ghibli-style character with short brown hair, wearing a blue jacket, walking with gentle movement. Classic Studio Ghibli 2D animation aesthetic, hand-painted watercolor feel, warm muted color palette. Soft round face with kind simplified expression. Natural diffused lighting, nostalgic dreamy atmosphere. Impressionistic outdoor background. Miyazaki animation quality. No photorealistic details. Single character.
+OUTPUT: A single finished Studio Ghibli-style illustration. Nostalgic countryside atmosphere. A character with short brown hair in a blue jacket walking along a quiet rural path. Classic Miyazaki 2D animation, hand-painted watercolor backgrounds, warm muted colors. Natural diffused lighting. Not a character sheet. Not concept art. Single cinematic moment.
 
 ═══════════════════════════════════════
 
 EXAMPLE 3:
-IDENTITY_KERNEL: {"face_shape": "heart", "hair": "red braid", "clothing": "green dress", "pose": "standing in wind"}
+USER_INTENT: "magical golden hour"
+KERNEL: {"hair": "red braid", "clothing": "green dress"}
 
-OUTPUT: A Studio Ghibli anime character with flowing red braided hair, wearing a simple green dress gently moving in the breeze. Authentic Ghibli 2D hand-drawn style with watercolor textures, warm sunlit tones. Soft heart-shaped face with peaceful expression. Magical atmospheric quality with soft diffused lighting. Painterly meadow background suggested. Like a scene from a Miyazaki masterpiece. No photorealistic details. Single character.
+OUTPUT: A single finished Studio Ghibli-style illustration. Magical golden hour lighting. A character with red braided hair wearing a flowing green dress in a windswept field. 2D cel animation aesthetic, watercolor textures, warm sunlit tones. Peaceful enchanting atmosphere. Not a character sheet. Not concept art. Single film frame.

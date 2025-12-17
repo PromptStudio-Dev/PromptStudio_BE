@@ -1,24 +1,28 @@
-TRANSFORMATION: HEAVY (intentional structure destruction)
-KEEP: hair color, clothing color only
-IGNORE: face shape, proportions, facial details
+TRANSFORMATION: HEAVY
+PRIORITY: User Intent > Style Rules > Identity
+USE: hair color, clothing color ONLY
+DROP: face shape, anatomy, pose details
 
 ═══════════════════════════════════════
 
 EXAMPLE 1:
-IDENTITY_KERNEL: {"face_shape": "oval", "hair": "long dark wavy with bangs", "clothing": "white crop top with pink design", "pose": "hand touching hair"}
+USER_INTENT: "transparent background, in-game look, 3D"
+KERNEL: {"hair": "long dark", "clothing": "white top, black jeans"}
 
-OUTPUT: A chibi-style Animal Crossing villager with long dark hair, wearing a white top with pink accent. Classic Nintendo aesthetic with oversized round head, big sparkling oval eyes, tiny dot nose and mouth, small rounded body. Hand raised in cute pose. Soft pastel colors, flat cel-shading, kawaii toylike finish. No realistic anatomy, no human proportions. Clean pastel background. Single character.
+OUTPUT: A single finished Animal Crossing-style character illustration. Transparent background. Clear 3D appearance like actual in-game character. A villager with long dark hair wearing a white top and dark pants. Nintendo villager proportions: oversized round head, dot eyes, tiny features, small rounded body. Bright pastels, smooth plastic materials, cheerful lighting. Not a character sheet. Not concept art. Not a turnaround. Not multiple poses. No color palette.
 
 ═══════════════════════════════════════
 
 EXAMPLE 2:
-IDENTITY_KERNEL: {"face_shape": "round", "hair": "short brown", "clothing": "blue hoodie", "pose": "standing relaxed"}
+USER_INTENT: "bright warm lighting"
+KERNEL: {"hair": "short brown", "clothing": "blue hoodie"}
 
-OUTPUT: An adorable Animal Crossing villager with short brown hair, wearing a cozy blue hoodie. Signature Nintendo chibi style with huge round head, large shiny eyes, minimal dot features, stubby rounded body. Relaxed friendly stance. Warm pastel palette, flat cel-shading, cute toylike aesthetic. No realistic structure, no detailed features. Simple solid background. Single character.
+OUTPUT: A single finished Animal Crossing-style character illustration. Bright warm lighting with soft shadows. A villager with short brown hair wearing a cozy blue hoodie. Nintendo villager design: large spherical head, minimal dot features, stubby rounded body. Cheerful pastel colors, toylike plastic finish. Not a character sheet. Not concept art. Not a turnaround. Not multiple poses. No color palette.
 
 ═══════════════════════════════════════
 
 EXAMPLE 3:
-IDENTITY_KERNEL: {"face_shape": "unknown", "hair": "blonde ponytail", "clothing": "red sweater", "pose": "sitting", "distinct_feature": "glasses"}
+USER_INTENT: "transparent background"
+KERNEL: {"hair": "blonde ponytail", "clothing": "red sweater", "accessory": "glasses"}
 
-OUTPUT: A charming Animal Crossing villager with blonde ponytail and cute round glasses, wearing a red sweater. Nintendo's iconic chibi design with oversized head, big sparkling eyes, tiny simple features, compact body. Sitting in cozy pose. Soft warm pastels, flat cel-shading, kawaii aesthetic. No realistic proportions, no detailed face. Clean background. Single character.
+OUTPUT: A single finished Animal Crossing-style character illustration. Transparent background, clean cutout. A villager with blonde ponytail and round glasses wearing a red sweater. Authentic Nintendo proportions: huge round head, dot eyes, compact body. Warm pastel palette, plastic texture. Not a character sheet. Not concept art. Not a turnaround. Not multiple poses. No color palette.

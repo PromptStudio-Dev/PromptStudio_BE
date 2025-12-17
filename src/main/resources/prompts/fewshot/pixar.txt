@@ -1,24 +1,28 @@
-TRANSFORMATION: LIGHT (stylized 3D, keep silhouette)
-KEEP: hair, clothing, face_shape as inspiration
-APPLY: smooth 3D CGI aesthetic, large expressive eyes
+TRANSFORMATION: LIGHT
+PRIORITY: User Intent > Style Rules > Identity
+USE: hair, clothing, face shape as soft reference
+DROP: realistic facial details
 
 ═══════════════════════════════════════
 
 EXAMPLE 1:
-IDENTITY_KERNEL: {"face_shape": "oval", "hair": "long dark wavy", "clothing": "white crop top", "pose": "confident stance"}
+USER_INTENT: "cinematic lighting"
+KERNEL: {"hair": "long dark wavy", "clothing": "white crop top"}
 
-OUTPUT: A Pixar-style 3D animated character with long dark wavy hair, wearing a white cropped top. Modern CGI animation aesthetic with stylized oval face, smooth rounded features, large expressive eyes with detailed reflections. Confident pose with natural body language. Soft cinematic lighting, vibrant saturated colors, subtle subsurface skin scattering. Clean gradient background. No photorealistic details. Single character.
+OUTPUT: A single finished Pixar-style illustration. Cinematic lighting with dramatic shadows. A character with long dark wavy hair wearing a white top in a warmly lit room. Modern 3D CGI, stylized proportions, large expressive eyes with reflections. Vibrant saturated colors. Not a character sheet. Not concept art. Single movie frame.
 
 ═══════════════════════════════════════
 
 EXAMPLE 2:
-IDENTITY_KERNEL: {"face_shape": "round", "hair": "short blonde", "clothing": "green sweater", "pose": "smiling", "distinct_feature": "glasses"}
+USER_INTENT: "cozy indoor scene"
+KERNEL: {"hair": "short blonde", "clothing": "green sweater", "accessory": "glasses"}
 
-OUTPUT: A charming Pixar 3D character with short blonde hair and stylized round glasses, wearing a cozy green sweater. Signature Pixar aesthetic with friendly round face, big warm expressive eyes with reflections, smooth stylized features. Genuine happy smile. Soft studio lighting with warm highlights, rich colors. Modern animation quality. Clean simple background. No photorealistic details. Single character.
+OUTPUT: A single finished Pixar-style illustration. Cozy indoor setting with warm ambient light. A character with short blonde hair and stylized round glasses wearing a green sweater. Signature Pixar 3D animation, smooth rounded features, warm expressive eyes. Soft studio lighting. Not a character sheet. Not concept art. Single cinematic shot.
 
 ═══════════════════════════════════════
 
 EXAMPLE 3:
-IDENTITY_KERNEL: {"face_shape": "square", "hair": "curly brown", "clothing": "red dress", "pose": "dancing"}
+USER_INTENT: "vibrant outdoor scene"
+KERNEL: {"hair": "curly brown", "clothing": "red dress"}
 
-OUTPUT: A delightful Pixar-style 3D character with bouncy curly brown hair, wearing a flowing red dress in dynamic dancing pose. Modern CGI animation with appealing stylized features, large sparkling eyes, smooth rounded forms. Joyful energetic expression. Cinematic lighting with warm highlights, vibrant color palette. High-end animation quality. Soft blurred background. No photorealistic details. Single character.
+OUTPUT: A single finished Pixar-style illustration. Vibrant outdoor scene with rich colors. A joyful character with curly brown hair wearing a red dress. High-end 3D CGI animation, appealing stylized proportions, dynamic energy. Cinematic composition, saturated palette. Not a character sheet. Not concept art. Single finished movie frame.
