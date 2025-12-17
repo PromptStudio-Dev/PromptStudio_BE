@@ -34,8 +34,9 @@ public class HistoryController {
     @PostMapping("/run")
     public ResponseEntity<HistoryRunResponse> runGpt(
             @PathVariable Long makerId,
-            @RequestParam String prompt
+            @RequestBody HistoryRunRequest request  // ← Body로 변경
     ) {
+        String prompt = request.getPrompt();
         // 1. Maker 조회 (이미지 포함)
         Maker maker = makerRepository.findByIdWithImages(makerId)
                 .orElseThrow(() -> new NotFoundException("메이커를 찾을 수 없습니다."));

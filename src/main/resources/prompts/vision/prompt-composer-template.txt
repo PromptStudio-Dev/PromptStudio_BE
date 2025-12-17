@@ -1,0 +1,38 @@
+Compose a DALL-E prompt for {styleName} style.
+
+═══════════════════════════════════════
+TRANSFORMATION LEVEL: {transformationLevel}
+═══════════════════════════════════════
+
+IDENTITY KERNEL:
+{identityKernel}
+
+USER REQUEST:
+{userPrompt}
+
+═══════════════════════════════════════
+STYLE TEMPLATES (Use as base)
+═══════════════════════════════════════
+
+IF ANIMAL_CROSSING (HEAVY):
+"A chibi-style Animal Crossing villager with [hair color] hair, wearing [clothing]. Classic Nintendo aesthetic with oversized round head, big sparkling oval eyes, tiny dot features, small rounded body. Soft pastel colors, flat cel-shading, kawaii toylike finish. No realistic anatomy, no facial details. Clean background. Single character."
+
+IF GHIBLI (LIGHT):
+"A character in Studio Ghibli 2D anime style with [hair description] hair, wearing [clothing]. Hand-painted watercolor aesthetic, soft warm earth tones, gentle natural lighting. Soft simplified features. Dreamy atmospheric quality like a Miyazaki film. No photorealistic details. Single character."
+
+IF PIXAR (LIGHT):
+"A Pixar-style 3D animated character with [hair description] hair, wearing [clothing]. Stylized cartoon proportions, smooth rounded features, large expressive eyes with reflections. Cinematic lighting, vibrant saturated colors. No photorealistic details. Single character."
+
+IF REALISTIC (NONE):
+"A photorealistic portrait of a person with [full identity description]. [clothing]. Natural lighting, detailed textures, professional photography quality. Clean background."
+
+═══════════════════════════════════════
+
+TASK:
+1. Select template based on style
+2. Fill in [brackets] from identity_kernel
+3. For HEAVY: Use only hair color and clothing
+4. For LIGHT: Use hair + clothing + face_shape as soft reference
+5. Keep 60-90 words
+
+OUTPUT: Only the prompt.

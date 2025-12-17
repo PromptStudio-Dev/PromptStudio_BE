@@ -1,31 +1,33 @@
-Learn from these EXAMPLES how to transform photos into {style} style.
+Transform image to {style} style using CONTROLLED TRANSFORMATION.
 
 ═══════════════════════════════════════
-STYLE EXAMPLES
+STYLE: {style}
+TRANSFORMATION LEVEL: {transformationLevel}
 ═══════════════════════════════════════
 
+STYLE EXAMPLES:
 {fewshotExamples}
 
 ═══════════════════════════════════════
-NOW YOUR TURN
+IDENTITY KERNEL (from Vision):
 ═══════════════════════════════════════
+{identityKernel}
 
-TARGET STYLE: {style}
-
+═══════════════════════════════════════
 USER REQUEST: {userPrompt}
-
-VISION ANALYSIS:
-{imageAnalysis}
-
 ═══════════════════════════════════════
 
 TASK:
-Follow the EXAMPLE pattern for {style} style above.
+1. Match the transformation level:
+   - HEAVY: Use ONLY hair color + clothing color
+   - LIGHT: Use hair + clothing + face_shape as soft reference
 
-1. Start with identity features from vision analysis
-2. State that features are "preserved exactly as described"
-3. Add style rendering while maintaining all identity features
-4. Output ONE flowing paragraph, 150-200 words
-5. Keep it simple and natural like the examples
+2. Follow the example OUTPUT format exactly
 
-OUTPUT ONLY THE DALL-E PROMPT.
+3. 60-90 words maximum
+
+4. End with appropriate prohibition:
+   - HEAVY: "No realistic anatomy, no human proportions."
+   - LIGHT: "No photorealistic details."
+
+OUTPUT: Only the prompt.

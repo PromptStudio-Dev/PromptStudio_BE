@@ -21,11 +21,20 @@ public enum PromptType {
     // 프롬프트 실행
     RUN_SYSTEM("prompts/run/system.txt"),
 
-    // Vision & DALL-E
-    VISION_ANALYSIS_SYSTEM("prompts/vision/analysis-system.txt"),
-    VISION_DALLE_EXPERT_SYSTEM("prompts/vision/dalle-expert-system.txt"),
+    // Vision & DALL-E (NEW ARCHITECTURE)
+    VISION_IDENTITY_EXTRACTOR("prompts/vision/vision-identity-extractor.txt"),
+    PROMPT_COMPOSER_SYSTEM("prompts/vision/prompt-composer-system.txt"),
+    PROMPT_COMPOSER_TEMPLATE("prompts/vision/prompt-composer-template.txt"),
+
+    // Legacy (하위 호환용 - 필요시 제거)
+    VISION_ANALYSIS_SYSTEM("prompts/vision/vision-identity-extractor.txt"),
+    VISION_DALLE_EXPERT_SYSTEM("prompts/vision/prompt-composer-system.txt"),
+
+    // Style Analysis
     VISION_STYLE_ANALYZER_SYSTEM("prompts/vision/style-analyzer-system.txt"),
     VISION_STYLE_ANALYZER_USER("prompts/vision/style-analyzer-user-template.txt"),
+
+    // Templates
     VISION_FEWSHOT_TEMPLATE("prompts/vision/fewshot-template.txt"),
     VISION_NO_STYLE_TEMPLATE("prompts/vision/no-style-template.txt"),
     VISION_UNKNOWN_STYLE_TEMPLATE("prompts/vision/unknown-style-template.txt"),
@@ -37,7 +46,10 @@ public enum PromptType {
 
     // 피드백
     FEEDBACK_SYSTEM("prompts/feedback/system.txt"),
-    FEEDBACK_USER("prompts/feedback/user-template.txt");
+    FEEDBACK_USER("prompts/feedback/user-template.txt"),
+
+    // 이미지 스타일
+    ENHANCE_IMAGE_STYLES("prompts/enhance/image-styles.txt");
 
     private final String path;
 }

@@ -1,16 +1,28 @@
-EXAMPLE 1: GHIBLI STYLE
-═══════════════════════════════════════
-INPUT:
-"Person with soft facial lines, light skin tone, calm eyes, long straight black hair, light blue shirt, gentle relaxed pose."
-
-OUTPUT:
-"A person with soft facial lines, light skin tone, calm natural eyes, and long straight black hair wearing a light blue casual shirt. The relaxed pose is preserved exactly as described. Rendered in a Ghibli‑inspired 2D illustration style emphasizing warm watercolor washes, soft hand‑painted textures, and gentle diffused lighting. Linework appears organically sketched with mild imperfections, and shadows are expressed through subtle layered gradients rather than hard edges. Colors lean toward warm creams, light teals, and muted earth tones to create a nostalgic and soothing mood. Background is loosely painted with soft bokeh-like forms to keep focus on the subject. The overall look evokes traditional cel‑animation charm with delicate brush strokes and a dreamy, atmospheric quality while maintaining the subject's silhouette, pose, and clothing colors."
+TRANSFORMATION: LIGHT
+PRIORITY: User Intent > Style Rules > Identity
+USE: hair, clothing, general mood
+DROP: detailed face structure
 
 ═══════════════════════════════════════
-EXAMPLE 2: GHIBLI STYLE
-═══════════════════════════════════════
-INPUT:
-"Person with rounded facial structure, medium skin tone, bright eyes, short wavy dark hair, teal top, soft smile."
 
-OUTPUT:
-"A person with gently rounded facial contours, medium toned skin, bright expressive eyes, short wavy dark hair, and a teal top, all preserved exactly as described. Rendered in a Ghibli‑inspired hand‑drawn aesthetic featuring warm natural lighting and soft watercolor textures layered with translucent shading. Line art remains clean yet organic, giving a traditional 2D animation feeling. Colors blend through subtle gradients with warm earth tones and harmonizing teal hues. Highlights and shadows are expressed softly, avoiding hard outlines. Background elements are lightly suggested with loose watercolor strokes to maintain focus on the subject. The overall mood conveys warmth, comfort, and nostalgic charm with painterly brush textures while respecting the subject's features, hair shape, and clothing details."
+EXAMPLE 1:
+USER_INTENT: "dreamy atmosphere"
+KERNEL: {"hair": "long dark wavy", "clothing": "white top"}
+
+OUTPUT: A single finished Studio Ghibli-style illustration. Dreamy atmospheric quality with soft lighting. A character with long flowing dark hair wearing a simple white top in a sunlit meadow. Hand-painted 2D animation, soft watercolor textures, warm earth tones. Gentle breeze, peaceful mood. Not a character sheet. Not concept art. Single scene only.
+
+═══════════════════════════════════════
+
+EXAMPLE 2:
+USER_INTENT: "nostalgic countryside feel"
+KERNEL: {"hair": "short brown", "clothing": "blue jacket"}
+
+OUTPUT: A single finished Studio Ghibli-style illustration. Nostalgic countryside atmosphere. A character with short brown hair in a blue jacket walking along a quiet rural path. Classic Miyazaki 2D animation, hand-painted watercolor backgrounds, warm muted colors. Natural diffused lighting. Not a character sheet. Not concept art. Single cinematic moment.
+
+═══════════════════════════════════════
+
+EXAMPLE 3:
+USER_INTENT: "magical golden hour"
+KERNEL: {"hair": "red braid", "clothing": "green dress"}
+
+OUTPUT: A single finished Studio Ghibli-style illustration. Magical golden hour lighting. A character with red braided hair wearing a flowing green dress in a windswept field. 2D cel animation aesthetic, watercolor textures, warm sunlit tones. Peaceful enchanting atmosphere. Not a character sheet. Not concept art. Single film frame.

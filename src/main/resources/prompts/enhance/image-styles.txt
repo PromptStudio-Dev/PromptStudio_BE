@@ -1,0 +1,19 @@
+# Image Enhancement Style Definitions
+# Format: KEYWORD|STYLE_DESCRIPTION
+
+animal_crossing|Animal Crossing New Horizons style, chibi proportions with oversized round head, small compact body, large sparkling oval eyes, soft pastel colors, flat cel-shading, kawaii toylike aesthetic
+
+pixar|Pixar 3D animation style, stylized realistic proportions, smooth subsurface scattering skin, expressive large eyes with reflections, soft cinematic lighting, vibrant colors, high-end CGI quality
+
+ghibli|Studio Ghibli anime style, hand-painted watercolor aesthetic, soft warm lighting, gentle earth tone palette, 2D animation with natural proportions, dreamy atmospheric quality
+
+disney|Disney 2D animation style, expressive large eyes, smooth flowing lines, vibrant colors, magical whimsical aesthetic
+
+realistic|Photorealistic style, natural lighting, detailed textures, professional photography quality
+
+anime|Japanese anime style, large expressive eyes, clean line art, vibrant colors, dynamic poses
+
+cartoon|Appealing cartoon illustration style, friendly polished design, clean lines, vibrant colors, professional digital art quality
+
+# Default (no style detected)
+default|High quality digital illustration, clean professional style, good lighting, detailed rendering
