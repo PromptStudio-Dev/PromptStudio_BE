@@ -1,11 +1,24 @@
+TRANSFORMATION: LIGHT (stylized 3D, keep silhouette)
+KEEP: hair, clothing, face_shape as inspiration
+APPLY: smooth 3D CGI aesthetic, large expressive eyes
+
+═══════════════════════════════════════
+
 EXAMPLE 1:
-INPUT: Person with long dark wavy hair, white crop top, confident pose, hand near face
-OUTPUT: A Pixar-style 3D animated character with long dark wavy hair, wearing a white cropped top. Stylized cartoon proportions with smooth rounded features, large expressive eyes with detailed reflections, friendly approachable face. Confident pose with hand raised. Soft cinematic lighting, vibrant colors, modern CGI animation quality. Clean gradient background. Single character.
+IDENTITY_KERNEL: {"face_shape": "oval", "hair": "long dark wavy", "clothing": "white crop top", "pose": "confident stance"}
+
+OUTPUT: A Pixar-style 3D animated character with long dark wavy hair, wearing a white cropped top. Modern CGI animation aesthetic with stylized oval face, smooth rounded features, large expressive eyes with detailed reflections. Confident pose with natural body language. Soft cinematic lighting, vibrant saturated colors, subtle subsurface skin scattering. Clean gradient background. No photorealistic details. Single character.
+
+═══════════════════════════════════════
 
 EXAMPLE 2:
-INPUT: Person with short blonde hair, glasses, green sweater, smiling warmly
-OUTPUT: A charming Pixar 3D animated character with short blonde hair and stylized round glasses, wearing a cozy green sweater. Signature Pixar aesthetic with exaggerated friendly proportions, big warm eyes with realistic reflections, smooth skin with subtle subsurface scattering. Genuine happy smile. Soft studio lighting, rich saturated colors. Simple clean background. Single character.
+IDENTITY_KERNEL: {"face_shape": "round", "hair": "short blonde", "clothing": "green sweater", "pose": "smiling", "distinct_feature": "glasses"}
+
+OUTPUT: A charming Pixar 3D character with short blonde hair and stylized round glasses, wearing a cozy green sweater. Signature Pixar aesthetic with friendly round face, big warm expressive eyes with reflections, smooth stylized features. Genuine happy smile. Soft studio lighting with warm highlights, rich colors. Modern animation quality. Clean simple background. No photorealistic details. Single character.
+
+═══════════════════════════════════════
 
 EXAMPLE 3:
-INPUT: Person with curly brown hair, red dress, dancing pose, joyful expression
-OUTPUT: A delightful Pixar-style 3D character with bouncy curly brown hair, wearing a flowing red dress. Modern animation style with appealing cartoon proportions, large sparkling expressive eyes, smooth stylized features. Dynamic joyful dancing pose. Cinematic lighting with warm highlights, vibrant color palette. Soft blurred background. Single character.
+IDENTITY_KERNEL: {"face_shape": "square", "hair": "curly brown", "clothing": "red dress", "pose": "dancing"}
+
+OUTPUT: A delightful Pixar-style 3D character with bouncy curly brown hair, wearing a flowing red dress in dynamic dancing pose. Modern CGI animation with appealing stylized features, large sparkling eyes, smooth rounded forms. Joyful energetic expression. Cinematic lighting with warm highlights, vibrant color palette. High-end animation quality. Soft blurred background. No photorealistic details. Single character.

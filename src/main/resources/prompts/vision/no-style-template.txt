@@ -1,25 +1,21 @@
-Recreate this image based on the analysis and user request.
+Create a DALL-E prompt that recreates this image without style transformation.
 
 ═══════════════════════════════════════
-IMAGE ANALYSIS:
+IDENTITY KERNEL:
 ═══════════════════════════════════════
-{imageAnalysis}
+{identityKernel}
 
 ═══════════════════════════════════════
 USER REQUEST: {userPrompt}
 ═══════════════════════════════════════
 
 TASK:
+1. Create a high-quality realistic/photographic recreation
+2. Use all fields from identity_kernel
+3. Apply any specific changes user requested
+4. Keep natural, professional quality
 
-Create a DALL-E prompt that:
-1. Recreates the subject from the analysis
-2. Applies any changes the user requested
-3. Maintains high quality illustration style
-4. Uses clear, direct descriptions
-
-If user request is vague, create a clean high-quality illustration of the subject.
-
-LENGTH: 50-80 words
+LENGTH: 60-90 words
 FORMAT: Single paragraph
 
 OUTPUT: Only the DALL-E prompt.

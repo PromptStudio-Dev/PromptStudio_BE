@@ -1,30 +1,28 @@
-Transform this image into {styleName} style.
+Transform to {styleName} style using controlled transformation.
 
 ═══════════════════════════════════════
 TARGET STYLE: {styleName}
+TRANSFORMATION LEVEL: LIGHT (default for unknown styles)
 ═══════════════════════════════════════
 
 STYLE CHARACTERISTICS:
 {styleAnalysis}
 
 ═══════════════════════════════════════
-SOURCE IMAGE:
+IDENTITY KERNEL:
 ═══════════════════════════════════════
-{imageAnalysis}
+{identityKernel}
 
 ═══════════════════════════════════════
 USER REQUEST: {userPrompt}
 ═══════════════════════════════════════
 
 TASK:
+1. START with the style name
+2. Apply style characteristics from analysis
+3. Use identity_kernel: hair + clothing + face_shape as soft reference
+4. End with: "No photorealistic details."
 
-Write a DALL-E prompt that:
-1. STARTS with "{styleName} style illustration of..."
-2. Applies the style characteristics above
-3. Keeps only: hair color/style, clothing, pose
-4. Ignores realistic facial details
-
-LENGTH: 50-80 words
-FORMAT: Single paragraph, style name first
+LENGTH: 60-90 words
 
 OUTPUT: Only the DALL-E prompt.

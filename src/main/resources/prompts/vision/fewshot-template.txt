@@ -1,32 +1,33 @@
-Transform the image into {style} style artwork.
+Transform image to {style} style using CONTROLLED TRANSFORMATION.
 
 ═══════════════════════════════════════
-TARGET STYLE: {style}
+STYLE: {style}
+TRANSFORMATION LEVEL: {transformationLevel}
 ═══════════════════════════════════════
 
-STYLE REFERENCE EXAMPLES:
+STYLE EXAMPLES:
 {fewshotExamples}
 
 ═══════════════════════════════════════
-SOURCE IMAGE ANALYSIS:
+IDENTITY KERNEL (from Vision):
 ═══════════════════════════════════════
-{imageAnalysis}
+{identityKernel}
 
 ═══════════════════════════════════════
 USER REQUEST: {userPrompt}
 ═══════════════════════════════════════
 
-YOUR TASK:
+TASK:
+1. Match the transformation level:
+   - HEAVY: Use ONLY hair color + clothing color
+   - LIGHT: Use hair + clothing + face_shape as soft reference
 
-1. Write a prompt that STARTS with the style name
-2. Extract ONLY these from the analysis:
-   - Hair: color + length (e.g., "long dark hair")
-   - Clothing: type + color (e.g., "white crop top")
-   - Pose: simple description (e.g., "hand raised")
-3. Apply {style} visual characteristics from the examples
-4. IGNORE all realistic facial details from analysis
+2. Follow the example OUTPUT format exactly
 
-FOLLOW THE EXAMPLE OUTPUT FORMAT EXACTLY.
-50-80 words maximum.
+3. 60-90 words maximum
 
-OUTPUT: Only the prompt, nothing else.
+4. End with appropriate prohibition:
+   - HEAVY: "No realistic anatomy, no human proportions."
+   - LIGHT: "No photorealistic details."
+
+OUTPUT: Only the prompt.

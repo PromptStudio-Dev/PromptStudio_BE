@@ -22,6 +22,7 @@ import promptstudio.promptstudio.global.dall_e.application.ImageService;
 import org.springframework.http.*;
 import promptstudio.promptstudio.global.gpt.prompt.PromptRegistry;
 import promptstudio.promptstudio.global.gpt.prompt.PromptType;
+import promptstudio.promptstudio.global.gpt.prompt.TransformationLevel;
 
 import java.util.List;
 import java.util.Map;
@@ -50,10 +51,13 @@ public class GptServiceImpl implements GptService {
 
     private static final String GPT_VISION_URL = "https://api.openai.com/v1/chat/completions";
 
+    // ============================================
+    // 스타일 감지
+    // ============================================
+
     private String detectRequestedStyle(String prompt) {
         String lower = prompt.toLowerCase();
 
-        // Known 스타일들 (기존)
         if (lower.contains("동물의 숲") || lower.contains("animal crossing") ||
                 lower.contains("모여봐요") || lower.contains("치비")) {
             return "animal_crossing";
@@ -69,52 +73,47 @@ public class GptServiceImpl implements GptService {
             return "ghibli";
         }
 
-        // 포켓몬
         if (lower.contains("포켓몬") || lower.contains("pokemon") ||
                 lower.contains("피카츄")) {
             return "pokemon";
         }
 
-        // 젤다
         if (lower.contains("젤다") || lower.contains("zelda") ||
                 lower.contains("브레스 오브 더 와일드") || lower.contains("티어스")) {
             return "zelda";
         }
 
-        // 원신
         if (lower.contains("원신") || lower.contains("genshin") ||
                 lower.contains("미호요")) {
             return "genshin";
         }
 
-        // 디즈니
         if (lower.contains("디즈니") || lower.contains("disney")) {
             return "disney";
         }
 
-        // 마블
         if (lower.contains("마블") || lower.contains("marvel")) {
             return "marvel";
         }
 
-        // 일반 애니메이션
         if (lower.contains("애니") || lower.contains("anime") ||
                 lower.contains("만화")) {
             return "anime";
         }
 
-        // 스타일 명시 없음
         return null;
     }
 
-    // 현재는 동물의 숲, 픽사, 지브리만 few shot
     private boolean isKnownStyle(String style) {
         return style != null && KNOWN_STYLES.contains(style);
     }
 
+    // ============================================
+    // 텍스트 업그레이드 (기존 유지)
+    // ============================================
+
     @Override
     public String upgradeText(String fullContext, String selectedText, String direction) {
-
         ChatClient chatClient = chatClientBuilder.build();
 
         PromptTemplate promptTemplate = new PromptTemplate(
@@ -141,7 +140,6 @@ public class GptServiceImpl implements GptService {
             String direction,
             String ragContext
     ) {
-
         ChatClient chatClient = chatClientBuilder.build();
 
         PromptTemplate promptTemplate = new PromptTemplate(
@@ -170,7 +168,6 @@ public class GptServiceImpl implements GptService {
             String prevResult,
             String direction
     ) {
-
         ChatClient chatClient = chatClientBuilder.build();
 
         PromptTemplate promptTemplate = new PromptTemplate(
@@ -201,7 +198,6 @@ public class GptServiceImpl implements GptService {
             String direction,
             String ragContext
     ) {
-
         ChatClient chatClient = chatClientBuilder.build();
 
         PromptTemplate promptTemplate = new PromptTemplate(
@@ -223,6 +219,10 @@ public class GptServiceImpl implements GptService {
 
         return result != null ? result.trim() : selectedText;
     }
+
+    // ============================================
+    // 텍스트 전용 프롬프트 실행 (기존 유지)
+    // ============================================
 
     @Override
     public GptRunResult runPrompt(String prompt) {
@@ -248,14 +248,10 @@ public class GptServiceImpl implements GptService {
 
                 String enhancedPrompt = enhanceImagePrompt(imagePrompt);
                 log.info("=== DALL-E 프롬프트 (Text Only - Enhanced) ===");
-                log.info("원본 프롬프트: {}", imagePrompt);
-                log.info("Enhanced 프롬프트:\n{}", enhancedPrompt);
-                log.info("==========================================");
+                log.info("원본: {}", imagePrompt);
+                log.info("Enhanced:\n{}", enhancedPrompt);
 
-                log.info("Original prompt: {}", imagePrompt);
-                log.info("Enhanced prompt: {}", enhancedPrompt);
-
-                String imageUrl = imageService.generateImageHD(enhancedPrompt);  // HD로 변경
+                String imageUrl = imageService.generateImageHD(enhancedPrompt);
 
                 return GptRunResult.builder()
                         .resultType(ResultType.IMAGE)
@@ -280,7 +276,14 @@ public class GptServiceImpl implements GptService {
         }
     }
 
-    private String analyzeImageWithExtremeDetail(List<String> imageUrls) {
+    // ============================================
+    // NEW ARCHITECTURE: Vision + Composer
+    // ============================================
+
+    /**
+     * Vision: 이미지에서 Identity Kernel 추출 (JSON)
+     */
+    private String extractIdentityKernel(List<String> imageUrls) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -290,7 +293,7 @@ public class GptServiceImpl implements GptService {
 
             Map<String, Object> systemMessage = new HashMap<>();
             systemMessage.put("role", "system");
-            systemMessage.put("content", promptRegistry.get(PromptType.VISION_ANALYSIS_SYSTEM));
+            systemMessage.put("content", promptRegistry.get(PromptType.VISION_IDENTITY_EXTRACTOR));
             messages.add(systemMessage);
 
             Map<String, Object> userMessage = new HashMap<>();
@@ -300,7 +303,7 @@ public class GptServiceImpl implements GptService {
 
             Map<String, Object> textPart = new HashMap<>();
             textPart.put("type", "text");
-            textPart.put("text", "Please provide a detailed visual description of the image for the purpose of creating similar artistic character representations. Describe the visual appearance, style, and characteristics that would help an artist recreate a similar character design. Focus on describing what you see without attempting to identify who this might be.");
+            textPart.put("text", "Extract identity kernel from this image. Output JSON only.");
             contentParts.add(textPart);
 
             for (String imageUrl : imageUrls) {
@@ -318,8 +321,8 @@ public class GptServiceImpl implements GptService {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("model", "gpt-4o");
             requestBody.put("messages", messages);
-            requestBody.put("max_tokens", 1000);
-            requestBody.put("temperature", 0.3);
+            requestBody.put("max_tokens", 500);
+            requestBody.put("temperature", 0.1);
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
@@ -331,16 +334,25 @@ public class GptServiceImpl implements GptService {
             );
 
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            String analysis = jsonNode
+            String result = jsonNode
                     .path("choices")
                     .get(0)
                     .path("message")
                     .path("content")
                     .asText();
 
-            return analysis.trim();
+            result = result
+                    .replaceAll("```json\\s*", "")
+                    .replaceAll("```\\s*", "")
+                    .trim();
+
+            log.info("=== Identity Kernel 추출 완료 ===");
+            log.info("결과:\n{}", result);
+
+            return result;
 
         } catch (Exception e) {
+            log.error("Identity Kernel 추출 실패: {}", e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "이미지 분석 실패: " + e.getMessage(),
@@ -349,8 +361,59 @@ public class GptServiceImpl implements GptService {
         }
     }
 
-    //스타일 지정 : 지브리, 동물의 숲, 픽사
-    private String createPromptWithKnownStyle(String style, String userPrompt, String imageAnalysis) {
+    /**
+     * Composer: Known 스타일 (Few-shot 사용)
+     */
+    private String composePromptWithStyle(String identityKernel, String style, String userPrompt) {
+        try {
+            TransformationLevel level = TransformationLevel.fromStyle(style);
+
+            ChatClient chatClient = chatClientBuilder
+                    .defaultOptions(ChatOptions.builder()
+                            .model("gpt-4o")
+                            .temperature(0.3)
+                            .build())
+                    .build();
+
+            String fewshotExamples = promptRegistry.getFewshotByName(style);
+
+            PromptTemplate promptTemplate = new PromptTemplate(
+                    promptRegistry.get(PromptType.VISION_FEWSHOT_TEMPLATE)
+            );
+
+            Prompt prompt = promptTemplate.create(Map.of(
+                    "style", style.toUpperCase().replace("_", " "),
+                    "transformationLevel", level.getLevel().toUpperCase(),
+                    "fewshotExamples", fewshotExamples != null ? fewshotExamples : "",
+                    "identityKernel", identityKernel,
+                    "userPrompt", userPrompt
+            ));
+
+            String dallePrompt = chatClient.prompt(prompt)
+                    .system(promptRegistry.get(PromptType.PROMPT_COMPOSER_SYSTEM))
+                    .call()
+                    .content();
+
+            log.info("=== DALL-E 프롬프트 (Known Style: {}) ===", style);
+            log.info("Transformation Level: {}", level.getLevel());
+            log.info("프롬프트 ({} words):\n{}", dallePrompt.split(" ").length, dallePrompt);
+
+            return dallePrompt.trim();
+
+        } catch (Exception e) {
+            log.error("Known Style 프롬프트 생성 실패: {}", e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "프롬프트 생성 실패: " + e.getMessage(),
+                    e
+            );
+        }
+    }
+
+    /**
+     * Composer: Unknown 스타일 (스타일 분석 후 적용)
+     */
+    private String composePromptWithUnknownStyle(String identityKernel, String styleName, String styleAnalysis, String userPrompt) {
         try {
             ChatClient chatClient = chatClientBuilder
                     .defaultOptions(ChatOptions.builder()
@@ -359,47 +422,42 @@ public class GptServiceImpl implements GptService {
                             .build())
                     .build();
 
-            // Few-shot 예시 로드
-            String fewshotExamples = promptRegistry.getFewshotByName(style);
-
-            // 템플릿에 few-shot 주입
             PromptTemplate promptTemplate = new PromptTemplate(
-                    promptRegistry.get(PromptType.VISION_FEWSHOT_TEMPLATE)
+                    promptRegistry.get(PromptType.VISION_UNKNOWN_STYLE_TEMPLATE)
             );
+
             Prompt prompt = promptTemplate.create(Map.of(
-                    "fewshotExamples", fewshotExamples != null ? fewshotExamples : "",
-                    "style", style.toUpperCase(),
-                    "userPrompt", userPrompt,
-                    "imageAnalysis", imageAnalysis
+                    "styleName", styleName,
+                    "styleAnalysis", styleAnalysis,
+                    "identityKernel", identityKernel,
+                    "userPrompt", userPrompt
             ));
 
             String dallePrompt = chatClient.prompt(prompt)
-                    .system(promptRegistry.get(PromptType.VISION_DALLE_EXPERT_SYSTEM))
+                    .system(promptRegistry.get(PromptType.PROMPT_COMPOSER_SYSTEM))
                     .call()
                     .content();
 
-            log.info("=== DALL-E 프롬프트 (Known Style: {}) ===", style);
-            log.info("Vision 분석 길이: {} chars", imageAnalysis.length());
-            log.info("DALL-E 프롬프트 길이: {} words", dallePrompt.split(" ").length);
-            log.info("DALL-E 프롬프트 전문:\n{}", dallePrompt);
-            log.info("==========================================");
+            log.info("=== DALL-E 프롬프트 (Unknown Style: {}) ===", styleName);
+            log.info("프롬프트 ({} words):\n{}", dallePrompt.split(" ").length, dallePrompt);
 
             return dallePrompt.trim();
 
         } catch (Exception e) {
+            log.error("Unknown Style 프롬프트 생성 실패: {}", e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "DALL-E 프롬프트 생성 실패: " + e.getMessage(),
+                    "프롬프트 생성 실패: " + e.getMessage(),
                     e
             );
         }
     }
 
-    //스타일 미지정 일반 이미지 제작
-    private String createPromptWithoutStyle(String userPrompt, String imageAnalysis) {
+    /**
+     * Composer: 스타일 없음 (원본 유지)
+     */
+    private String composePromptNoStyle(String identityKernel, String userPrompt) {
         try {
-            System.out.println("=== 스타일 미지정: 원본 스타일 유지 ===");
-
             ChatClient chatClient = chatClientBuilder
                     .defaultOptions(ChatOptions.builder()
                             .model("gpt-4o")
@@ -410,40 +468,38 @@ public class GptServiceImpl implements GptService {
             PromptTemplate promptTemplate = new PromptTemplate(
                     promptRegistry.get(PromptType.VISION_NO_STYLE_TEMPLATE)
             );
+
             Prompt prompt = promptTemplate.create(Map.of(
-                    "userPrompt", userPrompt,
-                    "imageAnalysis", imageAnalysis
+                    "identityKernel", identityKernel,
+                    "userPrompt", userPrompt
             ));
 
             String dallePrompt = chatClient.prompt(prompt)
-                    .system(promptRegistry.get(PromptType.VISION_DALLE_EXPERT_SYSTEM))
+                    .system(promptRegistry.get(PromptType.PROMPT_COMPOSER_SYSTEM))
                     .call()
                     .content();
 
-            System.out.println("프롬프트 생성 완료 (원본 스타일 유지)");
-            System.out.println("길이: " + dallePrompt.split(" ").length + " 단어");
-            System.out.println("================================");
-
             log.info("=== DALL-E 프롬프트 (No Style) ===");
-            log.info("Vision 분석 길이: {} chars", imageAnalysis.length());
-            log.info("DALL-E 프롬프트 길이: {} words", dallePrompt.split(" ").length);
-            log.info("DALL-E 프롬프트 전문:\n{}", dallePrompt);
-            log.info("==========================================");
+            log.info("프롬프트 ({} words):\n{}", dallePrompt.split(" ").length, dallePrompt);
 
             return dallePrompt.trim();
 
         } catch (Exception e) {
+            log.error("No Style 프롬프트 생성 실패: {}", e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "원본 스타일 프롬프트 생성 실패: " + e.getMessage(),
+                    "프롬프트 생성 실패: " + e.getMessage(),
                     e
             );
         }
     }
 
+    /**
+     * 스타일 특성 분석 (Unknown 스타일용)
+     */
     private String analyzeStyleCharacteristics(String styleName) {
         try {
-            System.out.println("=== 스타일 특성 분석 시작: " + styleName + " ===");
+            log.info("=== 스타일 특성 분석 시작: {} ===", styleName);
 
             ChatClient chatClient = chatClientBuilder
                     .defaultOptions(ChatOptions.builder()
@@ -464,9 +520,7 @@ public class GptServiceImpl implements GptService {
                     .call()
                     .content();
 
-            System.out.println("스타일 분석 완료:");
-            System.out.println(styleAnalysis);
-            System.out.println("================================");
+            log.info("스타일 분석 완료:\n{}", styleAnalysis);
 
             return styleAnalysis.trim();
 
@@ -479,62 +533,9 @@ public class GptServiceImpl implements GptService {
         }
     }
 
-    private String createPromptWithUnknownStyle(
-            String styleName,
-            String styleAnalysis,
-            String userPrompt,
-            String imageAnalysis) {
-        try {
-            System.out.println("=== Unknown 스타일 프롬프트 생성 시작 ===");
-
-            ChatClient chatClient = chatClientBuilder
-                    .defaultOptions(ChatOptions.builder()
-                            .model("gpt-4o")
-                            .temperature(0.3)
-                            .build())
-                    .build();
-
-            PromptTemplate promptTemplate = new PromptTemplate(
-                    promptRegistry.get(PromptType.VISION_UNKNOWN_STYLE_TEMPLATE)
-            );
-            Prompt prompt = promptTemplate.create(Map.of(
-                    "styleName", styleName,
-                    "styleAnalysis", styleAnalysis,
-                    "imageAnalysis", imageAnalysis,
-                    "userPrompt", userPrompt
-            ));
-
-            String dallePrompt = chatClient.prompt(prompt)
-                    .system(promptRegistry.get(PromptType.VISION_DALLE_EXPERT_SYSTEM))
-                    .call()
-                    .content();
-
-            log.info("=== DALL-E 프롬프트 (Unknown Style: {}) ===", styleName);
-            log.info("스타일 분석 길이: {} chars", styleAnalysis.length());
-            log.info("Vision 분석 길이: {} chars", imageAnalysis.length());
-            log.info("DALL-E 프롬프트 길이: {} words", dallePrompt.split(" ").length);
-            log.info("DALL-E 프롬프트 전문:\n{}", dallePrompt);
-            log.info("==========================================");
-
-            System.out.println("프롬프트 생성 완료");
-            System.out.println("길이: " + dallePrompt.split(" ").length + " 단어");
-            System.out.println("================================");
-
-
-
-
-            return dallePrompt.trim();
-
-        } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown 스타일 프롬프트 생성 실패: " + e.getMessage(),
-                    e
-            );
-        }
-
-
-    }
+    // ============================================
+    // 이미지 + 프롬프트 실행 (NEW ARCHITECTURE)
+    // ============================================
 
     @Override
     public GptRunResult runPromptWithImages(String prompt, List<String> imageUrls) {
@@ -563,37 +564,37 @@ public class GptServiceImpl implements GptService {
                         .build();
             }
 
-            // === 1. 스타일 감지 ===
+            // === NEW ARCHITECTURE ===
+
+            // 1. 스타일 감지
             String detectedStyle = detectRequestedStyle(prompt);
+            log.info("=== 감지된 스타일: {} ===", detectedStyle);
 
-            // === 2. Vision 분석 ===
-            String imageAnalysis = analyzeImageWithExtremeDetail(imageUrls);
+            // 2. Vision: Identity Kernel 추출 (JSON)
+            String identityKernel = extractIdentityKernel(imageUrls);
 
-            // === 3. DALL-E 프롬프트 생성 ===
+            // 3. Composer: 스타일별 DALL-E 프롬프트 생성
             String dallePrompt;
 
             if (detectedStyle != null && isKnownStyle(detectedStyle)) {
-                // Known 스타일: Few-shot 방법론
-                dallePrompt = createPromptWithKnownStyle(detectedStyle, prompt, imageAnalysis);
+                // Known 스타일: Few-shot + Controlled Transformation
+                dallePrompt = composePromptWithStyle(identityKernel, detectedStyle, prompt);
             } else if (detectedStyle != null) {
                 // Unknown 스타일: 스타일 분석 후 적용
                 String styleAnalysis = analyzeStyleCharacteristics(detectedStyle);
-                dallePrompt = createPromptWithUnknownStyle(detectedStyle, styleAnalysis, prompt, imageAnalysis);
+                dallePrompt = composePromptWithUnknownStyle(identityKernel, detectedStyle, styleAnalysis, prompt);
             } else {
                 // 스타일 미지정: 원본 유지
-                dallePrompt = createPromptWithoutStyle(prompt, imageAnalysis);
+                dallePrompt = composePromptNoStyle(identityKernel, prompt);
             }
 
-            // === 4. DALL-E Generation 호출 ===
+            // 4. DALL-E 이미지 생성
             String resultImageUrl;
+            TransformationLevel level = TransformationLevel.fromStyle(detectedStyle);
 
-            if (detectedStyle != null && (detectedStyle.equals("ghibli") ||
-                    detectedStyle.equals("pixar") ||
-                    detectedStyle.equals("animal_crossing"))) {
-                // Known 스타일: HD + vivid
+            if (level == TransformationLevel.HEAVY || level == TransformationLevel.LIGHT) {
                 resultImageUrl = imageService.generateImageHD(dallePrompt);
             } else {
-                // 원본 유지 또는 Unknown 스타일: HD + natural
                 resultImageUrl = imageService.generateImageRealistic(dallePrompt);
             }
 
@@ -603,6 +604,7 @@ public class GptServiceImpl implements GptService {
                     .build();
 
         } catch (Exception e) {
+            log.error("이미지 생성 실패: {}", e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "이미지 생성 실패: " + e.getMessage(),
@@ -610,6 +612,10 @@ public class GptServiceImpl implements GptService {
             );
         }
     }
+
+    // ============================================
+    // 히스토리, 피드백, 검색 (기존 유지)
+    // ============================================
 
     @Override
     public String generateHistoryTitle(String currentTitle, String currentContent,
@@ -620,7 +626,6 @@ public class GptServiceImpl implements GptService {
             String userMessage;
 
             if (previousTitle == null || previousContent == null) {
-                // 첫 번째 히스토리
                 PromptTemplate promptTemplate = new PromptTemplate(
                         promptRegistry.get(PromptType.HISTORY_FIRST)
                 );
@@ -630,7 +635,6 @@ public class GptServiceImpl implements GptService {
                 ));
                 userMessage = prompt.getContents();
             } else {
-                // 변경점 요약
                 PromptTemplate promptTemplate = new PromptTemplate(
                         promptRegistry.get(PromptType.HISTORY_DIFF)
                 );
@@ -652,21 +656,18 @@ public class GptServiceImpl implements GptService {
             return result != null ? result.trim() : "프롬프트 실행";
 
         } catch (Exception e) {
-            System.err.println("히스토리 제목 생성 실패: " + e.getMessage());
+            log.error("히스토리 제목 생성 실패: {}", e.getMessage());
             return "프롬프트 실행";
         }
     }
 
-    //피드백 생성
     @Override
     public String generatePromptFeedback(String content) {
         try {
-            // 빈 프롬프트 처리
             if (content == null || content.isBlank()) {
                 return "아직 프롬프트가 비어있어요! 어떤 이미지를 만들고 싶은지 작성해보세요 ✨";
             }
 
-            // 너무 짧은 프롬프트 처리
             if (content.trim().length() < 10) {
                 return "조금 더 구체적으로 작성하면 원하는 결과를 얻기 쉬워요!";
             }
@@ -686,14 +687,13 @@ public class GptServiceImpl implements GptService {
             return result != null ? result.trim() : "프롬프트를 분석하는 중 문제가 발생했어요.";
 
         } catch (Exception e) {
-            System.err.println("프롬프트 피드백 생성 실패: " + e.getMessage());
+            log.error("프롬프트 피드백 생성 실패: {}", e.getMessage());
             return "피드백을 생성하는 중 오류가 발생했어요.";
         }
     }
 
     @Override
     public String generateSearchQuery(String fullText, String selectedText, String direction) {
-
         ChatClient chatClient = chatClientBuilder.build();
 
         PromptTemplate promptTemplate = new PromptTemplate(
@@ -715,7 +715,6 @@ public class GptServiceImpl implements GptService {
 
     @Override
     public List<Document> retrieve(String query, int topK, double threshold) {
-
         SearchRequest.Builder builder = SearchRequest.builder()
                 .query(query)
                 .topK(topK)
@@ -724,11 +723,14 @@ public class GptServiceImpl implements GptService {
         return vectorStore.similaritySearch(builder.build());
     }
 
+    // ============================================
+    // 텍스트 전용 이미지 프롬프트 강화 (기존 유지)
+    // ============================================
+
     public String enhanceImagePrompt(String originalPrompt) {
         String promptLower = originalPrompt.toLowerCase();
         StringBuilder enhanced = new StringBuilder();
 
-        // 1. "character/캐릭터" 단어 정리
         String cleaned = originalPrompt
                 .replaceAll("(?i)\\s*character\\s*", " ")
                 .replaceAll("(?i)\\s*캐릭터\\s*", " ")
@@ -736,13 +738,9 @@ public class GptServiceImpl implements GptService {
                 .replaceAll("\\s+", " ")
                 .trim();
 
-        // 2. 시작 문구
         enhanced.append("A single illustration of ");
-
-        // 3. 원본 프롬프트 추가
         enhanced.append(cleaned);
 
-        // 4. 스타일 감지 및 적용
         String styleDescription = detectAndGetStyle(promptLower);
         if (styleDescription != null) {
             enhanced.append(". ").append(styleDescription).append(". ");
@@ -750,7 +748,6 @@ public class GptServiceImpl implements GptService {
             enhanced.append(". High quality digital illustration, clean professional style. ");
         }
 
-        // 5. 구도 및 품질
         enhanced.append("Centered composition, clean background. ");
         enhanced.append("Single subject only, no multiple views, no text, no watermarks.");
 
@@ -758,7 +755,6 @@ public class GptServiceImpl implements GptService {
     }
 
     private String detectAndGetStyle(String promptLower) {
-        // 스타일 감지 (우선순위 순)
         if (promptLower.contains("animal crossing") || promptLower.contains("동물의 숲") ||
                 promptLower.contains("모여봐요")) {
             return "Animal Crossing New Horizons style, chibi proportions with oversized round head, small compact body, large sparkling oval eyes, soft pastel colors, flat cel-shading, kawaii toylike aesthetic";
@@ -791,34 +787,6 @@ public class GptServiceImpl implements GptService {
             return "Appealing cartoon illustration style, friendly polished design, clean lines, vibrant colors";
         }
 
-        // 스타일 명시 없음 - null 반환 (기본 스타일 적용)
         return null;
-    }
-
-
-    // 1. TRANSFORMATION_LEVEL enum 추가
-    enum TransformationLevel {
-        NONE,    // REALISTIC
-        LIGHT,   // GHIBLI, PIXAR
-        HEAVY    // ANIMAL_CROSSING
-    }
-
-    // 2. 스타일별 변환 강도 매핑
-    private TransformationLevel getTransformationLevel(String style) {
-        return switch (style) {
-            case "animal_crossing" -> TransformationLevel.HEAVY;
-            case "ghibli", "pixar" -> TransformationLevel.LIGHT;
-            default -> TransformationLevel.NONE;
-        };
-    }
-
-    // 3. Vision 출력을 JSON으로 변경
-    private String extractIdentityKernel(List<String> imageUrls) {
-        // 새로운 JSON 기반 Vision 프롬프트 사용
-    }
-
-    // 4. Composer 단계 추가
-    private String composePrompt(String identityJson, String style, TransformationLevel level) {
-        // ALLOW/FORBID 규칙 적용
     }
 }

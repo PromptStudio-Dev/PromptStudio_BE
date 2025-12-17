@@ -1,11 +1,24 @@
-EXAMPLE 1:
-IDENTITY: {"face_shape": "round", "hair_silhouette": "long dark wavy", "clothing_simple": "white top pink design"}
-STYLE: ANIMAL_CROSSING (HEAVY transformation)
+TRANSFORMATION: HEAVY (intentional structure destruction)
+KEEP: hair color, clothing color only
+IGNORE: face shape, proportions, facial details
 
-OUTPUT: A chibi-style Animal Crossing villager with long dark hair, wearing a white top with pink accent. Classic Nintendo aesthetic with oversized round head, big sparkling oval eyes, tiny dot features, small rounded body. Soft pastel colors, flat cel-shading, kawaii toylike finish. No realistic anatomy, no facial details, no human proportions. Clean pastel background. Single character.
+═══════════════════════════════════════
+
+EXAMPLE 1:
+IDENTITY_KERNEL: {"face_shape": "oval", "hair": "long dark wavy with bangs", "clothing": "white crop top with pink design", "pose": "hand touching hair"}
+
+OUTPUT: A chibi-style Animal Crossing villager with long dark hair, wearing a white top with pink accent. Classic Nintendo aesthetic with oversized round head, big sparkling oval eyes, tiny dot nose and mouth, small rounded body. Hand raised in cute pose. Soft pastel colors, flat cel-shading, kawaii toylike finish. No realistic anatomy, no human proportions. Clean pastel background. Single character.
+
+═══════════════════════════════════════
 
 EXAMPLE 2:
-IDENTITY: {"face_shape": "oval", "hair_silhouette": "short brown", "clothing_simple": "blue hoodie"}
-STYLE: ANIMAL_CROSSING (HEAVY transformation)
+IDENTITY_KERNEL: {"face_shape": "round", "hair": "short brown", "clothing": "blue hoodie", "pose": "standing relaxed"}
 
-OUTPUT: An adorable Animal Crossing villager with short brown hair, wearing a cozy blue hoodie. Signature Nintendo chibi style with huge round head, large shiny eyes, minimal facial features, stubby body. Warm pastel palette, flat cel-shading. No realistic structure, no detailed face. Simple solid background. Single character.
+OUTPUT: An adorable Animal Crossing villager with short brown hair, wearing a cozy blue hoodie. Signature Nintendo chibi style with huge round head, large shiny eyes, minimal dot features, stubby rounded body. Relaxed friendly stance. Warm pastel palette, flat cel-shading, cute toylike aesthetic. No realistic structure, no detailed features. Simple solid background. Single character.
+
+═══════════════════════════════════════
+
+EXAMPLE 3:
+IDENTITY_KERNEL: {"face_shape": "unknown", "hair": "blonde ponytail", "clothing": "red sweater", "pose": "sitting", "distinct_feature": "glasses"}
+
+OUTPUT: A charming Animal Crossing villager with blonde ponytail and cute round glasses, wearing a red sweater. Nintendo's iconic chibi design with oversized head, big sparkling eyes, tiny simple features, compact body. Sitting in cozy pose. Soft warm pastels, flat cel-shading, kawaii aesthetic. No realistic proportions, no detailed face. Clean background. Single character.

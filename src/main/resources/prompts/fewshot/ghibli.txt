@@ -1,11 +1,24 @@
+TRANSFORMATION: LIGHT (soft simplification, keep silhouette)
+KEEP: hair, clothing, face_shape as soft reference
+SIMPLIFY: features become gentle and painterly
+
+═══════════════════════════════════════
+
 EXAMPLE 1:
-INPUT: Person with long dark wavy hair, bangs, white top, hand raised, natural expression
-OUTPUT: A young character in authentic Studio Ghibli anime style with long flowing dark hair and soft bangs, wearing a simple white top. Hand-painted 2D cel animation aesthetic with soft watercolor textures and warm earth tones. Gentle natural lighting, serene expression. One hand gracefully raised. Dreamy atmospheric background with soft colors. Like a frame from a Hayao Miyazaki film. Single character.
+IDENTITY_KERNEL: {"face_shape": "oval", "hair": "long dark wavy with bangs", "clothing": "white top", "pose": "hand raised"}
+
+OUTPUT: A character in authentic Studio Ghibli 2D anime style with long flowing dark hair and soft bangs, wearing a simple white top. Hand-painted cel animation aesthetic with soft watercolor textures, warm earth tones, gentle natural lighting. Soft oval face with simplified serene features. One hand gracefully raised. Dreamy atmospheric background. Like a frame from a Miyazaki film. No photorealistic details. Single character.
+
+═══════════════════════════════════════
 
 EXAMPLE 2:
-INPUT: Person with short brown hair, blue jacket, walking outdoors, peaceful mood
-OUTPUT: A character illustrated in classic Studio Ghibli 2D style with short brown hair, wearing a blue jacket. Traditional hand-drawn anime aesthetic, soft painterly textures, warm muted color palette. Walking with peaceful gentle expression. Soft natural lighting, nostalgic dreamy atmosphere. Impressionistic background suggesting outdoor scenery. Miyazaki animation quality. Single character.
+IDENTITY_KERNEL: {"face_shape": "round", "hair": "short brown", "clothing": "blue jacket", "pose": "walking"}
+
+OUTPUT: A Ghibli-style character with short brown hair, wearing a blue jacket, walking with gentle movement. Classic Studio Ghibli 2D animation aesthetic, hand-painted watercolor feel, warm muted color palette. Soft round face with kind simplified expression. Natural diffused lighting, nostalgic dreamy atmosphere. Impressionistic outdoor background. Miyazaki animation quality. No photorealistic details. Single character.
+
+═══════════════════════════════════════
 
 EXAMPLE 3:
-INPUT: Person with red hair in braid, green dress, standing in field, wind blowing
-OUTPUT: A Ghibli-style character with flowing red braided hair, wearing a simple green dress. Authentic Studio Ghibli 2D animation aesthetic with hand-painted watercolor feel, warm sunlit tones. Hair and dress gently moving in the breeze. Soft diffused lighting, magical peaceful atmosphere. Painterly meadow background. Like a scene from a Miyazaki masterpiece. Single character.
+IDENTITY_KERNEL: {"face_shape": "heart", "hair": "red braid", "clothing": "green dress", "pose": "standing in wind"}
+
+OUTPUT: A Studio Ghibli anime character with flowing red braided hair, wearing a simple green dress gently moving in the breeze. Authentic Ghibli 2D hand-drawn style with watercolor textures, warm sunlit tones. Soft heart-shaped face with peaceful expression. Magical atmospheric quality with soft diffused lighting. Painterly meadow background suggested. Like a scene from a Miyazaki masterpiece. No photorealistic details. Single character.
