@@ -43,13 +43,80 @@ public class GptServiceImpl implements GptService {
     @Value("${spring.ai.openai.api-key}")
     private String apiKey;
 
-    private static final Set<String> KNOWN_STYLES = Set.of(
-            "animal_crossing",
-            "pixar",
-            "ghibli"
-    );
+    private String extractStyleKeywords(String prompt) {
+        String lower = prompt.toLowerCase();
 
-    private static final String SAFE_VISION_PROMPT = """
+        // 픽셀 아트
+        if (lower.contains("픽셀") || lower.contains("pixel")) {
+            return "pixel_art";
+        }
+        // 치비/SD
+        if (lower.contains("치비") || lower.contains("chibi") || lower.contains("sd캐릭터") || lower.contains("sd 캐릭터")) {
+            return "chibi";
+        }
+        // 애니메이션/만화
+        if (lower.contains("애니") || lower.contains("anime") || lower.contains("만화") || lower.contains("일본")) {
+            return "anime";
+        }
+        // 3D 카툰
+        if (lower.contains("3d") || lower.contains("3D") || lower.contains("카툰") || lower.contains("cartoon")) {
+            return "3d_cartoon";
+        }
+        // 수채화
+        if (lower.contains("수채화") || lower.contains("watercolor") || lower.contains("워터컬러")) {
+            return "watercolor";
+        }
+        // 유화
+        if (lower.contains("유화") || lower.contains("oil painting") || lower.contains("오일")) {
+            return "oil_painting";
+        }
+        // 일러스트
+        if (lower.contains("일러스트") || lower.contains("illust")) {
+            return "illustration";
+        }
+        // 미니멀
+        if (lower.contains("미니멀") || lower.contains("minimal") || lower.contains("심플")) {
+            return "minimal";
+        }
+        // 레트로
+        if (lower.contains("레트로") || lower.contains("retro") || lower.contains("빈티지") || lower.contains("vintage")) {
+            return "retro";
+        }
+
+        return "illustration";  // 기본값: 일러스트
+    }
+
+    private String composePromptForUnknownStyle(String identityKernel, String styleKeyword, String userPrompt) {
+        try {
+            // Identity Kernel에서 hair, clothing 추출
+            JsonNode node = objectMapper.readTree(identityKernel);
+            JsonNode materials = node.path("materials");
+
+            String hair = materials.has("hair") ? materials.get("hair").asText() : "dark";
+            String clothing = materials.has("clothing") ? materials.get("clothing").asText() : "casual clothes";
+
+            // 템플릿에 값 주입
+            String template = getStyleTemplate(styleKeyword);
+            String dallePrompt = template
+                    .replace("[HAIR]", hair)
+                    .replace("[CLOTHING]", clothing)
+                    .replaceAll("\\s+", " ")
+                    .trim();
+
+            log.info("=== DALL-E 프롬프트 (Unknown Style: {}) ===", styleKeyword);
+            log.info("프롬프트 ({} words):\n{}", dallePrompt.split(" ").length, dallePrompt);
+
+            return dallePrompt;
+
+        } catch (Exception e) {
+            log.error("Unknown Style 프롬프트 생성 실패: {}", e.getMessage());
+            // 최소한의 안전 프롬프트
+            return "A single finished character illustration. Clean appealing art style. Simple background. Not a character sheet.";
+        }
+    }
+
+
+        private static final String SAFE_VISION_PROMPT = """
     For creating a fictional cartoon character, describe ONLY visible elements:
     - Hair: color and length (e.g., "long dark")
     - Clothing: type and color (e.g., "white shirt")
@@ -732,7 +799,8 @@ public class GptServiceImpl implements GptService {
                     prompt.contains("생성해줘") ||
                     prompt.contains("바꿔줘") ||
                     prompt.contains("변환") ||
-                    prompt.contains("스타일");
+                    prompt.contains("스타일") ||
+                    prompt.contains("일러스트");
 
             if (!isImageRequest) {
                 ChatClient chatClient = chatClientBuilder.build();
@@ -752,7 +820,14 @@ public class GptServiceImpl implements GptService {
             String abstractedStyle = toAbstractedStyle(detectedStyle);
             log.info("=== 감지된 스타일: {} → 추상화: {} ===", detectedStyle, abstractedStyle);
 
-            // 2. Vision: Identity Kernel 추출
+            // 2. Known 스타일이 아니면 키워드 추출
+            String styleKeyword = null;
+            if (abstractedStyle == null) {
+                styleKeyword = extractStyleKeywords(prompt);
+                log.info("=== 스타일 키워드 추출: {} ===", styleKeyword);
+            }
+
+            // 3. Vision: Identity Kernel 추출
             String identityKernel = extractIdentityKernel(imageUrls);
 
             // === Vision 거부 체크 ===
@@ -764,29 +839,33 @@ public class GptServiceImpl implements GptService {
                 );
             }
 
-            // 3. Composer: DALL-E 프롬프트 생성
+            // 4. DALL-E 프롬프트 생성
             String dallePrompt;
 
             if (abstractedStyle != null && isKnownAbstractedStyle(abstractedStyle)) {
+                // Known Style: 기존 Composer 사용
                 dallePrompt = composePromptWithStyle(identityKernel, abstractedStyle, prompt);
-            } else if (abstractedStyle != null) {
-                String styleAnalysis = analyzeStyleCharacteristics(abstractedStyle);
-                dallePrompt = composePromptWithUnknownStyle(identityKernel, abstractedStyle, styleAnalysis, prompt);
+
+                // Composer 거부 시 템플릿으로 대체
+                if (isRefusal(dallePrompt)) {
+                    log.warn("=== Composer 거부, 템플릿 사용 ===");
+                    dallePrompt = composePromptForUnknownStyle(identityKernel, abstractedStyle, prompt);
+                }
             } else {
-                dallePrompt = composePromptNoStyle(identityKernel, prompt);
+                // Unknown Style: 직접 템플릿 사용 (Composer 우회)
+                dallePrompt = composePromptForUnknownStyle(identityKernel, styleKeyword, prompt);
             }
 
-            // === Composer 거부 체크 (DALL-E 호출 전) ===
+            // === 최종 프롬프트 검증 ===
             if (isRefusal(dallePrompt)) {
-                log.warn("=== Composer 거부됨, 즉시 종료 ===");
-                log.warn("Composer 응답: {}", dallePrompt);
+                log.error("=== 프롬프트 생성 완전 실패 ===");
                 throw new ResponseStatusException(
                         HttpStatus.UNPROCESSABLE_ENTITY,
                         "이미지 생성이 정책상 제한되었습니다. 다른 스타일이나 이미지로 시도해주세요."
                 );
             }
 
-            // 4. DALL-E 이미지 생성
+            // 5. DALL-E 이미지 생성
             String resultImageUrl;
             TransformationLevel level = TransformationLevel.fromStyle(detectedStyle);
 
@@ -794,10 +873,9 @@ public class GptServiceImpl implements GptService {
                 if (level == TransformationLevel.HEAVY || level == TransformationLevel.LIGHT) {
                     resultImageUrl = imageService.generateImageHD(dallePrompt);
                 } else {
-                    resultImageUrl = imageService.generateImageRealistic(dallePrompt);
+                    resultImageUrl = imageService.generateImageHD(dallePrompt);  // Unknown도 HD
                 }
             } catch (Exception e) {
-                // DALL-E 실패: 즉시 사용자 에러 반환 (재시도 안 함)
                 log.error("=== DALL-E 실패 ===");
                 log.error("에러: {}", e.getMessage());
                 throw new ResponseStatusException(
@@ -822,7 +900,6 @@ public class GptServiceImpl implements GptService {
             );
         }
     }
-
     @Override
     public String generateHistoryTitle(String currentTitle, String currentContent,
                                        String previousTitle, String previousContent) {
