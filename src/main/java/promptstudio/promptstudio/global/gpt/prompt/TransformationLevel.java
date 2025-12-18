@@ -18,8 +18,8 @@ public enum TransformationLevel {
         if (style == null) return NONE;
 
         return switch (style.toLowerCase()) {
-            case "animal_crossing" -> HEAVY;
-            case "ghibli", "pixar", "disney" -> LIGHT;
+            case "animal_crossing", "chibi_game" -> HEAVY;
+            case "ghibli", "anime_film", "pixar", "disney", "cgi_animation", "cgi_animation_soft" -> LIGHT;
             default -> NONE;
         };
     }

@@ -155,39 +155,161 @@ public class GptServiceImpl implements GptService {
 
     private String getStyleTemplate(String styleKeyword) {
         return switch (styleKeyword) {
-            case "pixel_art" -> """
-            A single finished, fully rendered pixel art character illustration intended as final artwork.
-            Retro game aesthetic with clean pixel blocks, limited color palette.
-            Full body character with [HAIR] hair wearing [CLOTHING].
-            Relaxed pose with subtle head tilt and gentle friendly expression.
-            Classic 16-bit or 32-bit game sprite style.
+
+            // ═══════════════════════════════════════
+            // 🧸 동물의 숲 계열 (CHIBI_GAME+)
+            // ═══════════════════════════════════════
+            case "chibi_game", "animal_crossing" -> """
+            A single finished, fully rendered chibi 3D game character illustration intended as final artwork.
+            
+            RENDER STYLE:
+            Toy-like 3D game engine aesthetic. Head-to-body ratio approximately 1:1.
+            Skin has smooth plastic finish with subtle subsurface scattering.
+            Soft cel-shaded shadows with no hard edges.
+            Camera angle: eye-level with slight top-down tilt, as if viewing a game screen.
+            
+            CHARACTER:
+            Character with [HAIR] hair wearing [CLOTHING].
+            Oversized spherical head, tiny dot eyes with subtle shine, minimal nose, small curved smile.
+            Compact rounded body with stubby limbs.
+            Relaxed cheerful pose with gentle head tilt and happy welcoming expression.
+            
+            SCENE:
+            Standing in a cozy, warm environment with soft ambient occlusion.
+            Bright cheerful pastel color palette. Warm soft daylight with gentle fill light.
+            
+            QUALITY:
+            This style emphasizes charming toylike appeal, cohesive soft lighting, and game-screenshot authenticity.
             Transparent background with no environment, no shadows on ground, no backdrop.
             This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
             Not a character sheet. Not concept art. Not a turnaround.
+            """;
+
+            // ═══════════════════════════════════════
+            // 🌿 지브리 계열 (ANIME_FILM+)
+            // ═══════════════════════════════════════
+            case "anime_film", "ghibli" -> """
+            A single finished, fully rendered 2D anime film style character illustration intended as final artwork.
+            
+            RENDER STYLE:
+            Hand-painted traditional animation aesthetic. Watercolor paper texture visible.
+            Soft color bleeding at edges. Warm earth-toned palette with desaturated highlights.
+            Atmospheric perspective creating depth between character and background.
+            Gentle rim lighting from natural sun. Soft diffused shadows.
+            
+            CHARACTER:
+            Character with [HAIR] hair wearing [CLOTHING].
+            Soft oval face with gentle simplified features, warm expressive eyes.
+            Natural graceful pose with subtle wind movement in hair and clothes.
+            Serene peaceful expression with gentle hint of emotion.
+            
+            SCENE:
+            Standing in a dreamy natural environment - sunlit meadow, quiet countryside, or peaceful village.
+            Impressionistic background with soft bokeh-like depth.
+            Golden hour or soft overcast lighting. Visible atmosphere and air.
+            
+            QUALITY:
+            This style emphasizes cinematic composition, atmospheric depth, hand-painted warmth, and nostalgic beauty.
+            The character exists within a living, breathing world - not isolated on empty background.
+            This is a complete final render capturing a quiet cinematic moment.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+
+            // ═══════════════════════════════════════
+            // 🎬 픽사 계열 (CGI_ANIMATION+)
+            // ═══════════════════════════════════════
+            case "cgi_animation", "pixar" -> """
+            A single finished, fully rendered 3D CGI animated film style character illustration intended as final artwork.
+            
+            RENDER STYLE:
+            High-end theatrical animation quality. Global illumination with realistic light bounce.
+            Three-point lighting setup: warm key light, cool fill light, subtle rim light for separation.
+            Subsurface scattering on skin. Detailed eye reflections with dual catchlights.
+            Camera: 35mm equivalent lens, shallow depth of field, cinematic composition.
+            
+            CHARACTER:
+            Character with [HAIR] hair wearing [CLOTHING].
+            Stylized appealing proportions with slightly enlarged head and eyes.
+            Smooth rounded features with careful attention to appealing shapes.
+            Natural dynamic pose with genuine body language and authentic emotion.
+            Warm engaging expression - genuine smile reaching the eyes, or thoughtful contemplation.
+            
+            SCENE:
+            Character in a warm, inviting environment with motivated lighting.
+            Rich saturated color palette with intentional color harmony.
+            Soft atmospheric depth in background. Professional cinematography feel.
+            
+            QUALITY:
+            This style emphasizes theatrical animation excellence, intentional lighting design, emotional authenticity, and cohesive color harmony.
+            This looks like a frame from a major animated feature film.
+            This is a complete final render at theatrical release quality.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+
+            // ═══════════════════════════════════════
+            // ✨ 디즈니 계열 (CGI_ANIMATION_SOFT)
+            // ═══════════════════════════════════════
+            case "disney", "cgi_animation_soft" -> """
+            A single finished, fully rendered 3D CGI animated musical film style character illustration intended as final artwork.
+            
+            RENDER STYLE:
+            Soft theatrical animation quality with fairy-tale warmth. Gentle global illumination.
+            Lower contrast than typical CGI - lifted shadows, soft highlights.
+            Warm color temperature throughout. Subtle bloom and glow effects.
+            Skin has porcelain-like smoothness with warm subsurface scattering.
+            Camera: medium shot, eye-level, intimate character focus.
+            
+            CHARACTER:
+            Character with [HAIR] hair wearing [CLOTHING].
+            Graceful elegant proportions with emphasis on facial curves and expressiveness.
+            Large sparkling eyes with detailed iris patterns and magical catchlights.
+            Flowing hair with soft, almost magical movement.
+            Pose suggests musical performance or emotional moment - expressive and theatrical.
+            Expression shows clear readable emotion - joy, wonder, determination, or tenderness.
+            
+            SCENE:
+            Character in a magical, storybook environment with dreamy lighting.
+            Soft pastel and jewel-tone color palette. Fairy-tale atmosphere.
+            Subtle sparkles or magical particles in the air.
+            Background suggests a larger story and world.
+            
+            QUALITY:
+            This style emphasizes fairy-tale magic, emotional storytelling, musical theater expressiveness, and princess-like elegance.
+            The character looks like they're about to break into song.
+            This is a complete final render from an animated musical film.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+
+            // ═══════════════════════════════════════
+            // 기타 스타일 (기본)
+            // ═══════════════════════════════════════
+            case "pixel_art" -> """
+            A single finished, fully rendered pixel art character illustration intended as final artwork.
+            Retro game aesthetic with clean pixel blocks, limited 16-color palette.
+            Full body character with [HAIR] hair wearing [CLOTHING].
+            Relaxed pose with subtle head tilt and gentle friendly expression.
+            Classic 16-bit or 32-bit game sprite style with careful dithering.
+            Transparent background with no environment, no shadows on ground, no backdrop.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
             case "chibi" -> """
             A single finished, fully rendered chibi character illustration intended as final artwork.
             Cute stylized proportions with oversized head, small rounded body.
             Character with [HAIR] hair wearing [CLOTHING].
-            Relaxed pose with subtle head tilt and gentle smile.
-            Big sparkling expressive eyes, simplified adorable features.
-            Soft pastel colors, clean smooth lines.
+            Relaxed pose with subtle head tilt and adorable happy expression.
+            Big sparkling expressive eyes, simplified cute features.
+            Soft pastel colors, clean smooth lines, gentle shading.
             Transparent background with no environment, no shadows on ground, no backdrop.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
             case "anime" -> """
             A single finished, fully rendered anime style character illustration intended as final artwork.
             Japanese animation aesthetic with clean lines, vibrant colors.
             Character with [HAIR] hair wearing [CLOTHING].
             Natural relaxed pose with subtle body tilt and gentle expression.
-            Expressive eyes, stylized appealing proportions.
-            Soft atmospheric background with subtle color gradient.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
+            Expressive detailed eyes, stylized appealing proportions.
+            Dynamic lighting with soft shadows. Soft atmospheric background.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
             case "3d_cartoon" -> """
             A single finished, fully rendered 3D cartoon character illustration intended as final artwork.
@@ -195,11 +317,8 @@ public class GptServiceImpl implements GptService {
             Character with [HAIR] hair wearing [CLOTHING].
             Relaxed natural pose with subtle head angle and warm friendly expression.
             Stylized appealing proportions, expressive face.
-            Cinematic lighting, vibrant saturated colors.
-            Clean simple background with soft gradient.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
+            Cinematic lighting, vibrant saturated colors. Clean gradient background.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
             case "watercolor" -> """
             A single finished, fully rendered watercolor style character illustration intended as final artwork.
@@ -207,11 +326,8 @@ public class GptServiceImpl implements GptService {
             Character with [HAIR] hair wearing [CLOTHING].
             Graceful relaxed pose with natural head tilt and serene expression.
             Dreamy atmospheric quality, beautiful organic textures.
-            Warm natural lighting, harmonious color palette.
-            Soft blended painterly background.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
+            Warm natural lighting. Soft blended painterly background.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
             case "oil_painting" -> """
             A single finished, fully rendered oil painting style character portrait intended as final artwork.
@@ -219,11 +335,8 @@ public class GptServiceImpl implements GptService {
             Character with [HAIR] hair wearing [CLOTHING].
             Elegant pose with natural head angle and refined expression.
             Dramatic lighting, rich luxurious color palette.
-            Artistic brushwork visible, museum quality feel.
-            Elegant atmospheric background.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
+            Artistic brushwork visible, museum quality feel. Elegant background.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
             case "minimal" -> """
             A single finished, fully rendered minimal style character illustration intended as final artwork.
@@ -231,11 +344,8 @@ public class GptServiceImpl implements GptService {
             Character with [HAIR] hair wearing [CLOTHING].
             Simple relaxed pose with subtle asymmetry and calm expression.
             Flat harmonious colors, elegant geometric simplification.
-            Modern clean aesthetic, balanced composition.
             Plain solid color background.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
             case "retro" -> """
             A single finished, fully rendered retro style character illustration intended as final artwork.
@@ -243,46 +353,8 @@ public class GptServiceImpl implements GptService {
             Character with [HAIR] hair wearing [CLOTHING].
             Classic relaxed pose with natural head tilt and pleasant expression.
             Timeless illustration style, warm muted color palette.
-            Vintage poster or classic magazine feel.
-            Simple themed background with retro elements.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
-            """;
-            case "chibi_game", "animal_crossing" -> """
-            A single finished, fully rendered chibi 3D game character illustration intended as final artwork.
-            Cute toy-like proportions with oversized spherical head, small rounded body.
-            Character with [HAIR] hair wearing [CLOTHING].
-            Relaxed cheerful pose with subtle head tilt and gentle happy expression.
-            Simple dot eyes, tiny cute features, smooth plastic-like materials.
-            Bright cheerful pastel colors, soft warm lighting.
-            Transparent background with no environment, no shadows on ground, no backdrop.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
-            """;
-            case "anime_film", "ghibli" -> """
-            A single finished, fully rendered 2D anime film style character illustration intended as final artwork.
-            Hand-painted animation aesthetic with soft watercolor textures.
-            Character with [HAIR] hair wearing [CLOTHING].
-            Natural graceful pose with subtle head angle and gentle serene expression.
-            Warm earth tones, soft natural lighting, dreamy atmosphere.
-            Beautiful impressionistic background with soft details.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
-            """;
-            case "cgi_animation", "pixar" -> """
-            A single finished, fully rendered 3D CGI animated film style character illustration intended as final artwork.
-            Modern high-quality animation aesthetic with stylized proportions.
-            Character with [HAIR] hair wearing [CLOTHING].
-            Natural appealing pose with subtle body language and warm expressive face.
-            Large expressive eyes with detailed reflections, smooth rounded features.
-            Cinematic lighting, vibrant rich colors.
-            Clean atmospheric background with soft depth.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
+            Vintage poster or classic magazine feel. Simple themed background.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
             default -> """
             A single finished, fully rendered character illustration intended as final artwork.
@@ -291,9 +363,7 @@ public class GptServiceImpl implements GptService {
             Relaxed natural pose with subtle head tilt and pleasant friendly expression.
             Harmonious colors, balanced composition, polished finish.
             Clean simple background.
-            This is a complete final render, not a design reference.
-            Always prioritize visual appeal and charm.
-            Not a character sheet. Not concept art. Not a turnaround.
+            This is a complete final render. Not a character sheet. Not concept art.
             """;
         };
     }
@@ -302,17 +372,18 @@ public class GptServiceImpl implements GptService {
         return style != null && Set.of(
                 "chibi_game",
                 "anime_film",
-                "cgi_animation"
+                "cgi_animation",
+                "cgi_animation_soft"  // 디즈니 추가
         ).contains(style.toLowerCase());
     }
-
     private String toAbstractedStyle(String style) {
         if (style == null) return null;
 
         return switch (style.toLowerCase()) {
             case "animal_crossing" -> "chibi_game";
             case "ghibli" -> "anime_film";
-            case "pixar", "disney" -> "cgi_animation";
+            case "pixar" -> "cgi_animation";
+            case "disney" -> "cgi_animation_soft";  // 디즈니 전용
             default -> style;
         };
     }
@@ -320,54 +391,35 @@ public class GptServiceImpl implements GptService {
     private static final String GPT_VISION_URL = "https://api.openai.com/v1/chat/completions";
 
     private String detectRequestedStyle(String prompt) {
+        if (prompt == null) return null;
         String lower = prompt.toLowerCase();
 
+        // 동물의 숲
         if (lower.contains("동물의 숲") || lower.contains("animal crossing") ||
-                lower.contains("모여봐요") || lower.contains("치비")) {
+                lower.contains("동물의숲") || lower.contains("모동숲") || lower.contains("모여봐요")) {
             return "animal_crossing";
         }
-
+        // 지브리
+        if (lower.contains("지브리") || lower.contains("ghibli") ||
+                lower.contains("미야자키") || lower.contains("miyazaki") ||
+                lower.contains("토토로") || lower.contains("하울") || lower.contains("센과 치히로")) {
+            return "ghibli";
+        }
+        // 픽사
         if (lower.contains("픽사") || lower.contains("pixar")) {
             return "pixar";
         }
-
-        if (lower.contains("지브리") || lower.contains("ghibli") ||
-                lower.contains("센과 치히로") || lower.contains("토토로") ||
-                lower.contains("하울의 움직이는 성")) {
-            return "ghibli";
-        }
-
-        if (lower.contains("포켓몬") || lower.contains("pokemon") ||
-                lower.contains("피카츄")) {
-            return "pokemon";
-        }
-
-        if (lower.contains("젤다") || lower.contains("zelda") ||
-                lower.contains("브레스 오브 더 와일드") || lower.contains("티어스")) {
-            return "zelda";
-        }
-
-        if (lower.contains("원신") || lower.contains("genshin") ||
-                lower.contains("미호요")) {
-            return "genshin";
-        }
-
-        if (lower.contains("디즈니") || lower.contains("disney")) {
+        // 디즈니
+        if (lower.contains("디즈니") || lower.contains("disney") ||
+                lower.contains("겨울왕국") || lower.contains("frozen") ||
+                lower.contains("라푼젤") || lower.contains("rapunzel") ||
+                lower.contains("모아나") || lower.contains("moana") ||
+                lower.contains("엔칸토") || lower.contains("encanto")) {
             return "disney";
-        }
-
-        if (lower.contains("마블") || lower.contains("marvel")) {
-            return "marvel";
-        }
-
-        if (lower.contains("애니") || lower.contains("anime") ||
-                lower.contains("만화")) {
-            return "anime";
         }
 
         return null;
     }
-
 
     @Override
     public String upgradeText(String fullContext, String selectedText, String direction) {

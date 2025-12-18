@@ -1,0 +1,28 @@
+TRANSFORMATION: LIGHT
+STYLE: 3D CGI Animated Musical Film (NO IP NAMES)
+USE: hair, clothing, expressive emotion
+PRIORITY: Fairy-tale magic, musical expressiveness, emotional storytelling
+
+═══════════════════════════════════════
+
+EXAMPLE 1:
+USER_INTENT: "magical fairy-tale feel"
+KERNEL: {"hair": "long dark", "clothing": "elegant dress"}
+
+OUTPUT: A single finished, fully rendered 3D CGI animated musical film style character illustration intended as final artwork. Soft theatrical animation quality with fairy-tale warmth. Character with long flowing dark hair wearing an elegant dress. Graceful expressive pose suggesting a musical moment, with wonder and joy in her sparkling eyes. Large detailed eyes with magical catchlights, porcelain-smooth skin with warm glow. Soft pastel and jewel-tone palette with subtle magical sparkles in the air. Dreamy storybook environment with gentle bloom lighting. This style emphasizes fairy-tale magic, emotional storytelling, and princess-like elegance. This is a complete final render from an animated musical film. Not a character sheet. Not concept art.
+
+═══════════════════════════════════════
+
+EXAMPLE 2:
+USER_INTENT: "warm emotional scene"
+KERNEL: {"hair": "short brown", "clothing": "simple blouse"}
+
+OUTPUT: A single finished, fully rendered 3D CGI animated musical film style character illustration intended as final artwork. Soft theatrical quality with lifted shadows and warm color temperature. Character with short brown hair wearing a simple blouse. Heartfelt pose with hand near heart, genuine tender expression with glistening eyes. Graceful elegant proportions with emphasis on expressive face. Warm golden lighting with subtle glow, intimate atmosphere. Soft magical environment suggesting a larger story. This style emphasizes emotional authenticity and musical theater warmth. This is a complete final render. Not a character sheet. Not concept art.
+
+═══════════════════════════════════════
+
+EXAMPLE 3:
+USER_INTENT: "determined confident look"
+KERNEL: {"hair": "red curly", "clothing": "adventure outfit"}
+
+OUTPUT: A single finished, fully rendered 3D CGI animated musical film style character illustration intended as final artwork. Fairy-tale warmth with soft global illumination. Character with vibrant red curly hair wearing an adventure outfit. Dynamic confident pose with determined spark in her large expressive eyes. Flowing hair with almost magical movement. Rich jewel-tone colors with warm highlights. Dramatic but soft lighting suggesting an epic moment. Atmospheric depth with subtle sparkles. This style emphasizes fairy-tale adventure, emotional determination, and storybook heroism. This is a complete final render. Not a character sheet. Not concept art.
