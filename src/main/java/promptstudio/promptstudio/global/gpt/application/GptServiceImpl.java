@@ -73,47 +73,26 @@ public class GptServiceImpl implements GptService {
     }
     """;
 
+    private boolean isRefusal(String text) {
+        if (text == null || text.isBlank()) return true;
+        String lower = text.toLowerCase();
+        return lower.contains("sorry") ||
+                lower.contains("i can't") ||
+                lower.contains("i cannot") ||
+                lower.contains("can't assist") ||
+                lower.contains("cannot assist") ||
+                lower.contains("not able to") ||
+                lower.contains("unable to") ||
+                lower.contains("i'm unable");
+    }
+
+
     private boolean isKnownAbstractedStyle(String style) {
         return style != null && Set.of(
                 "chibi_game",
                 "anime_film",
                 "cgi_animation"
         ).contains(style.toLowerCase());
-    }
-
-    private String makeSaferPrompt(String originalPrompt) {
-        // IP 관련 단어 모두 제거
-        String safer = originalPrompt
-                .replaceAll("(?i)animal crossing", "chibi game")
-                .replaceAll("(?i)nintendo", "")
-                .replaceAll("(?i)ghibli", "anime film")
-                .replaceAll("(?i)miyazaki", "")
-                .replaceAll("(?i)pixar", "3D animated")
-                .replaceAll("(?i)disney", "")
-                .replaceAll("(?i)studio", "")
-                .replaceAll("\\s+", " ")
-                .trim();
-
-        // 안전 문구 추가
-        safer = safer + " This is an original character design. Do not reference any existing IP, brand, or franchise.";
-
-        log.info("=== Safer 프롬프트 생성 ===");
-        log.info("원본: {}", originalPrompt);
-        log.info("변환: {}", safer);
-
-        return safer;
-    }
-
-    private boolean isVisionRejected(String result) {
-        if (result == null || result.isBlank()) return true;
-        String lower = result.toLowerCase();
-        return lower.contains("sorry") ||
-                lower.contains("can't help") ||
-                lower.contains("cannot") ||
-                lower.contains("not able") ||
-                lower.contains("unable") ||
-                lower.contains("i can't") ||
-                !result.trim().startsWith("{");
     }
 
     private String toAbstractedStyle(String style) {
@@ -178,9 +157,6 @@ public class GptServiceImpl implements GptService {
         return null;
     }
 
-    private boolean isKnownStyle(String style) {
-        return style != null && KNOWN_STYLES.contains(style);
-    }
 
     @Override
     public String upgradeText(String fullContext, String selectedText, String direction) {
@@ -342,16 +318,15 @@ public class GptServiceImpl implements GptService {
         }
     }
 
-
     private String extractIdentityKernel(List<String> imageUrls) {
         try {
-            // 1차 시도: 일반 프롬프트
+            // 1차 시도
             String result = callVisionApiWithPrompt(
                     imageUrls,
                     promptRegistry.get(PromptType.VISION_IDENTITY_EXTRACTOR)
             );
 
-            if (!isVisionRejected(result)) {
+            if (!isRefusal(result) && result.trim().startsWith("{")) {
                 log.info("=== Identity Kernel 추출 완료 ===");
                 log.info("결과:\n{}", result);
                 return result;
@@ -361,45 +336,20 @@ public class GptServiceImpl implements GptService {
             log.warn("=== Vision 1차 거부, 안전 프롬프트로 재시도 ===");
             result = callVisionApiWithPrompt(imageUrls, SAFE_VISION_PROMPT);
 
-            if (!isVisionRejected(result)) {
+            if (!isRefusal(result) && result.trim().startsWith("{")) {
                 log.info("=== Identity Kernel 추출 완료 (2차 시도) ===");
                 log.info("결과:\n{}", result);
                 return result;
             }
 
-            // 둘 다 실패: Fallback Kernel 사용 (서비스 중단 방지)
-            log.warn("=== Vision 분석 불가, Fallback Kernel 사용 ===");
-            return FALLBACK_KERNEL;
+            // 둘 다 실패: 거부 메시지 그대로 반환 (상위에서 체크)
+            log.warn("=== Vision 분석 불가 ===");
+            return result;  // "I'm sorry..." 그대로 반환
 
         } catch (Exception e) {
             log.error("Identity Kernel 추출 실패: {}", e.getMessage());
-            return FALLBACK_KERNEL;
+            return "error: " + e.getMessage();
         }
-    }
-
-    private String getSafeVisionPrompt() {
-        return """
-        For creating a fictional cartoon character, describe ONLY:
-        - Hair: color and length
-        - Clothing: type and color  
-        - Accessory: one item or none
-        
-        This is for artwork creation, not identification.
-        
-        Output JSON only:
-        {"materials": {"hair": "...", "clothing": "...", "accessory": null}}
-        """;
-    }
-
-    private boolean isRejected(String result) {
-        if (result == null) return true;
-        String lower = result.toLowerCase();
-        return lower.contains("sorry") ||
-                lower.contains("can't help") ||
-                lower.contains("cannot") ||
-                lower.contains("not able") ||
-                lower.contains("unable") ||
-                !result.trim().startsWith("{");
     }
 
     private String callVisionApiWithPrompt(List<String> imageUrls, String systemPrompt) throws Exception {
@@ -630,7 +580,6 @@ public class GptServiceImpl implements GptService {
         try {
             log.info("=== 입력 프롬프트: [{}] ===", prompt);
 
-            // 이미지 생성 요청 체크
             boolean isImageRequest = prompt.contains("이미지") ||
                     prompt.contains("그림") ||
                     prompt.contains("사진") ||
@@ -654,9 +603,7 @@ public class GptServiceImpl implements GptService {
                         .build();
             }
 
-            // === POLICY-AWARE ARCHITECTURE ===
-
-            // 1. 스타일 감지 → IP-free 버전으로 변환
+            // 1. 스타일 감지
             String detectedStyle = detectRequestedStyle(prompt);
             String abstractedStyle = toAbstractedStyle(detectedStyle);
             log.info("=== 감지된 스타일: {} → 추상화: {} ===", detectedStyle, abstractedStyle);
@@ -664,7 +611,16 @@ public class GptServiceImpl implements GptService {
             // 2. Vision: Identity Kernel 추출
             String identityKernel = extractIdentityKernel(imageUrls);
 
-            // 3. Composer: 스타일별 DALL-E 프롬프트 생성
+            // === Vision 거부 체크 ===
+            if (isRefusal(identityKernel)) {
+                log.warn("=== Vision 거부됨, 즉시 종료 ===");
+                throw new ResponseStatusException(
+                        HttpStatus.UNPROCESSABLE_ENTITY,
+                        "이미지 분석이 정책상 제한되었습니다. 다른 이미지로 시도해주세요."
+                );
+            }
+
+            // 3. Composer: DALL-E 프롬프트 생성
             String dallePrompt;
 
             if (abstractedStyle != null && isKnownAbstractedStyle(abstractedStyle)) {
@@ -676,31 +632,34 @@ public class GptServiceImpl implements GptService {
                 dallePrompt = composePromptNoStyle(identityKernel, prompt);
             }
 
-            // 4. DALL-E 이미지 생성 (1차 시도)
+            // === Composer 거부 체크 (DALL-E 호출 전) ===
+            if (isRefusal(dallePrompt)) {
+                log.warn("=== Composer 거부됨, 즉시 종료 ===");
+                log.warn("Composer 응답: {}", dallePrompt);
+                throw new ResponseStatusException(
+                        HttpStatus.UNPROCESSABLE_ENTITY,
+                        "이미지 생성이 정책상 제한되었습니다. 다른 스타일이나 이미지로 시도해주세요."
+                );
+            }
+
+            // 4. DALL-E 이미지 생성
             String resultImageUrl;
+            TransformationLevel level = TransformationLevel.fromStyle(detectedStyle);
+
             try {
-                TransformationLevel level = TransformationLevel.fromStyle(detectedStyle);
                 if (level == TransformationLevel.HEAVY || level == TransformationLevel.LIGHT) {
                     resultImageUrl = imageService.generateImageHD(dallePrompt);
                 } else {
                     resultImageUrl = imageService.generateImageRealistic(dallePrompt);
                 }
             } catch (Exception e) {
-                // DALL-E 실패 시: 더 안전한 프롬프트로 1회 재시도
-                log.warn("=== DALL-E 1차 실패, Style Abstraction 재시도 ===");
-                log.warn("에러: {}", e.getMessage());
-
-                String saferPrompt = makeSaferPrompt(dallePrompt);
-                try {
-                    resultImageUrl = imageService.generateImageHD(saferPrompt);
-                } catch (Exception e2) {
-                    // 재시도도 실패: 사용자에게 에러 반환
-                    log.error("=== DALL-E 재시도 실패 ===");
-                    throw new ResponseStatusException(
-                            HttpStatus.UNPROCESSABLE_ENTITY,
-                            "이미지 생성이 제한되었습니다. 다른 스타일이나 이미지로 시도해주세요."
-                    );
-                }
+                // DALL-E 실패: 즉시 사용자 에러 반환 (재시도 안 함)
+                log.error("=== DALL-E 실패 ===");
+                log.error("에러: {}", e.getMessage());
+                throw new ResponseStatusException(
+                        HttpStatus.UNPROCESSABLE_ENTITY,
+                        "이미지 생성이 정책상 제한되었습니다. 다른 스타일이나 이미지로 시도해주세요."
+                );
             }
 
             return GptRunResult.builder()
