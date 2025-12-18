@@ -86,6 +86,150 @@ public class GptServiceImpl implements GptService {
                 lower.contains("i'm unable");
     }
 
+    private String getStyleTemplate(String styleKeyword) {
+        return switch (styleKeyword) {
+            case "pixel_art" -> """
+            A single finished, fully rendered pixel art character illustration intended as final artwork.
+            Retro game aesthetic with clean pixel blocks, limited color palette.
+            Full body character with [HAIR] hair wearing [CLOTHING].
+            Relaxed pose with subtle head tilt and gentle friendly expression.
+            Classic 16-bit or 32-bit game sprite style.
+            Transparent background with no environment, no shadows on ground, no backdrop.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "chibi" -> """
+            A single finished, fully rendered chibi character illustration intended as final artwork.
+            Cute stylized proportions with oversized head, small rounded body.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Relaxed pose with subtle head tilt and gentle smile.
+            Big sparkling expressive eyes, simplified adorable features.
+            Soft pastel colors, clean smooth lines.
+            Transparent background with no environment, no shadows on ground, no backdrop.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "anime" -> """
+            A single finished, fully rendered anime style character illustration intended as final artwork.
+            Japanese animation aesthetic with clean lines, vibrant colors.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Natural relaxed pose with subtle body tilt and gentle expression.
+            Expressive eyes, stylized appealing proportions.
+            Soft atmospheric background with subtle color gradient.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "3d_cartoon" -> """
+            A single finished, fully rendered 3D cartoon character illustration intended as final artwork.
+            Modern CGI animation style with smooth rounded features.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Relaxed natural pose with subtle head angle and warm friendly expression.
+            Stylized appealing proportions, expressive face.
+            Cinematic lighting, vibrant saturated colors.
+            Clean simple background with soft gradient.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "watercolor" -> """
+            A single finished, fully rendered watercolor style character illustration intended as final artwork.
+            Soft painted aesthetic with flowing colors and gentle organic edges.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Graceful relaxed pose with natural head tilt and serene expression.
+            Dreamy atmospheric quality, beautiful organic textures.
+            Warm natural lighting, harmonious color palette.
+            Soft blended painterly background.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "oil_painting" -> """
+            A single finished, fully rendered oil painting style character portrait intended as final artwork.
+            Classical painted aesthetic with rich textures and depth.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Elegant pose with natural head angle and refined expression.
+            Dramatic lighting, rich luxurious color palette.
+            Artistic brushwork visible, museum quality feel.
+            Elegant atmospheric background.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "minimal" -> """
+            A single finished, fully rendered minimal style character illustration intended as final artwork.
+            Clean simple design with limited colors and geometric shapes.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Simple relaxed pose with subtle asymmetry and calm expression.
+            Flat harmonious colors, elegant geometric simplification.
+            Modern clean aesthetic, balanced composition.
+            Plain solid color background.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "retro" -> """
+            A single finished, fully rendered retro style character illustration intended as final artwork.
+            Vintage aesthetic with warm tones and nostalgic charm.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Classic relaxed pose with natural head tilt and pleasant expression.
+            Timeless illustration style, warm muted color palette.
+            Vintage poster or classic magazine feel.
+            Simple themed background with retro elements.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "chibi_game", "animal_crossing" -> """
+            A single finished, fully rendered chibi 3D game character illustration intended as final artwork.
+            Cute toy-like proportions with oversized spherical head, small rounded body.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Relaxed cheerful pose with subtle head tilt and gentle happy expression.
+            Simple dot eyes, tiny cute features, smooth plastic-like materials.
+            Bright cheerful pastel colors, soft warm lighting.
+            Transparent background with no environment, no shadows on ground, no backdrop.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "anime_film", "ghibli" -> """
+            A single finished, fully rendered 2D anime film style character illustration intended as final artwork.
+            Hand-painted animation aesthetic with soft watercolor textures.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Natural graceful pose with subtle head angle and gentle serene expression.
+            Warm earth tones, soft natural lighting, dreamy atmosphere.
+            Beautiful impressionistic background with soft details.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            case "cgi_animation", "pixar" -> """
+            A single finished, fully rendered 3D CGI animated film style character illustration intended as final artwork.
+            Modern high-quality animation aesthetic with stylized proportions.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Natural appealing pose with subtle body language and warm expressive face.
+            Large expressive eyes with detailed reflections, smooth rounded features.
+            Cinematic lighting, vibrant rich colors.
+            Clean atmospheric background with soft depth.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+            default -> """
+            A single finished, fully rendered character illustration intended as final artwork.
+            Clean appealing art style with professional quality.
+            Character with [HAIR] hair wearing [CLOTHING].
+            Relaxed natural pose with subtle head tilt and pleasant friendly expression.
+            Harmonious colors, balanced composition, polished finish.
+            Clean simple background.
+            This is a complete final render, not a design reference.
+            Always prioritize visual appeal and charm.
+            Not a character sheet. Not concept art. Not a turnaround.
+            """;
+        };
+    }
 
     private boolean isKnownAbstractedStyle(String style) {
         return style != null && Set.of(

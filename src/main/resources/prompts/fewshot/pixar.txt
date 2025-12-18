@@ -1,7 +1,7 @@
 TRANSFORMATION: LIGHT
 STYLE: Modern 3D CGI Animation (NO IP NAMES)
 USE: hair, clothing, general appearance
-DROP: detailed face structure
+PRIORITY: Visual appeal and charm first
 
 ═══════════════════════════════════════
 
@@ -9,7 +9,7 @@ EXAMPLE 1:
 USER_INTENT: "cinematic lighting"
 KERNEL: {"hair": "long dark wavy", "clothing": "white top"}
 
-OUTPUT: A single finished illustration. Cinematic lighting with soft shadows. A character in modern 3D CGI animated style with long dark wavy hair wearing a white top. Stylized proportions, large expressive eyes, smooth rounded features. Vibrant saturated colors, professional render quality. Neutral pose. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
+OUTPUT: A single finished, fully rendered 3D CGI animated film style character illustration intended as final artwork. Modern high-quality animation aesthetic with stylized proportions. Character with long dark wavy hair wearing a white top. Natural appealing pose with subtle body language and warm confident expression. Large expressive eyes with detailed reflections, smooth rounded features. Cinematic dramatic lighting, vibrant saturated colors. Clean atmospheric background with soft depth. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.
 
 ═══════════════════════════════════════
 
@@ -17,7 +17,7 @@ EXAMPLE 2:
 USER_INTENT: "cozy warm scene"
 KERNEL: {"hair": "short blonde", "clothing": "green sweater", "accessory": "glasses"}
 
-OUTPUT: A single finished illustration. Cozy warm lighting. A character in modern 3D CGI style with short blonde hair and stylized round glasses wearing a green sweater. Appealing cartoon proportions, expressive eyes, smooth features. Warm color palette. Relaxed neutral pose. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
+OUTPUT: A single finished, fully rendered 3D CGI animated film style character illustration intended as final artwork. Charming modern animation aesthetic. Character with short blonde hair and stylized round glasses wearing a cozy green sweater. Relaxed natural pose with gentle head tilt and warm friendly smile. Expressive eyes, smooth appealing features. Soft warm cozy lighting, inviting color palette. Simple warm interior background. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.
 
 ═══════════════════════════════════════
 
@@ -25,4 +25,4 @@ EXAMPLE 3:
 USER_INTENT: "vibrant colors"
 KERNEL: {"hair": "curly brown", "clothing": "red dress"}
 
-OUTPUT: A single finished illustration. Vibrant rich colors. A character in modern 3D CGI animated style with curly brown hair wearing a red dress. Stylized appealing proportions, large expressive eyes. Dynamic but simple pose. High-quality render, cinematic composition. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
+OUTPUT: A single finished, fully rendered 3D CGI animated film style character illustration intended as final artwork. High-end modern animation quality. Character with curly brown hair wearing a beautiful red dress. Dynamic appealing pose with natural movement and joyful radiant expression. Large sparkling eyes, smooth stylized features. Vibrant rich saturated colors, cinematic lighting. Colorful atmospheric outdoor background. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.

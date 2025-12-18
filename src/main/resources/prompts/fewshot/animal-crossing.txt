@@ -1,7 +1,7 @@
 TRANSFORMATION: HEAVY
 STYLE: Chibi 3D Game Character (NO IP NAMES)
 USE: hair color, clothing color ONLY
-DROP: face, pose, anatomy
+PRIORITY: Visual appeal and charm first
 
 ═══════════════════════════════════════
 
@@ -9,7 +9,7 @@ EXAMPLE 1:
 USER_INTENT: "transparent background, 3D look"
 KERNEL: {"hair": "long dark", "clothing": "white top, black pants"}
 
-OUTPUT: A single finished character illustration. Transparent background, clean cutout. A cute chibi 3D game character with long dark hair wearing a white top and dark pants. Toy-like proportions: oversized spherical head, simple dot eyes, tiny features, small rounded body. Soft pastel colors, smooth plastic materials, bright cheerful lighting. Neutral standing pose. Not a reference sheet. Not concept art. Not a turnaround. Not multiple poses. Do not reference any existing game, brand, or IP.
+OUTPUT: A single finished, fully rendered chibi 3D game character illustration intended as final artwork. Cute toy-like proportions with oversized spherical head, small rounded body. Character with long dark hair wearing a white top and dark pants. Relaxed cheerful pose with subtle head tilt and gentle happy expression. Simple dot eyes, tiny cute features, smooth plastic materials. Bright pastel colors, warm soft lighting. Transparent background with no environment, no shadows on ground, no backdrop. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.
 
 ═══════════════════════════════════════
 
@@ -17,7 +17,7 @@ EXAMPLE 2:
 USER_INTENT: "bright warm lighting"
 KERNEL: {"hair": "short brown", "clothing": "blue hoodie"}
 
-OUTPUT: A single finished character illustration. Bright warm lighting with soft shadows. A cute chibi 3D game character with short brown hair wearing a cozy blue hoodie. Toy-like proportions: large spherical head, minimal dot features, compact rounded body. Soft pastel palette, smooth plastic texture. Neutral pose. Not a reference sheet. Not concept art. Not a turnaround. Not multiple poses. Do not reference any existing game, brand, or IP.
+OUTPUT: A single finished, fully rendered chibi 3D game character illustration intended as final artwork. Adorable toy-like proportions with large spherical head, compact rounded body. Character with short brown hair wearing a cozy blue hoodie. Relaxed pose with gentle head angle and warm friendly smile. Minimal dot features, smooth plastic-like texture. Cheerful pastel palette, bright warm lighting with soft shadows. Simple clean background. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.
 
 ═══════════════════════════════════════
 
@@ -25,4 +25,4 @@ EXAMPLE 3:
 USER_INTENT: "transparent background"
 KERNEL: {"hair": "blonde", "clothing": "red sweater", "accessory": "glasses"}
 
-OUTPUT: A single finished character illustration. Transparent background. A cute chibi 3D game character with blonde hair and round glasses wearing a red sweater. Toy-like proportions: oversized round head, dot eyes, tiny features, small body. Warm pastel colors, plastic-like materials. Neutral standing pose. Not a reference sheet. Not concept art. Not a turnaround. Not multiple poses. Do not reference any existing game, brand, or IP.
+OUTPUT: A single finished, fully rendered chibi 3D game character illustration intended as final artwork. Cute toy-like proportions with oversized round head, small body. Character with blonde hair and round glasses wearing a red sweater. Relaxed happy pose with subtle head tilt and gentle cheerful expression. Simple cute features, smooth plastic materials. Warm pastel colors, soft lighting. Transparent background with no environment, no shadows on ground, no backdrop. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.

@@ -1,7 +1,7 @@
 TRANSFORMATION: LIGHT
 STYLE: Hand-painted 2D Anime Film (NO IP NAMES)
 USE: hair, clothing, mood
-DROP: detailed face, specific pose
+PRIORITY: Visual appeal and charm first
 
 ═══════════════════════════════════════
 
@@ -9,7 +9,7 @@ EXAMPLE 1:
 USER_INTENT: "dreamy atmosphere"
 KERNEL: {"hair": "long dark", "clothing": "white top"}
 
-OUTPUT: A single finished illustration. Dreamy atmospheric quality. A character in hand-painted 2D anime film style with long flowing dark hair wearing a simple white top. Soft watercolor textures, warm earth tones, gentle natural lighting. Peaceful expression, neutral pose. Impressionistic background. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
+OUTPUT: A single finished, fully rendered 2D anime film style character illustration intended as final artwork. Hand-painted animation aesthetic with soft watercolor textures. Character with long flowing dark hair wearing a simple white top. Natural graceful pose with subtle head tilt and gentle serene expression. Warm earth tones, soft natural lighting, dreamy peaceful atmosphere. Beautiful impressionistic background with soft meadow details. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.
 
 ═══════════════════════════════════════
 
@@ -17,7 +17,7 @@ EXAMPLE 2:
 USER_INTENT: "nostalgic countryside"
 KERNEL: {"hair": "short brown", "clothing": "blue jacket"}
 
-OUTPUT: A single finished illustration. Nostalgic countryside atmosphere. A character in hand-painted 2D anime style with short brown hair wearing a blue jacket. Soft watercolor textures, warm muted colors, natural diffused lighting. Gentle expression, relaxed neutral pose. Soft pastoral background. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
+OUTPUT: A single finished, fully rendered 2D anime film style character illustration intended as final artwork. Classic hand-painted animation aesthetic with soft watercolor feel. Character with short brown hair wearing a blue jacket. Relaxed natural pose with gentle body angle and warm pleasant expression. Muted warm colors, natural diffused lighting, nostalgic peaceful mood. Soft pastoral countryside background. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.
 
 ═══════════════════════════════════════
 
@@ -25,4 +25,4 @@ EXAMPLE 3:
 USER_INTENT: "golden hour lighting"
 KERNEL: {"hair": "red", "clothing": "green dress"}
 
-OUTPUT: A single finished illustration. Magical golden hour lighting. A character in hand-painted 2D anime film style with red hair wearing a flowing green dress. Watercolor textures, warm sunlit tones. Peaceful atmosphere, gentle neutral pose. Soft atmospheric background. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
+OUTPUT: A single finished, fully rendered 2D anime film style character illustration intended as final artwork. Beautiful hand-painted animation aesthetic with watercolor textures. Character with flowing red hair wearing an elegant green dress. Graceful pose with natural movement and gentle serene expression. Warm golden hour lighting, magical atmosphere. Soft windswept field background with warm sunset tones. This is a complete final render. Always prioritize visual appeal and charm. Not a character sheet. Not concept art.
