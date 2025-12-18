@@ -1,28 +1,28 @@
 TRANSFORMATION: LIGHT
-PRIORITY: User Intent > Style Rules > Identity
-USE: hair, clothing, general mood
-DROP: detailed face structure
+STYLE: Hand-painted 2D Anime Film (NO IP NAMES)
+USE: hair, clothing, mood
+DROP: detailed face, specific pose
 
 ═══════════════════════════════════════
 
 EXAMPLE 1:
 USER_INTENT: "dreamy atmosphere"
-KERNEL: {"hair": "long dark wavy", "clothing": "white top"}
+KERNEL: {"hair": "long dark", "clothing": "white top"}
 
-OUTPUT: A single finished Studio Ghibli-style illustration. Dreamy atmospheric quality with soft lighting. A character with long flowing dark hair wearing a simple white top in a sunlit meadow. Hand-painted 2D animation, soft watercolor textures, warm earth tones. Gentle breeze, peaceful mood. Not a character sheet. Not concept art. Single scene only.
+OUTPUT: A single finished illustration. Dreamy atmospheric quality. A character in hand-painted 2D anime film style with long flowing dark hair wearing a simple white top. Soft watercolor textures, warm earth tones, gentle natural lighting. Peaceful expression, neutral pose. Impressionistic background. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
 
 ═══════════════════════════════════════
 
 EXAMPLE 2:
-USER_INTENT: "nostalgic countryside feel"
+USER_INTENT: "nostalgic countryside"
 KERNEL: {"hair": "short brown", "clothing": "blue jacket"}
 
-OUTPUT: A single finished Studio Ghibli-style illustration. Nostalgic countryside atmosphere. A character with short brown hair in a blue jacket walking along a quiet rural path. Classic Miyazaki 2D animation, hand-painted watercolor backgrounds, warm muted colors. Natural diffused lighting. Not a character sheet. Not concept art. Single cinematic moment.
+OUTPUT: A single finished illustration. Nostalgic countryside atmosphere. A character in hand-painted 2D anime style with short brown hair wearing a blue jacket. Soft watercolor textures, warm muted colors, natural diffused lighting. Gentle expression, relaxed neutral pose. Soft pastoral background. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
 
 ═══════════════════════════════════════
 
 EXAMPLE 3:
-USER_INTENT: "magical golden hour"
-KERNEL: {"hair": "red braid", "clothing": "green dress"}
+USER_INTENT: "golden hour lighting"
+KERNEL: {"hair": "red", "clothing": "green dress"}
 
-OUTPUT: A single finished Studio Ghibli-style illustration. Magical golden hour lighting. A character with red braided hair wearing a flowing green dress in a windswept field. 2D cel animation aesthetic, watercolor textures, warm sunlit tones. Peaceful enchanting atmosphere. Not a character sheet. Not concept art. Single film frame.
+OUTPUT: A single finished illustration. Magical golden hour lighting. A character in hand-painted 2D anime film style with red hair wearing a flowing green dress. Watercolor textures, warm sunlit tones. Peaceful atmosphere, gentle neutral pose. Soft atmospheric background. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.

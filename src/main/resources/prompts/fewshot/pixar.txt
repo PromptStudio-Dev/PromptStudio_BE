@@ -1,28 +1,28 @@
 TRANSFORMATION: LIGHT
-PRIORITY: User Intent > Style Rules > Identity
-USE: hair, clothing, face shape as soft reference
-DROP: realistic facial details
+STYLE: Modern 3D CGI Animation (NO IP NAMES)
+USE: hair, clothing, general appearance
+DROP: detailed face structure
 
 ═══════════════════════════════════════
 
 EXAMPLE 1:
 USER_INTENT: "cinematic lighting"
-KERNEL: {"hair": "long dark wavy", "clothing": "white crop top"}
+KERNEL: {"hair": "long dark wavy", "clothing": "white top"}
 
-OUTPUT: A single finished Pixar-style illustration. Cinematic lighting with dramatic shadows. A character with long dark wavy hair wearing a white top in a warmly lit room. Modern 3D CGI, stylized proportions, large expressive eyes with reflections. Vibrant saturated colors. Not a character sheet. Not concept art. Single movie frame.
+OUTPUT: A single finished illustration. Cinematic lighting with soft shadows. A character in modern 3D CGI animated style with long dark wavy hair wearing a white top. Stylized proportions, large expressive eyes, smooth rounded features. Vibrant saturated colors, professional render quality. Neutral pose. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
 
 ═══════════════════════════════════════
 
 EXAMPLE 2:
-USER_INTENT: "cozy indoor scene"
+USER_INTENT: "cozy warm scene"
 KERNEL: {"hair": "short blonde", "clothing": "green sweater", "accessory": "glasses"}
 
-OUTPUT: A single finished Pixar-style illustration. Cozy indoor setting with warm ambient light. A character with short blonde hair and stylized round glasses wearing a green sweater. Signature Pixar 3D animation, smooth rounded features, warm expressive eyes. Soft studio lighting. Not a character sheet. Not concept art. Single cinematic shot.
+OUTPUT: A single finished illustration. Cozy warm lighting. A character in modern 3D CGI style with short blonde hair and stylized round glasses wearing a green sweater. Appealing cartoon proportions, expressive eyes, smooth features. Warm color palette. Relaxed neutral pose. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.
 
 ═══════════════════════════════════════
 
 EXAMPLE 3:
-USER_INTENT: "vibrant outdoor scene"
+USER_INTENT: "vibrant colors"
 KERNEL: {"hair": "curly brown", "clothing": "red dress"}
 
-OUTPUT: A single finished Pixar-style illustration. Vibrant outdoor scene with rich colors. A joyful character with curly brown hair wearing a red dress. High-end 3D CGI animation, appealing stylized proportions, dynamic energy. Cinematic composition, saturated palette. Not a character sheet. Not concept art. Single finished movie frame.
+OUTPUT: A single finished illustration. Vibrant rich colors. A character in modern 3D CGI animated style with curly brown hair wearing a red dress. Stylized appealing proportions, large expressive eyes. Dynamic but simple pose. High-quality render, cinematic composition. Not a character sheet. Not concept art. Do not reference any existing studio, brand, or IP.

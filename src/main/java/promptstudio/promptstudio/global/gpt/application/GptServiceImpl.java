@@ -49,11 +49,85 @@ public class GptServiceImpl implements GptService {
             "ghibli"
     );
 
-    private static final String GPT_VISION_URL = "https://api.openai.com/v1/chat/completions";
+    private static final String SAFE_VISION_PROMPT = """
+    For creating a fictional cartoon character, describe ONLY visible elements:
+    - Hair: color and length (e.g., "long dark")
+    - Clothing: type and color (e.g., "white shirt")
+    - Accessory: one simple item or null
+    
+    DO NOT identify anyone. DO NOT describe face, pose, or body.
+    
+    Output JSON only:
+    {"subject_type": "human", "materials": {"hair": "...", "clothing": "...", "accessory": null}}
+    """;
 
-    // ============================================
-    // 스타일 감지
-    // ============================================
+    private static final String FALLBACK_KERNEL = """
+    {
+      "subject_type": "human",
+      "materials": {
+        "hair": "dark hair",
+        "clothing": "casual top",
+        "accessory": null
+      },
+      "fallback": true
+    }
+    """;
+
+    private boolean isKnownAbstractedStyle(String style) {
+        return style != null && Set.of(
+                "chibi_game",
+                "anime_film",
+                "cgi_animation"
+        ).contains(style.toLowerCase());
+    }
+
+    private String makeSaferPrompt(String originalPrompt) {
+        // IP 관련 단어 모두 제거
+        String safer = originalPrompt
+                .replaceAll("(?i)animal crossing", "chibi game")
+                .replaceAll("(?i)nintendo", "")
+                .replaceAll("(?i)ghibli", "anime film")
+                .replaceAll("(?i)miyazaki", "")
+                .replaceAll("(?i)pixar", "3D animated")
+                .replaceAll("(?i)disney", "")
+                .replaceAll("(?i)studio", "")
+                .replaceAll("\\s+", " ")
+                .trim();
+
+        // 안전 문구 추가
+        safer = safer + " This is an original character design. Do not reference any existing IP, brand, or franchise.";
+
+        log.info("=== Safer 프롬프트 생성 ===");
+        log.info("원본: {}", originalPrompt);
+        log.info("변환: {}", safer);
+
+        return safer;
+    }
+
+    private boolean isVisionRejected(String result) {
+        if (result == null || result.isBlank()) return true;
+        String lower = result.toLowerCase();
+        return lower.contains("sorry") ||
+                lower.contains("can't help") ||
+                lower.contains("cannot") ||
+                lower.contains("not able") ||
+                lower.contains("unable") ||
+                lower.contains("i can't") ||
+                !result.trim().startsWith("{");
+    }
+
+    private String toAbstractedStyle(String style) {
+        if (style == null) return null;
+
+        return switch (style.toLowerCase()) {
+            case "animal_crossing" -> "chibi_game";
+            case "ghibli" -> "anime_film";
+            case "pixar", "disney" -> "cgi_animation";
+            default -> style;
+        };
+    }
+
+    private static final String GPT_VISION_URL = "https://api.openai.com/v1/chat/completions";
 
     private String detectRequestedStyle(String prompt) {
         String lower = prompt.toLowerCase();
@@ -107,10 +181,6 @@ public class GptServiceImpl implements GptService {
     private boolean isKnownStyle(String style) {
         return style != null && KNOWN_STYLES.contains(style);
     }
-
-    // ============================================
-    // 텍스트 업그레이드 (기존 유지)
-    // ============================================
 
     @Override
     public String upgradeText(String fullContext, String selectedText, String direction) {
@@ -276,40 +346,34 @@ public class GptServiceImpl implements GptService {
     private String extractIdentityKernel(List<String> imageUrls) {
         try {
             // 1차 시도: 일반 프롬프트
-            String result = callVisionApiWithPrompt(imageUrls, promptRegistry.get(PromptType.VISION_IDENTITY_EXTRACTOR));
+            String result = callVisionApiWithPrompt(
+                    imageUrls,
+                    promptRegistry.get(PromptType.VISION_IDENTITY_EXTRACTOR)
+            );
 
-            if (!isRejected(result)) {
+            if (!isVisionRejected(result)) {
                 log.info("=== Identity Kernel 추출 완료 ===");
                 log.info("결과:\n{}", result);
                 return result;
             }
 
-            // 2차 시도: 더 안전한 프롬프트
+            // 2차 시도: 안전 프롬프트
             log.warn("=== Vision 1차 거부, 안전 프롬프트로 재시도 ===");
-            result = callVisionApiWithPrompt(imageUrls, getSafeVisionPrompt());
+            result = callVisionApiWithPrompt(imageUrls, SAFE_VISION_PROMPT);
 
-            if (!isRejected(result)) {
+            if (!isVisionRejected(result)) {
                 log.info("=== Identity Kernel 추출 완료 (2차 시도) ===");
                 log.info("결과:\n{}", result);
                 return result;
             }
 
-            // 둘 다 실패: 에러 발생
-            log.error("=== Vision 분석 불가, 이미지 제한됨 ===");
-            throw new ResponseStatusException(
-                    HttpStatus.UNPROCESSABLE_ENTITY,
-                    "이 이미지는 분석할 수 없습니다. 다른 이미지를 사용해주세요."
-            );
+            // 둘 다 실패: Fallback Kernel 사용 (서비스 중단 방지)
+            log.warn("=== Vision 분석 불가, Fallback Kernel 사용 ===");
+            return FALLBACK_KERNEL;
 
-        } catch (ResponseStatusException e) {
-            throw e;  // 그대로 전달
         } catch (Exception e) {
             log.error("Identity Kernel 추출 실패: {}", e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "이미지 분석 실패: " + e.getMessage(),
-                    e
-            );
+            return FALLBACK_KERNEL;
         }
     }
 
@@ -338,77 +402,67 @@ public class GptServiceImpl implements GptService {
                 !result.trim().startsWith("{");
     }
 
-    private String callVisionApiWithPrompt(List<String> imageUrls, String systemPrompt) {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(apiKey);
+    private String callVisionApiWithPrompt(List<String> imageUrls, String systemPrompt) throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
 
-            List<Map<String, Object>> messages = new ArrayList<>();
+        List<Map<String, Object>> messages = new ArrayList<>();
 
-            Map<String, Object> systemMessage = new HashMap<>();
-            systemMessage.put("role", "system");
-            systemMessage.put("content", systemPrompt);
-            messages.add(systemMessage);
+        Map<String, Object> systemMessage = new HashMap<>();
+        systemMessage.put("role", "system");
+        systemMessage.put("content", systemPrompt);
+        messages.add(systemMessage);
 
-            Map<String, Object> userMessage = new HashMap<>();
-            userMessage.put("role", "user");
+        Map<String, Object> userMessage = new HashMap<>();
+        userMessage.put("role", "user");
 
-            List<Map<String, Object>> contentParts = new ArrayList<>();
+        List<Map<String, Object>> contentParts = new ArrayList<>();
 
-            Map<String, Object> textPart = new HashMap<>();
-            textPart.put("type", "text");
-            textPart.put("text", "Describe visual elements for artwork. JSON only.");
-            contentParts.add(textPart);
+        Map<String, Object> textPart = new HashMap<>();
+        textPart.put("type", "text");
+        textPart.put("text", "Describe visual elements for artwork creation. JSON only.");
+        contentParts.add(textPart);
 
-            for (String imageUrl : imageUrls) {
-                Map<String, Object> imagePart = new HashMap<>();
-                imagePart.put("type", "image_url");
-                Map<String, String> imageUrlMap = new HashMap<>();
-                imageUrlMap.put("url", imageUrl);
-                imagePart.put("image_url", imageUrlMap);
-                contentParts.add(imagePart);
-            }
-
-            userMessage.put("content", contentParts);
-            messages.add(userMessage);
-
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "gpt-4o");
-            requestBody.put("messages", messages);
-            requestBody.put("max_tokens", 500);
-            requestBody.put("temperature", 0.1);
-
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(
-                    GPT_VISION_URL,
-                    HttpMethod.POST,
-                    request,
-                    String.class
-            );
-
-            JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            String result = jsonNode
-                    .path("choices")
-                    .get(0)
-                    .path("message")
-                    .path("content")
-                    .asText();
-
-            return result
-                    .replaceAll("```json\\s*", "")
-                    .replaceAll("```\\s*", "")
-                    .trim();
-
-        } catch (Exception e) {
-            log.error("Vision API 호출 실패: {}", e.getMessage());
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Vision API 호출 실패: " + e.getMessage(),
-                    e
-            );
+        for (String imageUrl : imageUrls) {
+            Map<String, Object> imagePart = new HashMap<>();
+            imagePart.put("type", "image_url");
+            Map<String, String> imageUrlMap = new HashMap<>();
+            imageUrlMap.put("url", imageUrl);
+            imagePart.put("image_url", imageUrlMap);
+            contentParts.add(imagePart);
         }
+
+        userMessage.put("content", contentParts);
+        messages.add(userMessage);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", "gpt-4o");
+        requestBody.put("messages", messages);
+        requestBody.put("max_tokens", 500);
+        requestBody.put("temperature", 0.1);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                GPT_VISION_URL,
+                HttpMethod.POST,
+                request,
+                String.class
+        );
+
+        JsonNode jsonNode = objectMapper.readTree(response.getBody());
+        String result = jsonNode
+                .path("choices")
+                .get(0)
+                .path("message")
+                .path("content")
+                .asText();
+
+        return result
+                .replaceAll("```json\\s*", "")
+                .replaceAll("```\\s*", "")
+                .trim();
     }
 
     private String composePromptWithStyle(String identityKernel, String style, String userPrompt) {
@@ -575,6 +629,7 @@ public class GptServiceImpl implements GptService {
     public GptRunResult runPromptWithImages(String prompt, List<String> imageUrls) {
         try {
             log.info("=== 입력 프롬프트: [{}] ===", prompt);
+
             // 이미지 생성 요청 체크
             boolean isImageRequest = prompt.contains("이미지") ||
                     prompt.contains("그림") ||
@@ -599,38 +654,53 @@ public class GptServiceImpl implements GptService {
                         .build();
             }
 
-            // === NEW ARCHITECTURE ===
+            // === POLICY-AWARE ARCHITECTURE ===
 
-            // 1. 스타일 감지
+            // 1. 스타일 감지 → IP-free 버전으로 변환
             String detectedStyle = detectRequestedStyle(prompt);
-            log.info("=== 감지된 스타일: {} ===", detectedStyle);
+            String abstractedStyle = toAbstractedStyle(detectedStyle);
+            log.info("=== 감지된 스타일: {} → 추상화: {} ===", detectedStyle, abstractedStyle);
 
-            // 2. Vision: Identity Kernel 추출 (JSON)
+            // 2. Vision: Identity Kernel 추출
             String identityKernel = extractIdentityKernel(imageUrls);
 
             // 3. Composer: 스타일별 DALL-E 프롬프트 생성
             String dallePrompt;
 
-            if (detectedStyle != null && isKnownStyle(detectedStyle)) {
-                // Known 스타일: Few-shot + Controlled Transformation
-                dallePrompt = composePromptWithStyle(identityKernel, detectedStyle, prompt);
-            } else if (detectedStyle != null) {
-                // Unknown 스타일: 스타일 분석 후 적용
-                String styleAnalysis = analyzeStyleCharacteristics(detectedStyle);
-                dallePrompt = composePromptWithUnknownStyle(identityKernel, detectedStyle, styleAnalysis, prompt);
+            if (abstractedStyle != null && isKnownAbstractedStyle(abstractedStyle)) {
+                dallePrompt = composePromptWithStyle(identityKernel, abstractedStyle, prompt);
+            } else if (abstractedStyle != null) {
+                String styleAnalysis = analyzeStyleCharacteristics(abstractedStyle);
+                dallePrompt = composePromptWithUnknownStyle(identityKernel, abstractedStyle, styleAnalysis, prompt);
             } else {
-                // 스타일 미지정: 원본 유지
                 dallePrompt = composePromptNoStyle(identityKernel, prompt);
             }
 
-            // 4. DALL-E 이미지 생성
+            // 4. DALL-E 이미지 생성 (1차 시도)
             String resultImageUrl;
-            TransformationLevel level = TransformationLevel.fromStyle(detectedStyle);
+            try {
+                TransformationLevel level = TransformationLevel.fromStyle(detectedStyle);
+                if (level == TransformationLevel.HEAVY || level == TransformationLevel.LIGHT) {
+                    resultImageUrl = imageService.generateImageHD(dallePrompt);
+                } else {
+                    resultImageUrl = imageService.generateImageRealistic(dallePrompt);
+                }
+            } catch (Exception e) {
+                // DALL-E 실패 시: 더 안전한 프롬프트로 1회 재시도
+                log.warn("=== DALL-E 1차 실패, Style Abstraction 재시도 ===");
+                log.warn("에러: {}", e.getMessage());
 
-            if (level == TransformationLevel.HEAVY || level == TransformationLevel.LIGHT) {
-                resultImageUrl = imageService.generateImageHD(dallePrompt);
-            } else {
-                resultImageUrl = imageService.generateImageRealistic(dallePrompt);
+                String saferPrompt = makeSaferPrompt(dallePrompt);
+                try {
+                    resultImageUrl = imageService.generateImageHD(saferPrompt);
+                } catch (Exception e2) {
+                    // 재시도도 실패: 사용자에게 에러 반환
+                    log.error("=== DALL-E 재시도 실패 ===");
+                    throw new ResponseStatusException(
+                            HttpStatus.UNPROCESSABLE_ENTITY,
+                            "이미지 생성이 제한되었습니다. 다른 스타일이나 이미지로 시도해주세요."
+                    );
+                }
             }
 
             return GptRunResult.builder()
@@ -638,6 +708,8 @@ public class GptServiceImpl implements GptService {
                     .resultImageUrl(resultImageUrl)
                     .build();
 
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             log.error("이미지 생성 실패: {}", e.getMessage());
             throw new ResponseStatusException(

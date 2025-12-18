@@ -1,15 +1,15 @@
 TRANSFORMATION: HEAVY
-PRIORITY: User Intent > Style Rules > Identity
+STYLE: Chibi 3D Game Character (NO IP NAMES)
 USE: hair color, clothing color ONLY
-DROP: face shape, anatomy, pose details
+DROP: face, pose, anatomy
 
 ═══════════════════════════════════════
 
 EXAMPLE 1:
-USER_INTENT: "transparent background, in-game look, 3D"
-KERNEL: {"hair": "long dark", "clothing": "white top, black jeans"}
+USER_INTENT: "transparent background, 3D look"
+KERNEL: {"hair": "long dark", "clothing": "white top, black pants"}
 
-OUTPUT: A single finished Animal Crossing-style character illustration. Transparent background. Clear 3D appearance like actual in-game character. A villager with long dark hair wearing a white top and dark pants. Nintendo villager proportions: oversized round head, dot eyes, tiny features, small rounded body. Bright pastels, smooth plastic materials, cheerful lighting. Not a character sheet. Not concept art. Not a turnaround. Not multiple poses. No color palette.
+OUTPUT: A single finished character illustration. Transparent background, clean cutout. A cute chibi 3D game character with long dark hair wearing a white top and dark pants. Toy-like proportions: oversized spherical head, simple dot eyes, tiny features, small rounded body. Soft pastel colors, smooth plastic materials, bright cheerful lighting. Neutral standing pose. Not a reference sheet. Not concept art. Not a turnaround. Not multiple poses. Do not reference any existing game, brand, or IP.
 
 ═══════════════════════════════════════
 
@@ -17,12 +17,12 @@ EXAMPLE 2:
 USER_INTENT: "bright warm lighting"
 KERNEL: {"hair": "short brown", "clothing": "blue hoodie"}
 
-OUTPUT: A single finished Animal Crossing-style character illustration. Bright warm lighting with soft shadows. A villager with short brown hair wearing a cozy blue hoodie. Nintendo villager design: large spherical head, minimal dot features, stubby rounded body. Cheerful pastel colors, toylike plastic finish. Not a character sheet. Not concept art. Not a turnaround. Not multiple poses. No color palette.
+OUTPUT: A single finished character illustration. Bright warm lighting with soft shadows. A cute chibi 3D game character with short brown hair wearing a cozy blue hoodie. Toy-like proportions: large spherical head, minimal dot features, compact rounded body. Soft pastel palette, smooth plastic texture. Neutral pose. Not a reference sheet. Not concept art. Not a turnaround. Not multiple poses. Do not reference any existing game, brand, or IP.
 
 ═══════════════════════════════════════
 
 EXAMPLE 3:
 USER_INTENT: "transparent background"
-KERNEL: {"hair": "blonde ponytail", "clothing": "red sweater", "accessory": "glasses"}
+KERNEL: {"hair": "blonde", "clothing": "red sweater", "accessory": "glasses"}
 
-OUTPUT: A single finished Animal Crossing-style character illustration. Transparent background, clean cutout. A villager with blonde ponytail and round glasses wearing a red sweater. Authentic Nintendo proportions: huge round head, dot eyes, compact body. Warm pastel palette, plastic texture. Not a character sheet. Not concept art. Not a turnaround. Not multiple poses. No color palette.
+OUTPUT: A single finished character illustration. Transparent background. A cute chibi 3D game character with blonde hair and round glasses wearing a red sweater. Toy-like proportions: oversized round head, dot eyes, tiny features, small body. Warm pastel colors, plastic-like materials. Neutral standing pose. Not a reference sheet. Not concept art. Not a turnaround. Not multiple poses. Do not reference any existing game, brand, or IP.
